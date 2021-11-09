@@ -1,0 +1,62 @@
+% ---------------------------------------------------------------------
+% This document compiles with pdflatex and is made with Koma-Script. 
+%
+% The Template is based on the template of Michael
+% von Riegen, riegen@informatik.uni-hamburg.de, and
+% modified at some points
+% ---------------------------------------------------------------------
+\documentclass[11pt, DIV=10, BCOR=20mm, bibliography=totoc, listof=totoc]{scrbook}
+
+% Import of packages and options that refer to the whole document can be found in myPreamble.sty
+\usepackage{myPreamble}
+\include{abbreviations}
+
+% useful if writing everything in one chapter
+%has no affection on input-commands
+% \includeonly{kapitel1}
+
+\begin{document}
+
+	% titlepage
+
+
+	% roman page numbering
+	\frontmatter
+	
+		\include{_titlepage}
+	\cleardoubleemptypage
+	\include{abstract}
+	
+	% lists (table of contents, list of figures, tables, abbreviations)
+	\tableofcontents
+	\listoffigures
+	\listoftables
+	\printglossary
+	\printglossary[title=List of Abbreviations,type=\acronymtype]	
+	
+	% arabic page numbering
+	\mainmatter
+	
+	\include{chapter1}
+	\include{chapter2}
+	%\include{kapitel3}
+	%\include{kapitel4}
+	%\include{kapitel5}
+	%\include{kapitel6}
+	%\include{kapitel7}
+	%\cleardoublepage
+	
+	% bibliography 
+	\frontmatter
+	\setcounter{page}{11}
+	\nocite{wiki:wissarbeit}
+	\bibliographystyle{alphadin}
+	\bibliography{references}
+	\cleardoublepage
+	
+	\appendix
+
+	% affidavit
+	\input{_eidversicherung}
+	
+\end{document}
