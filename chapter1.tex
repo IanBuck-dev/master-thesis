@@ -2,6 +2,7 @@
 % -----------------------------------------------------------------------
 
 \chapter{Introduction}
+\label{chap:Introduction}
 
  In 2023 56\% of the human population already lives in urban areas with the number projected to continiously increase to 68\% by 2050 \footnote{https://ourworldindata.org/urbanization\#by-2050-more-than-two-thirds-of-the-world-will-live-in-urban-areas}. Combined with the ongoing climate change and urban densification, cities are facing many new challenges. With the removal of vegetation in favor of living space and the sealing of surfaces with heat-absorbing materials such as asphalt or concrete for streets and highways \cite{gret2020urban}, rising temperatures lead to new phenomena that pose risks for the urban citizens. A recent phenomenon is the appearance of so called urban heat-islands (UHI). A heat-island is a local occurrence of significantly higher temperatures than surrounding areas that pose a health risk, especially for the elderly, children or citizen with prior health-issues \cite{martin2015alternative}.\\
 % continuous data layer
@@ -9,8 +10,7 @@ In order to detect UHIs, Land Surface Temperature (LST) is commonly used. While 
 Lastly, there is the possibility of deploying sensor networks to closely monitor the climate of the city, but this approach can be quite cost intensive for a large amount of sensors over a long time period \cite{chapman2015birmingham}. An alternative that is less costly would be to instead rely on citizen-owned sensor networks from the existing Smart Home and Internet of Things (IoT) infrastructure, like Sensor.Community \footnote{https://deutschland.maps.sensor.community/} and Netatmo \footnote{https://weathermap.netatmo.com/}, which offer a temporal resolution of 5 min for temperature and wind, hourly for rain, while also having a comparably high spatial resolution. This approach has the desired temporal resolution and has been shown to work well in \cite{meier2017crowdsourcing}, but there might be areas, such as industrial zones, where citizens are not able or not allowed to install their personal sensors. In order to also gain insights in such previously unobserved areas, we propose the usage of mobile sensors that could be installed on buses, bikes or e-scooters to gain temporary snapshots and improve the spatial resolution even further.
 As research realted activities commonly rely on continuous or gridded data fields, there needs to be a way to convert these single data points from the different sensors into a continuous data-layer.\\
 In this paper, we propose a solution to this problem by training a machine learning regression model, that allows for the interpolation of missing data-points. Based on sensor readings, from the sensor networks and mobile sensors, of commonly collected weather information, such as temperature, humidity, rain, pressure, wind, and possibly other variables such as vegetation indexes \cite{alonso2020new}, the model then creates a continuous data-layer that allows for a holistic view of the observed variable, in this case temperature.\\
-\\
-The rest of the paper is structured as follows. In chapter 2 we describe the architecture of the system including the sensor networks and how multiple heterogeneous data sources can be integrated. In chapter 3 we describe the proposed data-point interpolation model and discuss how mobile sensors can be integrated to increase the spatial resolution. Lastly, in chapter 4, we discuss the approach and give a brief overview about future steps.
+
 
 \section{Motivation}
 \label{ch:1}
@@ -18,6 +18,8 @@ The rest of the paper is structured as follows. In chapter 2 we describe the arc
 TODO
 
 \section{Objective}
+
+Forschungsfragen
 
 TODO
 
@@ -28,4 +30,4 @@ TODO
 
 \section{Structure of this work} 
 
-TODO
+The rest of the thesis is structured as follows. Chapter \ref{chap:Related Work} begins with an analysis of related work, where important literature is discussed, that forms the foundation of this research. In chapter \ref{chap:System Architecture}, the focus lies on describing the service architecture, that shows how a machine learning model can be deployed in different contexts to improve data availability. Which machine learning approaches can be used to interpolate missing data and how they differ from each other is discussed in chapter \ref{chap:Machine Learning Model Design}. In Chapter \ref{chap:Evaluation}, the different ML approaches are compared and cross validated with each other based on the different model that are trained on the obtained data-sets. Finally, chapter \ref{chap:Conclusion} discusses the findings of this thesis and gives an outlook into future work and research directions.
