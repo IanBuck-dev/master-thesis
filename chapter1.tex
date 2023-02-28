@@ -11,23 +11,51 @@ Lastly, there is the possibility of deploying sensor networks to closely monitor
 As research realted activities commonly rely on continuous or gridded data fields, there needs to be a way to convert these single data points from the different sensors into a continuous data-layer.\\
 In this paper, we propose a solution to this problem by training a machine learning regression model, that allows for the interpolation of missing data-points. Based on sensor readings, from the sensor networks and mobile sensors, of commonly collected weather information, such as temperature, humidity, rain, pressure, wind, and possibly other variables such as vegetation indexes \cite{alonso2020new}, the model then creates a continuous data-layer that allows for a holistic view of the observed variable, in this case temperature.\\
 
-
-\section{Motivation}
-\label{ch:1}
-
-TODO
+\todo{Readjust at the end of thesis}
 
 \section{Objective}
 
-Forschungsfragen
+current situation: abundance of data (data quality unknown), but different data sources at different places with different formats, making it hard to work with different sources at the same time
+- smart city example -> heat island detection
+    - sensor networks (statinary + mobile)
+    - LST satellite data (lack of spatiotemporal resolution, not suited for micro-climate)
+    - vegetation indexes (in geoinformation systems/portals)
+    - etc.
+- currently these sources are used independently from each other, but how can they be integrated?
+    - hybrid approaches have shown that combining different approaches (smart city stationary + moving sensors) to give better prediction quality than singular approach (reasons: unobserved areas)
+    - statistical models offer not enough flexibility/are to cumbersom to work with (and probabilities are not known)
+    - ML is a good fit to analyse patterns and rules
+- how can ML be used to integrate the different types of data?
+- what work needs to be done before using the data in ML (preprocessing, transformation, outlier detection etc.)
+    - one way of preparing data is to interpolate missing data to create continous gridded features (focus of this work)
+    - how ML can we improve the interpolation quality of features? -> turn sparse features into denser versions with interpolation, interpolation based on other features present
 
-TODO
+In order to validate these things, we need high quality data-sets with many different features, but there are not many available, even tho for certain things (atmosphere etc.) there are OpenData sets available.
+Goal of this work is to create good data-sets that can be used to train and validate different methods, like ML approaches
 
-\section{Scope of this work}
-\label{ch:eingrenzungThema}
+\section{Structure of this work}
 
-TODO
+Research methods:\\
+- literature research as foundation\\
+    - heat island detection
+        - smart cities -> sensor networks vs LST
+        - what type of other data is available? geoinformation, vegetatition, for micro-climate: shades of bigger buildings?
+    - 
+- prototyping\\
+    - implement pipeline to pre-process different types of data\\
+    - feature extraction\\
+    - implement ML model\\
+    - deploy ML model\\
+\\
+- create/search for fine granular data sets\\
+    - add new contextual data to exitsing data sets\\
+    - discuss different types of data (gridded vs continous vs data points) and methods for each
+\\
+- train ML models with different methods (deep learning, random forests etc.) and different features enabled\\
+\\
+- cross validation of results\\
+    - discuss validation techniques and indicators (RSME, MSE)\\
 
-\section{Structure of this work} 
 
+% Strucure of the thesis
 The rest of the thesis is structured as follows. Chapter \ref{chap:Related Work} begins with an analysis of related work, where important literature is discussed, that forms the foundation of this research. In chapter \ref{chap:System Architecture}, the focus lies on describing the service architecture, that shows how a machine learning model can be deployed in different contexts to improve data availability. Which machine learning approaches can be used to interpolate missing data and how they differ from each other is discussed in chapter \ref{chap:Machine Learning Model Design}. In Chapter \ref{chap:Evaluation}, the different ML approaches are compared and cross validated with each other based on the different model that are trained on the obtained data-sets. Finally, chapter \ref{chap:Conclusion} discusses the findings of this thesis and gives an outlook into future work and research directions.

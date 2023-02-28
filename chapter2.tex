@@ -1,9 +1,102 @@
 \chapter{Related Work}
 \label{chap:Related Work}
 
-- normal Literature Review of realted fields of research
- - 
+% start: Heat island detection -> needs temperature map of current climatic conditions of the intra urban micro climate
+% - LST data (high coverage, but low spatialtemporal resolution)
+% - coverage through public stationary weather stations (low spatial resolution)
+% - option: sensor network with many stationary + moving sensors
+% (hybrid approaches show promising higher prediction quality)
 
+% but sensor networks have potentially low spatial coverages.
+% -> solution: interpolate missing data (calculation or educated guess)
+
+% First overview: interpolation techniques/history
+% - foundation in statistics
+% - adaptation for specific research areas (focus on temperature related research in this thesis)
+%     - geostatistics (Krigin) -> probabilities need to be known
+%         - climate research (macro) -> global warming, temperature trends
+%         - urban climate research (micro) -> heat islands, polution
+%     - ML approaches (deep learning, random forests etc.)
+%         - list some approaches
+
+% ML show promise in helping with interpolation tasks
+% -> in order to train we need good data sets
+
+% overview of data collection
+% - open data movement
+%     - list open data catalogues (EU, more local ones)
+% - commercial sources
+%     - list some examples, but not focus because not accessible
+% - overview data preperation
+% - overview of feature selection
+% - overview ML interpolation methods
+
+In the following chapter we lay the foundation for the research conducated in this thesis.
+
+\section{Interpolation of Missing Data}
+
+
+\subsection{Regression Analysis in Statistics}
+- foundation of other research fields, based in statistics/mathematics
+
+- linear regression (least-squares)
+- multiple regression models
+- hierachical regression
+
+- special cases
+    - piecewise linear regression
+    - inverse prediction
+    - weighted least squares
+    - logistic regression
+    - poisson regression
+
+\subsection{Interpolation in Geostatistics}
+
+- spatiotemporal (kriging)
+- time series prediction vs interpolation of missing data
+- based on GIS 
+- pipeline: fit measured data points to grid, interpolate missing squares
+
+
+\subsection{Prediction of Future Data}
+- Time Series Analysis
+
+\subsection{Interpolation with Machine Learning Models}
+
+- ML regression
+
+\section{Access to Data-Sets}
+
+\subsection{OpenData Movement}
+ - portals
+        - official:
+            - EU: https://data.europa.eu/data/datasets?query=temperature\&locale=en (combinas many governmental and local catalogues) / https://data.europa.eu/data/catalogues?locale=en
+            - USA: https://data.gov/
+            - UK: https://www.data.gov.uk/
+        - private: https://www.kaggle.com/
+
+- strategies:
+    - self procurement (test beds -> Helsinki Testbed (climate research meso sclae), UK Birmingham Testbed (climate + smart city), )
+
+\section{Applications and Research Areas}
+
+- focus on temperature interpolation/climate research
+
+- climate research
+    - high area coverage, low spatio and temporal resolution (5km by 5km squares)
+    - based on LST data (from satelites) -> not the same as air temperature
+
+- micro-climate research
+    - bad/costly area coverage, high spatio and temporal resolution
+    - Urban heat islands
+    - Pollution (fine dust pollution)
+
+- connection to smart cities
+    - integrating many heterogenous data points
+    - detection climatic anomalys
+    - notifiy/warn residents
+
+%% Important keys
 - important key words
 
 - current status quo
