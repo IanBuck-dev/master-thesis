@@ -25,13 +25,23 @@ current situation: abundance of data (data quality unknown), but different data 
     - hybrid approaches have shown that combining different approaches (smart city stationary + moving sensors) to give better prediction quality than singular approach (reasons: unobserved areas)
     - statistical models offer not enough flexibility/are to cumbersom to work with (and probabilities are not known)
     - ML is a good fit to analyse patterns and rules
+        - but effort to retrain models for each application expensive
 - how can ML be used to integrate the different types of data?
-- what work needs to be done before using the data in ML (preprocessing, transformation, outlier detection etc.)
-    - one way of preparing data is to interpolate missing data to create continous gridded features (focus of this work)
-    - how ML can we improve the interpolation quality of features? -> turn sparse features into denser versions with interpolation, interpolation based on other features present
+- how can data availibility of contexttual data be improved by leveraging ML approaches for different topics?
+    - for the heat map detection, what you need is a fine-granular temperature map, that allows for outlier detection
+        - either train your own model on a huge dataset
+        - or access a temperature map -> this will be discussed, how to use ML for this and improve data availibilty by using interpolation
+- additonal topics to briefly discuss (mainly apply by implementing ML models) 
+    - what work needs to be done before using the data in ML (preprocessing, transformation, outlier detection etc.)
+        - one way of preparing data is to interpolate missing data to create continous gridded features (focus of this work)
+        - how ML can we improve the interpolation quality of features? -> turn sparse features into denser versions with interpolation, interpolation based on other features present
+
+Methodology
 
 In order to validate these things, we need high quality data-sets with many different features, but there are not many available, even tho for certain things (atmosphere etc.) there are OpenData sets available.
-Goal of this work is to create good data-sets that can be used to train and validate different methods, like ML approaches
+Goal is: implement a temperature map based on ML that interpolates missing data based on historical and current data.
+Compare prediction quality of different type of models (DL, random forests etc.) based on cross-validation (simulate missing data by leaving data points out on purpose) -> experiment with different intervals, densities etc. -> could also compare to Krigin (as a typical geostatistical approach for temperature interpolation)
+Subgoal: In order to achive this, we also need high quality data-sets to train and validate the model -> source them from OpenData platforms
 
 \section{Structure of this work}
 
