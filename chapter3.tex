@@ -75,6 +75,7 @@ Dealing with the heterogenity of data
 modeling uncertainty of data
 
 \subsubsection{Integrating Static Data}
+\label{subsubsec: integrating static data}
 
 Next to sensor readings captured for a given area, there are also other types of information that could be useful for ML applications. Alonso and Renard~\cite{alonso2020new} used these additional indexes to predict air temperature:
 
@@ -170,7 +171,6 @@ Rainfall       & mm/h    & 0.2 to 150 mm/h        & 1mm/h   & every 5 min (bucke
 % todo: adjust to page size, maybe move to dataset chapter
 \end{table}
 
-\\
 Next to commercial vendors, there also exist OpenSource projects which operate and develop sensor platforms independently:\\
 \\
 \textbf{Sensor Community}: Sensor.Community~\footnote{\url{https://sensor.community}} is an open-source community driven project that aims to collect Open Environmental Data. The project is part of the initiative OK Lab Stuttgart~\footnote{\url{https://codefor.de/stuttgart/}}, which is run by a group of volunteers that ...
@@ -188,26 +188,46 @@ But, they also differ at...
 
 \subsection{Application Layer}
 
-The application layer contains services which utilize data provided by the data management layer to provide services for the city and its citizens. As part of this layer, there could be an UHI detection service, which can notify citizens in a certain area if increased heat islands are detected, or be used to predict UHIs in the future to improve trip planning, increase the watering of plants in the affected area and more.
-The difficulty of UHI detection in this context is less the detection of the actual area that is hotter, but the aquisition of a fine-granular temperature map with very high spatio-temporal resolution and high data quality. In order to simplify this process of aquiring a comprehensive temperature map, in this work we will create a air temperature interpolation service, that consolidates (near) real-time data streams from the data management layer and uses ML-based interpolation to create a continous temperature layer, which other services, like the UHI detection service, can build upon. Needing to train, validate, and constantly improve a ML-model by yourself takes a lot of resources and expert knowledge. The goal is to reduce the complexity of building application services and enabling a higher focus on the usability and user experience (UX) of using such a service, by removing the need to create such a ML-model yourself and instead rely on the model provided by another service.\\
-
-% todo
-- problem less the UHI detection (difference in temperature) but more about integrating the temperature data, seperate temperature interpolation service
-
-How the ML model can be retrained continously etc.
-Ingest data
+The application layer contains services which utilize data provided by the data management layer to provide services for the city and its citizens. As part of this layer, services could be build that aggregate data streams coming from the data management layer and use ML to improve the data quality by detecting outliers, reducing bias, interpolating missing data etc. The improved data could then be published and other services that would otherwiese rely on the raw data streams and potentially need to implement their own outlier detection or interpolation of missing data techniques, instead simply subscribe to the externally managed service. This could lower the barrier to entry for developers with less available resources, financially or domain-knowledge wise, and generelly allow developers/service providers to allocate their resources to other areas like user experience (UX) and usability compared to the maintenance of complex ML-based services.\\
+In the context of this work, we focus on the topic of UHI detection. In this context, there could be a UHI detection service that ingests real-time data streams from the data management layer and notify citizens if an UHI is detected in or predicted for a particular urban area. As the main challenge for UHI detection lies, next to the definition of urban and rural reference areas, on the gathering of a comprehensive temperature map that allow UHI detection algorithms to work, in this work we primarily focus on creating and evaluating an air temperature map service, that enables the detection of CUHIs and could also be used as a foundation for other services in a smart city, like plant watering systems, smart healthcare and more.
 
 \section{Applications for Machine-Learning}
+
+The data management layer publishes historical data and real-time data streams for application service to ingest. Generally, ML can be used for the following tasks in different variations:
+
+\begin{itemize}
+    \item Classification
+\end{itemize}
+
+In this context, 
 
 % todo
 This section is about where ML could be used (Land cover, )
 
 - comparison to NLP -> pipeline vs singular model (NLP pipeline vs ChatGPT)
 
+applications:
+- all-in one solution (all features included) -> huge DL model with billions of parameters (ChaptGPT)
+    - not feasible in this thesis
+- pipeline solution (use ML models incrementally and build upon results)
+    - similar to NLP
+    - feasible for specific topics
+    - bottom-up approach (use ML to increase the amount of available data)
+
+- types of ML utilisation
+    - utlier detection
+    - classification
+    - regression
+        - interpolation of missing data
+        - prediction of future data
+
 \subsection{Parallels to Natural Language Processing}
 
 NLP pipeline (stemmer, lexer, etc.)
 vs single model (ChatGPT) - neural network with billions of parameters
+
+% continous improvements
+
 
 \section{Smart City Case Studies}
 \label{sec: smart city case studies}

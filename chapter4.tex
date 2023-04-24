@@ -1,18 +1,97 @@
 \chapter{Machine Learning Model Design}
 \label{chap:Machine Learning Model Design}
 
-The data-layer exposes a variety of single data-points for different points in time. As meteorological research and analysis activities are usually in need of gridded or continuous data \cite{sekulic2020spatio}, in this paper we design a temperature interpolation service that offers continuous temperature data for a given area. This service is part of the \textit{service-layer} and acts as a building block for further temperature related research and analysis, as temperature is an important variable for research in agronomy, meteorology, hydrology, ecology and many other fields of application.\\
-The core of the service is a deployable regression model, that is capable of interpolating missing data points for a target feature in a defined area, based on surrounding data points, that contain various features that are related to the target feature. In the case of temperature interpolation, the target feature is the temperature and the related features could be temperature, rain, humidity, solar radiation or wind, which can be collected using weather stations and specialized sensors. Other features in the context of temperature prediction could also be geological data such as  Normalized Difference Vegetation Index (NDVI) or Modified Normalized Difference Water Index (MNDWI), which according to \cite{alonso2020new} have a strong impact on their estimation model.\\
-In order to find the most appropriate model for this application, we want to compare different promising approaches for interpolating data points such as classical geostatistical methods like Empirical Bayesian Kriging (EBK) or EBK-Regression Prediction (EBKRP) \cite{njoku2023effects} with machine-learning approaches such as random forest regression \cite{alonso2020new}. The goal is to minimize prediction errors and identifying the features that have the biggest impact on prediction quality, like possibly the density of weather stations \cite{njoku2023effects}.\\
-One focus point of this study will also be the underlying uncertainty and dynamic of the data layer. Because the data layer consists of sensors that are connected to a network, there are bound to be times when the network is unreliable and sensors are temporarily not available. This could happen either for bigger areas if a network provider is having an outage in one of its data centers, or more localized, if the Wi-Fi is unreachable for a single sensor. The network is also run by citizens, so each one can decide to turn off their own sensors, exchange them for new ones or add additional sensors to the network. The prediction model of the temperature map service needs to take this into consideration when interpolating the data.
+The data-layer exposes a variety of single data-points for different points in time. As meteorological research and analysis activities are usually in need of gridded or continuous data \cite{sekulic2020spatio}, in this paper we design a temperature interpolation service that offers continuous air temperature data for a given area. This service is part of the \textit{service-layer} and acts as a building block for further temperature related research and analysis, as air temperature is an important variable for research in agronomy, meteorology, hydrology, ecology and many other fields of application.\\
+The core of this service is a deployable ML regression model, that is capable of interpolating missing data points for a target feature in a defined area, based on surrounding data points, that contain various features that are related to the target feature. In the case of temperature interpolation, the target feature is the air temperature and the related features could be surrounding air temperature, rain, humidity, solar radiation or wind, which can be collected using weather stations and specialized sensors. Other features in the context of temperature prediction could also be geological data such as  Normalized Difference Vegetation Index (NDVI) or Modified Normalized Difference Water Index (MNDWI) which, according to \cite{alonso2020new}, have a strong impact on their estimation model.\\
+The hypothesis of this work is that ML regression models perform better than traditional geostatistical methods when it comes to interpolating missing data points in a highly dynamic environment, such as an urban city, as they these models are able to learn data patterns and feature dependencies as well as being more flexible in terms of the number of features that can be used for prediction. Additionally, ML models could reduce the effort it takes to configure a geostaticial model by automatically selecting the most important features and optimizing the hyperparameters based on the urban environment.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/expose-mobile-sensor-deployment.png}
-    \caption{Some areas are not covered by stationary sensors (left). Whenever mobile sensors collect data in these areas (middle) this knowledge can be used to train regression model which predicts weather conditions for these unmonitored areas (right).}
-    \label{fig:mobile-sensor-deployment}
-\end{figure}
+\section{Geostatical Interpolation Baseline}
+In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) or k-nearest neighbours (KNN) that are easy and performant, but struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Krigin, which is based on a gaussian process and uses a covariance function to model the spatial correlation between data points. The covariance function is a measure of the similarity between two data points, which is used to calculate the weight of the data point in the interpolation process. There are different types of Krigin methods available, each suited for different use cases, including:
 
-Because we have a highly dynamic underlying data structure that we need to account for, we think that we could improve the prediction results even further by increasing the density of data points and adding readings for previously unobserved areas by adding mobile sensors to the data layer. These sensors could be deployed in an urbanized area by being installed on buses, bikes or e-scooters, which also have the advantage that they usually move close to heat absorbing surfaces such as streets or move through parks which can generally help with heat dissipation. The question here would be, what type of sensors are applicable for such local snapshots and which features could be captured. Temperature can be read easily with a small and inexpensive sensor like the BMP280, whereas collecting rain might be difficult for a moving object.
+\begin{enumerate}
+    \item Simple Krigin: the simplest form of Krigin, that assumes that the mean of the measured values is known and constant
+    \item Ordinary Krigin: same as Simple Krigin, but the mean is an unknown constant
+    \item Universal Krigin: instead of assuming a constant mean, the mean is modeled as a deterministic function
+    \item Indicator Krigin: same as Ordinary Krigin, but for categorical data
+    \item Propability Krigin: same as Indicator Krigin, but assumes two types of random errors that can are each auto-correlated and cross-correlated to each other
+    \item Disjunctive Krigin: same as Ordinary Krigin, but tries to improve the prediction quality by using an unknown constant and approximating an arbitrary function. It requires the bivariate normality assumption and is difficult to verify and solutions might be mathematically and computationally complicated
+    \item Cokrigin: offers methods for the previous Krigin methods, but uses information on several variable types. This could improve the prediction quality, but might increase the variance of the prediction, as more much more estimation is required
+\end{enumerate}
 
-- compare regression based models
+In the context of geostatistical analysis, there are different types of Krigin methods available that combine the aforementioned methods with other techniques, such as regression analysis. The following list is the geostaticial methods offered by ArcGIS Pro as part of the Geostatical Analyst toolbox~\footnote{\url{https://pro.arcgis.com/en/pro-app/latest/tool-reference/geostatistical-analyst/an-overview-of-the-geostatistical-analyst-toolbox.htm}}:
+
+% TODO: add more details for each method
+\begin{enumerate}
+    \item Empirical Bayesian Krigin (EBK)
+    \item Empircal Bayesian Krigin 3D (EBK3D)
+    \item EBK Regression Prediction (EBKRP): Empirical Bayesian Kriging with regression prediction
+    \item Global Polynominal Interpolation
+    \item Kernel Interpolation with Barriers
+    \item Moving Window Krigin
+    \item Radial Basis Function
+\end{enumerate}
+
+In the scope of this work, we unfortunately cannot compare all of these methods with each other and therefore need to focus on a subset of methods. EBK and EBKRP are one of the most commonly used methods for temperature interpolation (cite). According to \cite{njoku2023effects}, EBKRP continously outperforms EBK in different weather station density scenarios, therefore we will use EBKRP as a baseline for our comparison.\\
+In the following, the machine learning fundamentals for this work are explained and the different ML regression model types are introduced.
+
+\section{Supervised Learning}
+There are multiple learning approaches when it comes to machine learning, especially in the context of smart cities. The main directions are supervised learning, with classification and regression, unsupervised learning with clustering and dimensionaly reduction, and reinforcement learning~\cite{ullah2020applications}. As interpolation of missing data is a form of regression, in this study we use a supervised regression approach to train our ML models.\\
+In supervised learning, an AI network is trained with input and target values to create a mapping function. In the context of smart cities, the input values come from the data management layer and consist of historical sensor data, such as humidity, solar radiance, or air temperature, combined with static data as shown in section \ref{subsubsec: integrating static data}. The target variable in this context is air temperature, but the approach can be applied to any other feature, such as humidity or solar radiance.
+
+% TODO: write
+\subsection{Dealing with Uncertainty}
+- The model has a lot of uncertainty
+- model uncertainty in input data? (depending on sensor type, sensor age, placement...)
+
+- dealing with bias
+- dealing with variance
+-> problem of over-fitting
+
+\subsection{Supervised Regression Models}
+
+\subsubsection{Linear Regression Models}
+Most simple type of regression. Expect a linear dependens between dependent and independent variables. Downside, if the dependence is non-linear
+- linear regression
+
+\subsubsection{Polynomial Regression Models}
+able to fit non-linear dependencies
+
+\subsubsection{Ridge Regression Models}
+addresses overfitting to training data
+
+\subsubsection{LASSO Regression}
+enforce sparsity in the learned weights
+
+\subsubsection{Bayesian Regression}
+
+\subsubsection{Neural Network Models}
+input layer -> hidden layers -> output
+
+The advantages of Multi-layer Perceptron are:
+- Capability to learn non-linear models.
+- Capability to learn models in real-time (on-line learning) using partial\_fit.
+
+The disadvantages of Multi-layer Perceptron (MLP) include:
+- MLP with hidden layers have a non-convex loss function where there exists more than one local minimum. Therefore different random weight initializations can lead to different validation accuracy.
+- MLP requires tuning a number of hyperparameters such as the number of hidden neurons, layers, and iterations.
+- MLP is sensitive to feature scaling.
+
+- Loss functions/optimzers: Stochastic Gradient Descend, Adam, L-BFGS
+
+
+- random forest regression
+...
+
+\subsection{Evaluation Metrics}
+- Mean absolute error, mean absolute relative, mean quared error, r-squared, root mean squared error (RMSE)
+
+\section{ML Model Deployment}
+Deployed as a service. Input ingested -> continous data map as output all 5 min or so (could also be smaller depending on use-case -> trade-off between cost and accurancy)
+
+\subsection{ML Model Retraing}
+Need to retrain model from time to time, e.g. if the accurracy drops below a certain threshold.
+
+
+% Implementation details
+- dealing with coordinate systems:
+    - projected coordinate system (e.g. UTM) instead of long lat alt values (important for interpolation)

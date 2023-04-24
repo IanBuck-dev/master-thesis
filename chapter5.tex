@@ -1,9 +1,24 @@
 \chapter{Preparation of Datasets}
 \label{chap:preparations data sets}
 
-\section{Automated Data Collection}
+goals:
+- dataset to train and validate different types of regression models
+- target variable: air temperature
+- input variables:
+    - weather station measurements (air temperature, humidity, wind speed, wind direction, percipitation)
+    - satellite data (surface temperature, surface roughness, soil temperature, land coverage indexes, sky view factor, ...)
 
-Build Netatmo api connector, load data
+    Need to separate between reference grade data (weather station calibrated), and low-cost sensors without placement information
+
+% \section{Automated Data Collection}
+
+% Build Netatmo api connector, load data
+
+\section{Overview Data Sources}
+Reference data: DWD station data (see https://dwd-geoportal.de/products/OBS\_DEU\_PT10M\_T2M/) -> 10 min 2m height air temperature
+https://opendata.dwd.de/climate\_environment/CDC/observations\_germany/climate/10\_minutes/air\_temperature/recent/
+
+need to write script to download all files and for each file do some conversion to csv
 
 
 - overview of sources for good datasets for temperature and climate related research
