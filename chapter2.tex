@@ -4,7 +4,7 @@
 In the following chapter we lay the foundation for the research conducated in this thesis. We start off with an introduction of the topic of urban heat island (UHI) detection, which is one of the motivating factors behind this work. UHI research is part of the discipline of modern climatology and relies on many different sub-disciplines like meteorology, thermal dynamics, geology and many more.
 After discussing traditional ways to detect UHIs, such as using remote satellite data, we discuss newer approaches, especially in the context of smart cities, that focus on collecting air temperatures in urban environments. Measuring data in the urban environment comes with many challenges~\cite{oke2006guideline}, that can lead to missing or wrong observations for given places.
 In order to improve data availibility in the urban climate context we compare traditional interpolation techniques based on (geo-)statistics with more recent machine-learning based approaches, that could be used in this highly complex urban setting. This interpolated data could be used to improve interpolation or prediction models and give additional insights into the influences of urban environments, f.e. in the context of UHIs and their detection and analysis.
-Finally, in order to compare traditional geostatistical models with ML-based models, we need comprehensive data-sets of urban climate data. An overview of available data sources is given in section~\ref{sec: access to data sets} together with an introduction to the OpenData movement.
+Finally, in order to compare traditional geostatistical models with ML-based models, we need comprehensive data-sets of urban climate data. An overview of available data sources is given in section \ref{sec: access to data sets} together with an introduction to the OpenData movement.
 
 \section{Urban Heat Islands (UHI)}
 
@@ -63,7 +63,20 @@ The surface temperature is measured directly at the surface of an object and is 
 todo: List of measurement types (microwaves etc.) with disadvantages\\
 Surface and air temperatures can vary greatly, therefore a SUHI does not necessarily also imply a CUHI.
 
-\subsection{UHI Detection in the Context of Smart Cities}
+\section{Smart Cities}
+
+\subsection{Architecture Layers}
+
+\subsubsection{Sensing Layer}
+
+\subsubsection{Data Transportation Layer}
+
+\subsubsection{Data Management Layer}
+
+\subsubsection{Application Layer}
+
+\subsection{Applications for ML-based Interpolation}
+\subsubsection{UHI Detection in the Context of Smart Cities}
 
 Smart Cities are `urban areas that exploit operational data [...] to optimze the operation of city services'~\cite{harrison2010foundations}, by collecting near-real-time data from physical and virtual sensors, integrating those data sources into an enterprise computing platform and performing complex analytics on them. With current urbanization trends (60\% ofd ppl living in cities 2060) and the ongoing global and urban warming (cite), research into smart cities has gotten a lot of attention recently (cite). On of the driving factors behind smart cities is next to progress in digitisation of cities the availibility of cheap smart sensors (cite), that enable a good spatiotemporal surveillance of factors in a smart city.\\
 - goals and pillars
@@ -128,59 +141,3 @@ downside: cannot find local maximas/minimas
 % -> in order to train we need good data sets
 
 - ML regression
-
-\section{Access to data sets}
-\label{sec: access to data sets}
-
-% overview of data collection
-% - open data movement
-%     - list open data catalogues (EU, more local ones)
-% - commercial sources
-%     - list some examples, but not focus because not accessible
-% - overview data preperation
-% - overview of feature selection
-% - overview ML interpolation methods
-
-As part of this thesis, the collection of own data via sensors or other means is not feasible due to time and resource constraints. However, there are many onlie sources and portals/catalogues that give access to a wide variety of data-sets.
-
-\subsection{OpenData Movement}
- - portals
-        - official:
-            - EU: https://data.europa.eu/data/datasets?query=temperature\&locale=en (combinas many governmental and local catalogues) / https://data.europa.eu/data/catalogues?locale=en
-            - USA: https://data.gov/
-            - UK: https://www.data.gov.uk/
-        - private: https://www.kaggle.com/
-
-- strategies:
-    - self procurement (test beds -> Helsinki Testbed (climate research meso sclae), UK Birmingham Testbed (climate + smart city), )
-
-\subsection{Available Data Sources and Portals}
-
-\section{Applications and Research Areas (needed?)}
-
-- focus on temperature interpolation/climate research
-
-- climate research
-    - high area coverage, low spatio and temporal resolution (5km by 5km squares)
-    - based on LST data (from satelites) -> not the same as air temperature
-
-- micro-climate research
-    - bad/costly area coverage, high spatio and temporal resolution
-    - Urban heat islands
-    - Pollution (fine dust pollution)
-
-- connection to smart cities
-    - integrating many heterogenous data points
-    - detection climatic anomalys
-    - notifiy/warn residents
-
-%% Important keys
-- important key words
-
-- current status quo
-
-- important authors and current work
-
--> identify reseach gap
-- convert single data points to continous/gridded data
-- improve density of data to gain insights and imrove visibility -> identify areas with low prediction quality

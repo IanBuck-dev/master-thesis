@@ -1,27 +1,94 @@
-\chapter{Machine Learning Model Design}
-\label{chap:Machine Learning Model Design}
+\chapter{Machine Learning-based Interpolation}
+\label{chap:Machine Learning based Interpolation}
 % 10 pages?
 
-In recent times, the area of machine learning has seen big advancements in terms of model size and complexity. Especially in the area of generative AI, e.g. text and image generation, models such as OpenAI's ChatGPT~\cite{openai2023gpt4} have generated significant hype for the possiblity of use of AI. As a result, the question arises what benefits AI can bring to other areas of application, such as sensing applications in the context of smart cities. In this chapter, we will discuss the usage of AI in the context of smart city, more precisely in the context of data enrichment via interpolation, and outline possible advantages and disadvantages compared to traditional (geo-) statistical methods.\\
+% Intro with small motivation why ML is used
+In recent times, the area of machine learning has seen big advancements in terms of model size and complexity. Especially in the area of generative AI, transformer-based neural networks have revolutionised text and image generation. Models such as OpenAI's \textit{ChatGPT}~\cite{openai2023gpt4} or Google's \textit{LaMDA}~\cite{thoppilan2022lamda} have generated significant hype for the possiblity of use of AI\@. Additionally, statements like the universal approximation theorem, which states that a feed-forward network with a single hidden layer containing a finite number of neurons can approximate any continous function~\cite{hornik1989multilayer}, emphasize the potential power of ML models.
+As a result, the question arises what benefits AI can bring to other areas of application, such as interpolation. In this chapter, we will discuss the usage of ML in the context of data enrichment via interpolation, more precisely in the context of smart cities and air temperature interpolation, and outline possible advantages and disadvantages compared to traditional (geo-) statistical methods.\\
+% TODO: emphasize the usefulness for handling dynamic data, such as moving sensors
+% Definitions
 First of all, we need to clarify what is meant by artificial intelligence (AI), machine learning (ML) and deep learning (DL). AI is a broad term that is used to describe the ability to perform tasks, that are usually associated with human intelligence. ML is a subfield of AI, that focuses on the ability of a system to learn from data without being explicitly programmed to do so. Finally, DL is a subfield of ML, that uses artificial neural networks, which imitate the structure of the human brain, to learn from data and perform various tasks.\\
-In this work, we will focus primarely on DL models, as these offer the possibility to learn complex patterns and dependencies, which could be beneficial in the complex context of smart city and temperature interpolation. The universal approximation theorem states, that a feedforward network with a single hidden layer containing a finite number of neurons can approximate any continous function~\cite{hornik1989multilayer}. This statement emphasizes the power of DL models. However, it does not state how many neurons are needed to approximate the function and gives no indication on how to train the network. In practice there is lot of trial and error involved when designing DL models.\\
-Additionally, we will also take a brief look on traditional ML models, such as linear regression models, as these are usually very easy to implement and can be used as another baseline for comparison, which trade speed of setup and execution against complexity and potentially less accuracy.\\
-\\
-In the following, we will first discuss fundamental model assumptions given by the data layer. Afterwards, we will discuss the potential design of a ML model for temperature interpolation, including the architecture as well as potential input features and possible pre-processing steps. The model is then implemented and later evaluated in chapter \ref{chap:Evaluation}.
+% ML in the context of the goal of this work
+Because ML is such a powerfull tool, in this chapter we will discuss how ML can be used to answer the question, how ML can be used for contextual data enrichment via interpolation, specifically in the context of smart cities and air temperature sensing applications. In the following, we first take a look at the taxonomy of ML algorithms in order to understand which interpolation tasks ML can solve, before deciding on a number of potential ML models for the task of air temperature interpolation, which will later be implemented and evaluated.
 
-% Goal of this chapter
+\section{Taxonomy of Machine Learning Algorithms}
+
+% classification vs regression
+% supervised vs unsupervised vs reinforcement learning
+
+Generally speaking, ML algorithms can be categorised based on many different properties~\cite{sarker2021machine}, such as the type of learning, e.g. supervised, unsupervised, semi-supervised or reinforment, or the type of problem they try to solve, e.g. classification, regression or clustering. The most important differenciation for this work is to distinguish algorithms based on the type of problem they try to solve. Because we focus on solving interpolation problems, in this work we will only consider algorithms that can be used to solve regression problems, as interpolation is a form of regression.\\
+In regression analysis, the goal is to predict a (continous) target variable $y$ based on a set of input variables $X$ (cite), like it is the case for temperature interpolation. Generally speaking, this problem can be classified as a supervised learning problem, therefore the possible algorithm candiates are as follows:
+
+\begin{itemize}
+    \item Linear Regression
+    \item KNN Regression
+    \item Regression Trees and Random Forests
+    \item Tree Boosting
+    \item Support Vector Regression
+    \item Neural Networks
+\end{itemize}
+
+Each model has certain benefits but also comes with drawbacks or special assumptions for the input data to the model. First, we will discuss each model and then compare these assumptions with the data coming from the data-layer, to identify suitable models for the task of air temperature interpolation. These models will then later be implemented and compared in chapter \ref{chap:Evaluation}.\\
+Based on the domain, there already exist proposed best-practices for which algorithms to use for what applications. In the context of smart cities such recommendations for topics such as intelligent transportation systems, smart grids, smart city health care and more can be found in \cite{ullah2020applications}, which unfortunately does not cover interpolation.
+
+% TODO: table with model comparison for quick overview
+
+\subsection{Linear Regression}
+
+Linear regression~\cite{montgomery2021introduction} is a comparatively simple, yet very popular and widely used model for regression problems. The goal of this model is to predict a continous dependent variable based on a number of independent variables. These independent variables can be either continous or discrete. The model can be expressed as follows:
+
+% TODO: explain equation
+\begin{equation}
+    y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_n x_n + \epsilon
+\end{equation}
+
+The relationship between the parameters is assumed to be liniear, while each variable must be independent of each other. Due to this independent assumption, linear regression is not suitable for (geo-) spatial data, as these types of variables are usually correlated with each other, which we will later see in Sec.~\ref{sec:geolocation}.
+
+\subsection{Regression Trees and Random Forests}
+
+Decision trees are used for a wide variety of classification problems. Due to the fact that decision trees can vary significantly given similar inputs, e.g have a high variance, random forests were introduced as a counter measure. Random forests combine multiple decision trees and average their predictions in order to reduce the variance.\\ 
+When instead of a discrete target variable a continous target variable is predicted, regression trees can be used. The principle behind regression trees is to split the data into continously smaller sub-sets, and asking the correct questions at the right time in order to find the best split. Compared to decision trees which try to minimise the entropy, regression trees try to minimise an error that is compatible with a continous target variable such as mean squared error (MSE). The model can be expressed as follows:
+
+% TODO: explain equation
+\begin{equation}
+    \hat{y} = \sum_{m=1}^M c_m \mathbb{1}(x \in R_m)
+\end{equation}
+
+Regression trees are easy to understand and interpret. Additionally, they do not require any scaling of variables, which is a big advantage compared to other models. However, they are prone to overfitting and are not suitable for extrapolation. Furthermore, they are discontinous at the split points, which is a big disadvantage for interpolation of spatial data. Therefore, regression trees don't seem to be suitable for the task of air temperature interpolation.
+
+\subsection{Tree Boosting}
+
+% TODO
+
+\subsection{Support Vector Machines}
+
+Support Vector Machines (SVM) are typically used in classification problems, however they can be also used for regression problems, called Support Vector Regression (SVR). SVMs transform the input data into a higher dimensional space and try to find a hyperplane that separates the data into two classes. This approach is similar to linear regression, however SVMs are more robust to outliers and can be used for non-linear problems. Depending on the Kernel function used, e.g. Linear, Polynomial, Radial Basis Function (RBF) or Sigmoid, the model can suffer from the same problems as linear regression when dealing with correlated spatial data.
+As a result, appropriate counter measures need to be taken, such as using the Mahalanobis distance instead of the Euclidean distance for RBF kernels~\cite{kamada2006support}, which converts correlated features into uncorrelated features.
+
+\subsection{Neural Networks}
+
+Neural networks 
+
+\subsubsection{Deep Neural Networks}
+
+% TODO
 
 \section{Model Assumptions from the Data Layer}
 
-The data-layer exposes a variety of single data-points for various features for different locations for current and past points in time. As meteorological research and analysis activities are usually in need of gridded or continuous data \cite{sekulic2020spatio}, the goal of this chapter is to design a model that is capable of turning these single data-points into a gridded data layer of air temperature where each cell has a specific air temperature value. Features other than air temperature could further improve the predecition quality, like how \cite{alonso2020new} suggests that in their study the Normalized Difference Vegetation Index (NDVI) and Modified Normalized Difference Water Index (MNDWI) have a strong impact on their estimation model. Therefore, we discuss how additional features can be included in the model.\\
-This model should then be deloyed inside the \textit{service-layer} and act as a building block for further temperature related research and analysis, as air temperature is an important variable for research in agronomy, meteorology, hydrology, ecology and many other fields of application and could be used for UHI detection in the context of smart cities. The general idea and architecture behind the model should not only be applicable for air temperature, but also other types of output features.
-
+Next to the model, the most important thing for a machine learning algorithm is the data. Even when the model is perfectly suited for the task at hand, if the data is not suitable, e.g. not enough data, wrong quality, wrongly prepared or formatted etc., the model will not be able to perform well. In the following, we take a look at the data coming from the data-layer and discuss important assumptions such as spatial and temporal autocorrelation.\\
+First of all, the data-layer exposes a variety of single data-points for various features for different locations for current and past points in time. As meteorological research and analysis activities are usually in need of gridded or continuous data~\cite{sekulic2020spatio}, the goal of this chapter is to design a model that is capable of turning these single data-points into a gridded data layer of air temperature where each cell has a specific air temperature value. Features other than air temperature could further improve the predecition quality, like how~\cite{alonso2020new} suggests that in their study the Normalized Difference Vegetation Index (NDVI) and Modified Normalized Difference Water Index (MNDWI) have a strong impact on their estimation model. Therefore, we discuss how additional features can be included in the model.\\
+This model should then be deloyed inside the \textit{service-layer} and act as a building block for further temperature related research and analysis, as air temperature is an important variable for research in agronomy, meteorology, hydrology, ecology and many other fields of application and could be used for UHI detection in the context of smart cities. The general idea and architecture behind the model should not only be applicable for air temperature, but also other types of output features, even tho potentially significant domain knowledge, like in geostatistical analysis and statistics, is required to select and prepare the input features.\\
 % TODO: summary of the assumptions for the geolocation data
+Generally, there are different types of input features. Firstly, there are discrete measurements that capture the underlying continuous geological process as a specific value at a certain point in time. Examples for this are the measurements from sensors which might be deployed in an urban environment to capture air temperature, humidity and more. Important to note here is the interval, the values are captured. For example, a sensor might capture the air temperature as the average over five minutes, whereas a rain sensor might capture the absolute amount of rain in a specific time interval. Secondly, there are calculated features, which might be derived from the discrete measurements or the location of a measurement. For example, the distance to the closest body of water with a minimum size of $x^2$ meters might be a important information for the air temperature. Lastly, ...
+% data from gridded data sources (e.g. affiliation to postal code, district...)
 
 \subsection{Incorporating Geolocation Data}
+\label{sec:geolocation}
+
+\subsubsection{Spatial Autocorrelation}
 
 As discussed in chapter \ref{chap:Related Work}, there is a dependency between air temperature and other meteological features and the location of the sensors. The closer a sensor is to another sensor, the more correlated the sensor readings should be.
-In geo-statistics, this is called spatial autocorrelation and can be defined traditionally with the Moran's I index~\cite{moran1948interpretation} or the Geary's coefficient~\cite{geary1954contiguity}.
+In geo-statistics, this is called spatial autocorrelation and can be defined traditionally with the Moran's I index~\cite{moran1948interpretation} or the Geary's coefficient~\cite{geary1954contiguity}. 
 % TODO: explain autocorrelation and the implications for ML models
 % model assumptions: no ML algorithm that expects independence between observations
 % feature selection: including all correlated features can lead to overfitting
@@ -37,15 +104,13 @@ The next approach would be to convert the
 
 - area n x m grid of data points, each grid cell with n x n size (depending on the resulution), 4D space with location as x and y coordinates (euclidean distance -> but only for smaller areas such as city of Hamburg and suroundings), time as z coordinate and feature values as w coordinate.\\
 
-% Timeseries handling
+\subsubsection{Temporal Autocorrelation}
+% How to handle timeseries data and short term memory
+
+% TODO
 
 
 
-
-
-\section{Supervised Learning}
-There are multiple learning approaches when it comes to machine learning, especially in the context of smart cities. The main directions are supervised learning, with classification and regression, unsupervised learning with clustering and dimensionaly reduction, and reinforcement learning~\cite{ullah2020applications}. As interpolation of missing data is a form of regression, in this study we use a supervised regression approach to train our ML models.\\
-In supervised learning, an AI network is trained with input and target values to create a mapping function. In the context of smart cities, the input values come from the data management layer and consist of historical sensor data, such as humidity, solar radiance, or air temperature, combined with static data as shown in section \ref{subsubsec: integrating static data}. The target variable in this context is air temperature, but the approach can be applied to any other feature, such as humidity or solar radiance.
 
 % TODO: write
 \subsection{Dealing with Uncertainty}
@@ -55,23 +120,6 @@ In supervised learning, an AI network is trained with input and target values to
 - dealing with bias
 - dealing with variance
 -> problem of over-fitting
-
-\subsection{Supervised Regression Models}
-
-\subsubsection{Linear Regression Models}
-Most simple type of regression. Expect a linear dependens between dependent and independent variables. Downside, if the dependence is non-linear
-- linear regression
-
-\subsubsection{Polynomial Regression Models}
-able to fit non-linear dependencies
-
-\subsubsection{Ridge Regression Models}
-addresses overfitting to training data
-
-\subsubsection{LASSO Regression}
-enforce sparsity in the learned weights
-
-\subsubsection{Bayesian Regression}
 
 \subsubsection{Neural Network Models}
 input layer -> hidden layers -> output
@@ -140,3 +188,5 @@ DeepLearning Lecture
     - maintain information about order
     - share parameters across the sequence
 
+% TODO: quick implementation summary
+The model is implemented following advice from~\cite{rey2023geographic}...

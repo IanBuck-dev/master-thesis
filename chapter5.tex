@@ -2,8 +2,39 @@
 \label{chap:preparations data sets}
 % Todo: 6 pages?
 
-goals:
-- dataset to train and validate different types of regression models
+In this chapter, we will take a quick look at potential data sources to train and evaluate the ML interpolation models of this work. 
+The goal of this chapter is to get an overview of which feature is available via which data source, and to get an idea of the data quality and availability. The specific data preparation steps such as data cleaning, feature engineering, and feature selection will be discussed in the following.\\
+% TODO: add following points
+- supervised learning -> target feature, e.g. air temperature\\
+- no static sensor locations, e.g. moving sensors -> can be simulated via leaving out data points\\
+- spatial and temporal influence between features\\
+- data quality -> missing values, outliers, wrong values, ...\\
+
+\section{Overview Data Sources}
+
+With the rise of the Internet and Big Data, the amount of available data has increased exponentially in the last decade. Additionally, movements such as the OpenData movement have made many datasets publicly available and promoted collaboration in research. There are many different data sources available that can be categorized as fully open source, OpenData, or commercial.\\
+% Open source data sets -> user generated (e.g. OpenStreetMap)
+Open source data sets can be found via... A very popular example is the OpenStreetMap project, which aims to ...\\
+% OpenData -> government, research, ...
+OpenData...\\
+% Commercial -> satellite data, weather data, ...
+Example for commercial data providers are Netatmo...\\
+
+Reference data: DWD station data (see https://dwd-geoportal.de/products/OBS\_DEU\_PT10M\_T2M/) -> 10 min 2m height air temperature
+https://opendata.dwd.de/climate\_environment/CDC/observations\_germany/climate/10\_minutes/air\_temperature/recent/
+
+need to write script to download all files and for each file do some conversion to csv
+% Build Netatmo api connector, load data
+
+- overview of sources for good datasets for temperature and climate related research
+
+goal:
+- collect mutiple datasets (many features, fine-granualar spaciotemporal)
+- enhance datasets with additonal information (soil conditions, zoning plans, vegetation health)
+
+
+\section{Feature Engineering}
+
 - target variable: air temperature
 - input variables:
     - weather station measurements (air temperature, humidity, wind speed, wind direction, percipitation)
@@ -11,19 +42,27 @@ goals:
 
     Need to separate between reference grade data (weather station calibrated), and low-cost sensors without placement information
 
-% \section{Automated Data Collection}
+% \section{Access to data sets}
+% \label{sec: access to data sets}
 
-% Build Netatmo api connector, load data
+% % overview of data collection
+% % - open data movement
+% %     - list open data catalogues (EU, more local ones)
+% % - commercial sources
+% %     - list some examples, but not focus because not accessible
+% % - overview data preperation
+% % - overview of feature selection
+% % - overview ML interpolation methods
 
-\section{Overview Data Sources}
-Reference data: DWD station data (see https://dwd-geoportal.de/products/OBS\_DEU\_PT10M\_T2M/) -> 10 min 2m height air temperature
-https://opendata.dwd.de/climate\_environment/CDC/observations\_germany/climate/10\_minutes/air\_temperature/recent/
+% As part of this thesis, the collection of own data via sensors or other means is not feasible due to time and resource constraints. However, there are many onlie sources and portals/catalogues that give access to a wide variety of data-sets.
 
-need to write script to download all files and for each file do some conversion to csv
+% \subsection{OpenData Movement}
+%  - portals
+%         - official:
+%             - EU: https://data.europa.eu/data/datasets?query=temperature\&locale=en (combinas many governmental and local catalogues) / https://data.europa.eu/data/catalogues?locale=en
+%             - USA: https://data.gov/
+%             - UK: https://www.data.gov.uk/
+%         - private: https://www.kaggle.com/
 
-
-- overview of sources for good datasets for temperature and climate related research
-
-goal:
-- collect mutiple datasets (many features, fine-granualar spaciotemporal)
-- enhance datasets with additonal information (soil conditions, zoning plans, vegetation health)
+% - strategies:
+%     - self procurement (test beds -> Helsinki Testbed (climate research meso sclae), UK Birmingham Testbed (climate + smart city), )
