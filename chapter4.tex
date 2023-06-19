@@ -4,34 +4,63 @@
 
 % Intro with small motivation why ML is used
 In recent times, the area of machine learning has seen big advancements in terms of model size and complexity. Especially in the area of generative AI, transformer-based neural networks have revolutionised text and image generation. Models such as OpenAI's \textit{ChatGPT}~\cite{openai2023gpt4} or Google's \textit{LaMDA}~\cite{thoppilan2022lamda} have generated significant hype for the possiblity of use of AI\@. Additionally, statements like the universal approximation theorem, which states that a feed-forward network with a single hidden layer containing a finite number of neurons can approximate any continous function~\cite{hornik1989multilayer}, emphasize the potential power of ML models.
-As a result, the question arises what benefits AI can bring to other areas of application, such as interpolation. In this chapter, we will discuss the usage of ML in the context of data enrichment via interpolation, more precisely in the context of smart cities and air temperature interpolation, and outline possible advantages and disadvantages compared to traditional (geo-) statistical methods.\\
-% TODO: emphasize the usefulness for handling dynamic data, such as moving sensors
+As a result, the question arises what benefits AI can bring to other areas of application, such as interpolation. In this chapter, we will discuss the usage of ML in the context of data enrichment via interpolation, more precisely in the context of smart cities and air temperature interpolation, and outline possible advantages and disadvantages compared to traditional (geo-) statistical methods and answer questions such as how stationary and moving sensors can be combined to accomplish better interpolation results.\\
 % ML in the context of the goal of this work
-Because ML is such a powerfull tool, in this chapter we will discuss how ML can be used for contextual data enrichment via interpolation, specifically in the context of smart cities and air temperature sensing applications. More specifically, as meteorological research and analysis activities are usually in need of gridded or continuous data~\cite{sekulic2020spatio}, the goal of this chapter is to design a ML model that is capable of turning these single data-points into a gridded data layer of air temperature where each cell has a specific air temperature value. Furthermore, traditional (geo-) statistical approaches have certain limitations such as potentially lower flexibility. In the context of temperature interpolation, another important question to discuss is how moving sensor data can be incoporated into the model in addition to statinary sensors and weather stations.\\ 
-In the following, we first take a look at the taxonomy of ML algorithms in order to understand which interpolation tasks ML can solve, before deciding on a number of potential ML models for the task of air temperature interpolation, which will later be implemented and evaluated.
+There are several ways that interpolation can help us in the context of smart cities and air temperature interpolation. First of all, interpolation can help us fill in missing data for individual sensors, which can be caused by sensor failures, network failures or simply maintenance. Secondly, research suggests that a combination of stationary and moving sensors can lead to better sensing capabilities of phenomena such as urban heat or pollution islands (cite). In the context of CUHI detection, moving sensors can increase the sensor coverage and could be used to detect realtionships between staionary sensors and moving sensors, allowing for the detection of a CUHI even if there is currently no moving sensor in the area. Lastly, we could even go so far as to replace traditional (geo-) statistical methods with ML methods, as ML models can be more flexible and can be adapted to different use-cases. This is interesting, as meteorological research and analysis activities are usually in need of gridded or continuous data~\cite{sekulic2020spatio}.\\
+In the following, we first introduce several ML algorithms that can be used for regression tasks and discuss how they need to be adapted in order to solve interpolation tasks as well as the advantages and disadvantages of each model. Afterwards, we will decide for one model that will be implemented and evaluated in chapter~\ref{chap:Evaluation}.
 
 \section{AI vs. Machine Learning vs. Deep Learning}
 
 Before diving deeper into the applications of ML, we need to clarify what is meant by artificial intelligence (AI), machine learning (ML) and deep learning (DL). AI is a broad term that is used to describe the ability to perform tasks, that are usually associated with human intelligence. ML is a subfield of AI, that focuses on the ability of a system to learn from data without being explicitly programmed to do so. Finally, DL is a subfield of ML, that uses artificial neural networks, which imitate the structure of the human brain, to learn from data and perform various tasks.\\
 % TODO: graphic?
 
-\section{Taxonomy of Machine Learning Algorithms}
+\section{Comparison of Machine Learning Algorithms}
+\label{sec:taxonomy}
 
-% classification vs regression
-% supervised vs unsupervised vs reinforcement learning
+Before using the ML regression algorithms introduced in this section to solve the interpolation problem, the models need to be adapted to this specific use-case. This can happen either by adapting the input data and the types of features used or by adapting the model configuration. The following questions need to be answered:
 
+\begin{itemize}
+    \item \textbf{How to model sensors?:} Do we want to model each sensor individually, do we want to model all sensors in the area or do we want to model the whole area at once?
+    \item \textbf{How to model stationary vs. non-stationary sensors?:} Do we model stationary and non-stationary sensors differently and can the model handle the possibly unsteadily data of moving sensors, e.g. different locations or different time intervals?
+    \item \textbf{How to model the temporal correlation?:} Does the model allow to model temporal correlation between sensor readings and is it only short-term or also long-term correlation?
+    \item \textbf{How to model the spatial correlation?:} Is spatial correlation directly incorporated in the model architecture or does it need to be modelled via features?
+\end{itemize}
+
+Next to the questions on how the models need to be adapted, we also need to consider certain selection criteria which is discussed in the next section.
+
+\subsection{Model Selection Criteria}
+
+Next to the adaptations that need to be made in order to fit a regression algorithms to the interpolation problem, there are also non-functional requirements that need to be considered when selecting a model. The most important requirements are:
+
+\begin{itemize}
+    \item \textbf{Model Assumptions:} The model assumptions need to be met by the features used in the input data. For example, linear regression assumes that the input features are independent from each other, as linear regression measures the amount the target veariable is influenced by one feature changing while all other features stay the same. In case of correlation, this assumption is violated, as f.e. the amount of percipitation influences the humidity.
+    \item \textbf{Accuracy and Reliability:} Creating an accurate and reliable model is really important to increase the trust for predicted values, however there are certain trade-offs to be made, as model performance or generalisation ability are also important factors to consider.
+    The accuracy of the model is mainly determined how well the choosen model can fit the underlying data, e.g. a linear model cannot fit a non-linear function, and is measured by the evaluation metrics described in section \ref{subsec:evaluation_metrics}.
+    The reliability of the model is determined by the training data as well as the model architecture, as f.e. training data that is not representative of the underlying function can introduce bias into the model or can prevent the model from learning the correct function. Another important factor is the data quality, as more noise can result in worse model performance. Lastly, reliability of the model is also determined by the ability of the model to handle missing or sparse data as well as outliers. This is especially important in our context as we try to integrate moving sensors into the interpolation process, which sense data at different times and locations.
+    \item \textbf{Amount of Training Data:} The amount of training data required to train the model is another important factor to consider, as some models require more training data than others. Especially neural networks tend to need more training data than other models, as they have a lot of parameters that need to be tuned. In our context, the amount of data available is quite limited, therefore models that require less training data are preferred.
+    \item \textbf{Handling of Missing Data:} TODO
+    \item \textbf{Handling of Sparse Data:} TODO
+    \item \textbf{Model Performance:} TODO
+    \item \textbf{Other:} Next to these main requirements, there are also other requirements to the specifc use case, such as the ability to deploy production-ready models in commercial settings. Due to the limited scope of this work, these requirements will not be considered.
+\end{itemize}
+
+After introducing the requirements for model adaptions and selection, the next step is to introduce and compare the different ML regression algorithms.
 Generally speaking, ML algorithms can be categorised based on many different properties~\cite{sarker2021machine}, such as the type of learning, e.g. supervised, unsupervised, semi-supervised or reinforment, or the type of problem they try to solve, e.g. classification, regression or clustering. The most important differenciation for this work is to distinguish algorithms based on the type of problem they try to solve. Because we focus on solving interpolation problems, in this work we will only consider algorithms that can be used to solve regression problems, as interpolation is a form of regression.\\
 In regression analysis, the goal is to predict a (continous) target variable $y$ based on a set of input variables $X$ (cite), like it is the case for temperature interpolation. Generally speaking, this problem can be classified as a supervised learning problem, therefore the possible algorithm candiates are as follows:
+% todo: regression as a way of fitting a continous function and finding the underlying distribution
 
 \begin{itemize}
     \item Linear Regression
     \item KNN Regression
-    \item Regression Trees and Random Forests
-    \item Tree Boosting
-    \item Support Vector Regression
     \item Neural Networks
+
+    \begin{itemize}
+        \item LSTM
+        \item RNN
+    \end{itemize}
 \end{itemize}
 
+Additonally, there are also other regression such as Regression Trees and Random Forests, Tree Boosting, or Support Vector Regression, which are less popular and seem to be less suitable for the interpolation problem at hand.
 Each model has certain benefits but also comes with drawbacks or special assumptions for the input data to the model. First, we will discuss each model and then compare these assumptions with the data coming from the data-layer, to identify suitable models for the task of air temperature interpolation. These models will then later be implemented and compared in chapter \ref{chap:Evaluation}.\\
 Based on the domain, there already exist proposed best-practices for which algorithms to use for what applications. In the context of smart cities such recommendations for topics such as intelligent transportation systems, smart grids, smart city health care and more can be found in \cite{ullah2020applications}, which unfortunately does not cover interpolation.
 
@@ -48,6 +77,10 @@ Linear regression~\cite{montgomery2021introduction} is a comparatively simple, y
 \end{equation}
 
 The relationship between the parameters is assumed to be liniear, while each variable must be independent of each other. Due to this independent assumption, there are special steps needed to make linear regression work for (geo-) spatial data, as these types of variables are usually correlated with each other.
+
+\subsection{KNN Regression}
+
+K-Nearest Neighbours (KNN) is a simple algorithm that can be used for both classification~\cite{cover1967nearest} and regression problems. 
 
 \subsection{Regression Trees and Random Forests}
 
@@ -78,7 +111,7 @@ Neural networks
 
 % TODO
 
-\section{Model Assumptions from the Data Layer}
+\section{Feature Engineering}
 
 Next to the model, the most important thing for a machine learning algorithm is the data. Even when the model is perfectly suited for the task at hand, if the data is not suitable, e.g. not enough data, wrong quality, wrongly prepared or formatted etc., the model will not be able to perform well. In the following, we take a look at the data coming from the data-layer and discuss important assumptions such as spatial and temporal autocorrelation. These correlations are important to consider, as they could invalidate models as f.e. Linear Regression~\ref{subsec: linear regression} assumes uncorrelated input variables.\\
 First of all, the data-layer exposes a variety of single data-points for various features for different locations for current and past points in time.
@@ -150,7 +183,37 @@ The disadvantages of Multi-layer Perceptron (MLP) include:
 ...
 
 \subsection{Evaluation Metrics}
+\label{subsec:evaluation_metrics}
+
 - Mean absolute error, mean absolute relative, mean quared error, r-squared, root mean squared error (RMSE)
+
+\section{Model Selection}
+% Possible model candidates
+
+Question: do we want to model each sensor individually, do we want to model all sensors at once or do we want to model the whole area?
+Do we model stationary and non-stationary sensors differently?
+
+Options:
+- linear regression
+    - needs independent variables -> PCA
+- KNN regression
+    - needs independent variables -> PCA
+- Neural Network
+    - try without independent variables
+    - LSTM -> temporal correlation
+    - CNN -> spatial correlation, temperature map
+
+After listing the selection criteria, the next step is to discuss the possible model candidates and evaluate them based on the selection criteria. The following models are considered:
+
+- linear regression
+- knn regression
+- neural networks
+    - deep learning
+        - sequential model
+        - recurrent neural network (RNN)
+        - long short-term memory (LSTM)
+        - convolutional neural network (CNN)
+
 
 \section{ML Model Deployment}
 Deployed as a service. Input ingested -> continous data map as output all 5 min or so (could also be smaller depending on use-case -> trade-off between cost and accurancy)
@@ -200,3 +263,6 @@ DeepLearning Lecture
 
 % TODO: quick implementation summary
 The model is implemented following advice from~\cite{rey2023geographic}...
+
+Additonal ideas:
+- types of geological features (vectors, rasters) -> distance, containment, intersection, etc. 
