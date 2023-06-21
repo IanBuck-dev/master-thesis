@@ -38,10 +38,10 @@ Next to the adaptations that need to be made in order to fit a regression algori
     The accuracy of the model is mainly determined how well the choosen model can fit the underlying data, e.g. a linear model cannot fit a non-linear function, and is measured by the evaluation metrics described in section \ref{subsec:evaluation_metrics}.
     The reliability of the model is determined by the training data as well as the model architecture, as f.e. training data that is not representative of the underlying function can introduce bias into the model or can prevent the model from learning the correct function. Another important factor is the data quality, as more noise can result in worse model performance. Lastly, reliability of the model is also determined by the ability of the model to handle missing or sparse data as well as outliers. This is especially important in our context as we try to integrate moving sensors into the interpolation process, which sense data at different times and locations.
     \item \textbf{Amount of Training Data:} The amount of training data required to train the model is another important factor to consider, as some models require more training data than others. Especially neural networks tend to need more training data than other models, as they have a lot of parameters that need to be tuned. In our context, the amount of data available is quite limited, therefore models that require less training data are preferred.
-    \item \textbf{Handling of Missing Data:} TODO
-    \item \textbf{Handling of Sparse Data:} TODO
-    \item \textbf{Model Performance:} TODO
-    \item \textbf{Other:} Next to these main requirements, there are also other requirements to the specifc use case, such as the ability to deploy production-ready models in commercial settings. Due to the limited scope of this work, these requirements will not be considered.
+    \item \textbf{Handling of Missing Data:} If the model cannot handle missing data well, there might be additonal data preprocessing steps that need to be done. One example for this would be how the model reacts to not a number (NaN) values which is a float number defined in the IEEE 754 floating-point standard~\cite{ieee754}. Each multiplication with NaN results in NaN, which can therefore lead to a model where all weights turn into NaN when there is a single NaN value in the input data. This is especially important in the context of distributed sensors, as they might not sense every feature at all times. Common strategies to handle missing values involve dropping the complete feature if it has any NaN, drop any rows in the data that has NaN values or imputation, e.g. replace the missing value with a value such as the mean or median of the feature.
+    \item \textbf{Handling of Sparse Data:} Similar to missing data, handling of sparse data is also really important to prevent problems such as the NaN problem mentioned previously. The main difference to missing data is that sparse data is not missing, but rather not available at all times. In our context, moving sensors would be an example for sparse data, as they only sense data at certain times and locations. The strategies to handle missing data are also similar to those of missing data, but imputation and interpolation are more common strategies to handle sparse data.
+    \item \textbf{Model Performance:} The more complex a model is, generally speaking the more training data it needs to fine-tune all it's weights and the longer it takes to train, either due to the amount of data or the amount of steps that need to be taken when updating weights in the training process. In the context of open-source and citizen participation less complex models are preferred, as they can be trained and deployed with less resources. However, a less complex model could have the downside of not being able to fit the underlying data as well as a more complex model, therefore there is a trade-off between model complexity and model performance.
+    \item \textbf{Other:} Next to these main requirements, there are also other requirements, such as the ability the handle massive amounts of data, live retraining or sophisticated support via ML libraries such as \textit{Tensor Flow}~\footnote{\url{https://www.tensorflow.org/}} for commercial use-cases. Due to the limited scope of this work, these requirements will be considered in less detail.
 \end{itemize}
 
 After introducing the requirements for model adaptions and selection, the next step is to introduce and compare the different ML regression algorithms.
@@ -69,18 +69,29 @@ Based on the domain, there already exist proposed best-practices for which algor
 \subsection{Linear Regression}
 \label{subsec: linear regression}
 
-Linear regression~\cite{montgomery2021introduction} is a comparatively simple, yet very popular and widely used model for regression problems. The goal of this model is to predict a continous dependent variable based on a number of independent variables. These independent variables can be either continous or discrete. The model can be expressed as follows:
+Linear regression~\cite{montgomery2021introduction} is a comparatively simple, yet very powerful and widely used model for regression problems. The goal of this model is to predict a continous dependent variable based on a number of independent variables. These independent variables can be either continous or discrete. The model can be expressed as follows:
 
 % TODO: explain equation
 \begin{equation}
     y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_n x_n + \epsilon
 \end{equation}
 
-The relationship between the parameters is assumed to be liniear, while each variable must be independent of each other. Due to this independent assumption, there are special steps needed to make linear regression work for (geo-) spatial data, as these types of variables are usually correlated with each other.
+where $y$ is the dependent variable, $x_1$ to $x_n$ are the independent variables, $\beta_0$ to $\beta_n$ are the parameters of the model and $\epsilon$ is the error term. The relationship between the parameters is assumed to be liniear, while each variable must be independent of each other. Due to this independent assumption, there are special steps needed to make linear regression work for (geo-) spatial data, as these types of variables are usually correlated with each other. This is further discussed in~\ref{subsec:Dealing with Correlation}.\\
+Linear regression has the advantage, that it is a very simple model, therefore the majority of work needs to be done in the feature engineering process. The downside is that there is no inherent support for spatial or temporal correlation and the model cannot be used to fit non-linear functions. In order to fit no-linear functions, polynomial regression can be used, which can however lead to overfitting especially when the degree of the polynomial is high.
 
 \subsection{KNN Regression}
 
-K-Nearest Neighbours (KNN) is a simple algorithm that can be used for both classification~\cite{cover1967nearest} and regression problems. 
+K-Nearest Neighbours (KNN) is a simple algorithm that can be used for both classification~\cite{cover1967nearest} and regression problems~\cite{altman1992introduction}. The main idea behind KNN is the assumption, that data points near each other are more similar than data points that are further away. As a result, the $k$ nearest neighbours, either by number or by radius, of a data point are used to predict the target variable. The number of nearest neighbours is a hyperparameter that needs to be tuned in order to find the best trade of between bias and variance. The model can be expressed as follows:
+
+% Todo: check if correct
+\begin{equation}
+    \hat{y} = \frac{1}{k} \sum_{i=1}^{k} y_i
+\end{equation}
+
+where $\hat{y}$ is the predicted target variable, $k$ is the number of nearest neighbours and $y_i$ is the target variable of the $i$-th nearest neighbour.\\
+KNN is part of the family of non-parametric models, meaining they do not make any strong assumptions about the underlying regression curve. KNN is a simple yet powerful model, however the standard model does not have weights, e.g. all nearest neighbours have the same influence on the prediction, as well as each feature is weighted equally. In the context of correlated input features, this could introduce a bias into the model, if not handled properly in the feature engineering process.
+
+% Todo: more text
 
 \subsection{Regression Trees and Random Forests}
 
@@ -151,6 +162,7 @@ The next approach would be to convert the
 
 % TODO
 \subsection{Dealing with Correlation}
+\label{subsec:Dealing with Correlation}
 
 Todo: Techniques to turn correlated variables into uncorrelated ones
 - principal component analysis (PCA)
