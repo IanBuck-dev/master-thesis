@@ -2,18 +2,19 @@
 \label{chap:preparations data sets}
 % Todo: 6 pages?
 
-Next to the ML model selected, the data used to train and evaluate the model has a major influence on the performance of the model. If the data is not representative of the underlying process we want to interpolate, the model will have a bias or will not be able to generalize well to new data. In this chapter, we take a look at potential data sources and discuss the construction process of the datasets used in this work.\\
-In the field of natural language processing (NPL) and computer vision (CV), there is an abundance of large available datasets which have a big contribution to the advancements in the field, e.g. annotated datasets as provided by Google Research~\footnote{\url{https://research.google/resources/datasets/}}. In the field of climate research, there are also many datasets, including satellite data, weather station data, and climate model data. For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g. a high sensor density and a low time interval of f.e. five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings, as discussed in~\ref{subsec: Sensing Layer}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Running such a dense sensor network can be quite expensive, therefore there are currently no openly available datasets. There are however projects such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, but links to their datasets are unfortunately not maintained, showing the difficulty of finding and retrieving relevant datasets in this field.\\
-As a result, in this work we create our own dataset by combining openly available sensor data from the following providers:
+Next to the ML model selected, the data used to train and evaluate the model has a major influence on its performance. If the data is not representative of the underlying process that the model should be fitted to, there can be bias or an inability to generalize well to new data. In this chapter, we take a look at potential data sources and discuss the construction process of the datasets used in this work.\\
+In the field of natural language processing (NPL) and computer vision (CV), there is an abundance of large available datasets which have a big contribution to the advancements in the field, e.g. annotated datasets as provided by Google Research~\footnote{\url{https://research.google/resources/datasets/}}. In the field of climate research, there are also many datasets, including satellite data, weather station data, and climate model data. For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g. a high sensor density and a low time interval of f.e. five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings, as discussed in~\ref{subsec: Sensing Layer}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Such requirements are not met by traditional weather station networks as the spatial coverage is too low, as seen in figure~\ref{fig:dwd sensor locations germany} which shows the weather station network of the official german weather services (DWD).
+However they are met by dense sensor networks. A mayor challenge of running such a dense sensor network in a controlled scientific environment is the potential high cost of individual sensors, e.g. high precision and calibration, and the maintenance of the network, e.g. battery replacement, damages due to environmental influences, theft etc. Therefore, there are very few such projects and currently no openly available datasets. There were projects in the past such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, but links to their datasets are unfortunately not maintained, showing the difficulty of finding and retrieving relevant datasets in this field.\\
+As an alternative, in this work we instead use data from citizen run sensor networks which are either openly available or can be requested in limited fashion via provided APIs. In this work we create train and test datasets by combining openly available sensor data from the following providers:
 
-\subsubsection{Sensor Community}
+\section{Sensor Community}
 
 Sensor Community~\footnote{\url{https://sensor.community/en/}} is a contributers driven global sensor community that creates Open Environmental Data, and has an archive available~\footnote{\url{https://archive.sensor.community/}} of their historical sensor data world wide. There are no quality measures recorded for each sensor, but as crowd-sourced sensor data tends to have a lower quality than professsionally setup sensors, e.g. sensor placement by non-professionals, we need to explore how the data quality looks like.
 In Figure~\ref{fig:temperature_sensor_community_map}, where we see the greater Hamburg area with a currently reported temperature of 25°C by the DWD Fuhlsbüttel station, there are multiple sensors that report a temperature of 30°C and above, which could be either due to the sensor being placed in direct sunlight or due to the sensor being faulty. An outlier near Pinneberg is shown in fig.~\ref{fig:temperature_sensor_community_outlier}, where one sensor reports 25°C, as currently expected, and one sensor reporting 50°C, which is clearly an outlier. This data quality issue needs to be adressed in the data pre-processing step and can result in a significant reduction of available data. This was also an issue dicussed in~\cite{meier2017crowdsourcing}, as ``erroneous metadata, failure of data collection, and unsuitable exposure of sensors lead to a reduction of data availability by 53 \%``.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/sensor_community_temperature_map.png}
+    \includegraphics[width=1\textwidth]{images/sensor_community_temperature_map.png}
     \caption{Temperature map from Sensor Community for Hamburg, Germany, on 22.06.2023 12:51h with the DWD reference at 25°C}
     \label{fig:temperature_sensor_community_map}
 \end{figure}
@@ -25,20 +26,58 @@ In Figure~\ref{fig:temperature_sensor_community_map}, where we see the greater H
     \label{fig:temperature_sensor_community_outlier}
 \end{figure}
 
-Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of these sensors, many are located in Germany and almost half of them are of type BME 280, which is a lost-cost Bosch sensor which can measure temperature, pressure and humidity, as seen in appendix~\ref{sensor_community_sensors_by_countries}.
-% Todo: show sensor locations for Hamburg
+Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of these sensors, many are located in Germany and almost half of them are of type BME 280, which is a lost-cost Bosch sensor which can measure temperature, pressure and humidity, as seen in appendix~\ref{sensor_community_sensors_by_countries}. The sensor locations as of may 2023 are shown in~\ref{fig:sensor community sensor locations germany}. DHT22 sensors can measure temperature and humidity, BMP280 and BMP180 sensors can measure temperature and pressure, and BME280 sensors can measure temperature, pressure and humidity.\\
 
-\subsubsection{Netatmo}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sc_sensor_locations_germany.png}
+    \caption{Sensor locations of Sensor Community in Germany, as of 01.05.2023, of sensor type DHT22 (2590 sensors), BME280 (1558 sensors), BMP280 (100 sensors), BMP180 (72 sensors)}
+    \label{fig:sensor community sensor locations germany}
+\end{figure}
 
+\section{Netatmo}
 
+Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is an american company that sells smart-home devices including weather stations. They host a weather map~\footnote{\url{https://weathermap.netatmo.com/}} where customers can share their weather station data. There are currently no openly historical datasets available, however there is one private dataset for 2020 available under \url{https://catalogue.ceda.ac.uk/uuid/e8793d74a651426692faa100e3b2acd3} which I requested access to, but did not receive a reply yet. % TODO: update if I get access
+They also contribute to the EUMETNET project which offers a wide range of weather data sets and offer an educational program.\\ % TODO: write if we get access
+
+They offer an API~\footnote{\url{https://dev.netatmo.com/apidocumentation}} which allows to retrieve only live station data. 
+
+As there ...
+todo: explain api collection, limited by area and rate limit, issues at the start, but way more sensors than sensor community
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/netatmo_sensor_locations_germany.png}
+    \caption{Sensor locations of Netatmo in Hamburg, Germany, as of 28.06.2023}
+    \label{fig:netatmo sensor locations germany}
+\end{figure}
+
+\section{Quality Control}
+
+A mayor backdraw of such data is the lack of quality measures for sensor placement and sensor calibration, due to the fact that the sensors are operated by non-professionals.
+
+quality control (QC) approaches
+- quality is uncertain
+- use weather stations as reference (correct setup, good sensor calibration, ...)
+
+\subsubsection{DWD}
+
+- german official weather service
+- high data quality
+- low spatial coverage
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/dwd_weather_station_locations_germany.png}
+    \caption{DWD Weather Station Locations in Germany, \url{https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/subdaily/standard_format/KL_Standardformate_Beschreibung_Stationen.txt}, accessed 28.06.2023}
+    \label{fig:dwd sensor locations germany}
+\end{figure}
 
 % TODO: add following points
 - supervised learning -> target feature, e.g. air temperature\\
 - no static sensor locations, e.g. moving sensors -> can be simulated via leaving out data points\\
 - spatial and temporal influence between features\\
 - data quality -> missing values, outliers, wrong values, ...\\
-
-data from Netatmo, and data from the german weather services (DWD) which serve as reference points,
 
 \section{Overview Data Sources}
 
