@@ -5,7 +5,15 @@
 Next to the ML model selected, the data used to train and evaluate the model has a major influence on its performance. If the data is not representative of the underlying process that the model should be fitted to, there can be bias or an inability to generalize well to new data. In this chapter, we take a look at potential data sources and discuss the construction process of the datasets used in this work.\\
 In the field of natural language processing (NPL) and computer vision (CV), there is an abundance of large available datasets which have a big contribution to the advancements in the field, e.g. annotated datasets as provided by Google Research~\footnote{\url{https://research.google/resources/datasets/}}. In the field of climate research, there are also many datasets, including satellite data, weather station data, and climate model data. For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g. a high sensor density and a low time interval of f.e. five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings, as discussed in~\ref{subsec: Sensing Layer}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Such requirements are not met by traditional weather station networks as the spatial coverage is too low, as seen in figure~\ref{fig:dwd sensor locations germany} which shows the weather station network of the official german weather services (DWD).
 However they are met by dense sensor networks. A mayor challenge of running such a dense sensor network in a controlled scientific environment is the potential high cost of individual sensors, e.g. high precision and calibration, and the maintenance of the network, e.g. battery replacement, damages due to environmental influences, theft etc. Therefore, there are very few such projects and currently no openly available datasets. There were projects in the past such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, but links to their datasets are unfortunately not maintained, showing the difficulty of finding and retrieving relevant datasets in this field.\\
-As an alternative, in this work we instead use data from citizen run sensor networks which are either openly available or can be requested in limited fashion via provided APIs. In this work we create train and test datasets by combining openly available sensor data from the following providers:
+As an alternative, in this work we instead mainly use data from citizen run sensor networks, e.g. crowdsourced data from personal weather stations (PWS), which are either openly available or can be requested in limited fashion via provided APIs. In this work we create train and test datasets by combining openly available sensor data from the providers Sensor Community, Netatmo, and the official german weather services (DWD) for quality control. Other sources for crowdsourced weather station data include WeatherObservationsWebsite (WOW)~\footnote{\url{https://wow.metoffice.gov.uk/}} and Weather Underground~\footnote{\url{https://www.wunderground.com/}}. WOW is a platform run by the UK Met Office, which is the UK's national weather service, and has a dense sensor coverage in the UK and the Netherlands as seen in figure \ref{fig:wow sensor locations}. Weather Underground is a commercial weather service which also provides a crowdsourced weather station network. Unfortunately, Weather Underground only provides an API for users with a registered weather station or other bulk download options for historical data. The website would allow for manual download of historical data, but this is not feasible for the amount of data needed for this work.
+% TODO: talk about static data such as NDVI
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/wow_sensor_locations.png}
+    \caption{Temperature sensor locations from WOW, acessed on 05.07.2023}
+    \label{fig:wow sensor locations}
+\end{figure}
 
 \section{Sensor Community}
 
@@ -37,13 +45,7 @@ Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of 
 
 \section{Netatmo}
 
-Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is an american company that sells smart-home devices including weather stations. They host a weather map~\footnote{\url{https://weathermap.netatmo.com/}} where customers can share their weather station data. There are currently no openly historical datasets available, however there is one private dataset for 2020 available under \url{https://catalogue.ceda.ac.uk/uuid/e8793d74a651426692faa100e3b2acd3} which I requested access to, but did not receive a reply yet. % TODO: update if I get access
-They also contribute to the EUMETNET project which offers a wide range of weather data sets and offer an educational program.\\ % TODO: write if we get access
-
-They offer an API~\footnote{\url{https://dev.netatmo.com/apidocumentation}} which allows to retrieve only live station data. 
-
-As there ...
-todo: explain api collection, limited by area and rate limit, issues at the start, but way more sensors than sensor community
+Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is an american company that sells smart-home devices including weather stations. They host a weather map~\footnote{\url{https://weathermap.netatmo.com/}} where customers can share their weather station data. The provide an API to access current weather station data. They provide historical and current weather data for commercial partners or partners in the research and education sector. They are part of the EUMETNET project~\footnote{\url{https://www.eumetnet.eu/}} which is a network of 31 European meteological and hydrological services (NMHSs). The project aims to facilitate the exchange of weather data and to improve the quality of weather forecasts, especially in the context of PWS~\cite{hahn2022observations}. There are currently no openly historical datasets available, only private datasets such as \url{https://catalogue.ceda.ac.uk/uuid/e8793d74a651426692faa100e3b2acd3} (last acessed 05.07.2023), that are only available for EUMETNET members. They offer an educational program~\footnote{\url{https://www.netatmo.com/en-eu/weather-with-netatmo}} to acess limited amounts of data that is usually only available to commercial partners.
 
 \begin{figure}[ht]
     \centering
@@ -52,15 +54,9 @@ todo: explain api collection, limited by area and rate limit, issues at the star
     \label{fig:netatmo sensor locations germany}
 \end{figure}
 
-\section{Quality Control}
+In this work, data from Netatmo stations is primarily used as Netatmo offers a large amount of sensors in Germany, as seen in figure~\ref{fig:netatmo sensor locations germany}. Due to the limitations of the API rate limits, only data for the region of Hamburg, Germany is used.
 
-A mayor backdraw of such data is the lack of quality measures for sensor placement and sensor calibration, due to the fact that the sensors are operated by non-professionals.
-
-quality control (QC) approaches
-- quality is uncertain
-- use weather stations as reference (correct setup, good sensor calibration, ...)
-
-\subsubsection{DWD}
+\section{DWD}
 
 - german official weather service
 - high data quality
@@ -73,11 +69,21 @@ quality control (QC) approaches
     \label{fig:dwd sensor locations germany}
 \end{figure}
 
-% TODO: add following points
-- supervised learning -> target feature, e.g. air temperature\\
-- no static sensor locations, e.g. moving sensors -> can be simulated via leaving out data points\\
-- spatial and temporal influence between features\\
-- data quality -> missing values, outliers, wrong values, ...\\
+\section{Quality Control}
+
+Quality control (QC) is an essential step in the process of data analysis and preparation. The goal is to identify and remove outliers in the data that are due to placement errors of sensors, sensor malfunctions, sensor inaccuracies or other errors. In the context of PWS, weather stations are placed and maintained by non-professionals, making QC even more important. One of the main challenges in the context of (hyper-) local urban air temperature data is to not flag data as outliers that is representative of the local climate in case of extreme temperature, e.g.\ heat islands, and at the same time identify erronous or wrongly placed sensors, e.g.\ too close to walls, in direct sunlight, indoors, etc. Additionally, current PWS networks do not track sufficient metadata on the sensor placement, e.g.\ sensor height, which also plays an important role in protecting the privacy of citizens and not exposing too accurate sensor locations.\\
+Due to the the popularity of Netatmo weather station data in research due to high spatio-temporal resolution, there are several 
+software libraries available that help simplify and automate the QC process. These tools were primarily developed for Netatmo temperature data, however CrowdQC and TITAN can also be used for other data sources~\cite{hahn2022observations}. The following tools are available:
+
+\begin{itemize}
+    \item CrowdQC (R package~\footnote{\url{https://doi.org/10.14279/depositonce-6740.3}})
+    \item CrowdQC+~\cite{fenner2021crowdqc+} (R package~\footnote{\url{https://github.com/dafenner/CrowdQCplus}})
+    \item TITAN (R package~\footnote{\url{https://github.com/metno/TITAN}})
+    \item NetatmoQC (Python 3 package~\footnote{\url{https://source.coderefinery.org/iOBS/wp2/task-2-3/netatmoqc}})
+\end{itemize}
+
+CrowdQC was used in ...\\ % TODO: add where what is used
+The usage of QC lead to different percentages of data being flagged as outliers
 
 \section{Overview Data Sources}
 
@@ -138,3 +144,5 @@ The target feature in this work is the air temperature at 2m height. The input f
 
 % - strategies:
 %     - self procurement (test beds -> Helsinki Testbed (climate research meso sclae), UK Birmingham Testbed (climate + smart city), )
+
+% TODO: simulate low-resolution temporal moving sensors with stationary sensors and rmeoving available sensor readings (e.g. at day 30 min intervals + 2h interval at night?)

@@ -3,19 +3,31 @@
 % 10 pages?
 
 % Intro with small motivation why ML is used
-In recent times, the area of machine learning has seen big advancements in terms of model size and complexity. Especially in the area of generative AI, transformer-based neural networks have revolutionised text and image generation. Models such as OpenAI's \textit{ChatGPT}~\cite{openai2023gpt4} or Google's \textit{LaMDA}~\cite{thoppilan2022lamda} have generated significant hype for the possiblity of use of AI\@. Additionally, statements like the universal approximation theorem, which states that a feed-forward network with a single hidden layer containing a finite number of neurons can approximate any continous function~\cite{hornik1989multilayer}, emphasize the potential power of ML models.
-As a result, the question arises what benefits AI can bring to other areas of application, such as interpolation. In this chapter, we will discuss the usage of ML in the context of data enrichment via interpolation, more precisely in the context of smart cities and air temperature interpolation, and outline possible advantages and disadvantages compared to traditional (geo-) statistical methods and answer questions such as how stationary and moving sensors can be combined to accomplish better interpolation results.\\
-% ML in the context of the goal of this work
-There are several ways that interpolation can help us in the context of smart cities and air temperature interpolation. First of all, interpolation can help us fill in missing data for individual sensors, which can be caused by sensor failures, network failures or simply maintenance. Secondly, research suggests that a combination of stationary and moving sensors can lead to better sensing capabilities of phenomena such as urban heat or pollution islands (cite). In the context of CUHI detection, moving sensors can increase the sensor coverage and could be used to detect realtionships between staionary sensors and moving sensors, allowing for the detection of a CUHI even if there is currently no moving sensor in the area. Lastly, we could even go so far as to replace traditional (geo-) statistical methods with ML methods, as ML models can be more flexible and can be adapted to different use-cases. This is interesting, as meteorological research and analysis activities are usually in need of gridded or continuous data~\cite{sekulic2020spatio}.\\
-In the following, we first introduce several ML algorithms that can be used for regression tasks and discuss how they need to be adapted in order to solve interpolation tasks as well as the advantages and disadvantages of each model. Afterwards, we will decide for one model that will be implemented and evaluated in chapter~\ref{chap:Evaluation}.
+In recent times, the area of machine learning has seen big advancements in terms of model size and complexity. Especially in the area of generative AI, transformer-based neural networks have revolutionised text and image generation. Models such as OpenAI's \textit{ChatGPT}~\cite{openai2023gpt4} or Google's \textit{LaMDA}~\cite{thoppilan2022lamda} have generated significant hype for the possiblity of use of AI\@. Additionally, statements like the universal approximation theorem, which states that a feed-forward network with a single hidden layer containing a finite number of neurons can approximate any continous function~\cite{hornik1989multilayer}, emphasize the potential power of ML models. As a result, the question arises what benefits AI can bring to other areas of application, such as interpolation.\\
+In this chapter, we will discuss the usage of ML in the context of data enrichment via interpolation, more precisely in the context of smart cities and urban air temperature interpolation. The ML model will be compared against traditional proven geostatistical model, e.g. Kriging, to outline and discover possible advantages and disadvantages. In general, the idea is to trade the explain- and interpretability of purely statistical-based approaches for model capabilities and accuracy, and the ability to capture more complex (non-linear) dependencies.
 
-\section{AI vs. Machine Learning vs. Deep Learning}
+\subsubsection{AI vs. Machine Learning vs. Deep Learning}
 
-Before diving deeper into the applications of ML, we need to clarify what is meant by artificial intelligence (AI), machine learning (ML) and deep learning (DL). AI is a broad term that is used to describe the ability to perform tasks, that are usually associated with human intelligence. ML is a subfield of AI, that focuses on the ability of a system to learn from data without being explicitly programmed to do so. Finally, DL is a subfield of ML, that uses artificial neural networks, which imitate the structure of the human brain, to learn from data and perform various tasks.\\
+Before diving deeper into the applications of ML, we need to clarify what is meant by artificial intelligence (AI), machine learning (ML) and deep learning (DL). AI is a broad term that is used to describe the ability to perform tasks, that are usually associated with human intelligence. ML is a subfield of AI, that focuses on the ability of a system to learn from data without being explicitly programmed to do so. Finally, DL is a subfield of ML, that uses artificial neural networks, which imitate the structure of the human brain, to learn from data and perform various tasks.
 % TODO: graphic?
 
-\section{Comparison of Machine Learning Algorithms}
-\label{sec:taxonomy}
+\section{Machine-Learning Application Areas in Air Temperarture Interpolation}
+
+As meteorological research and analysis activities are usually in need of gridded or continuous data~\cite{sekulic2020spatio}, interpolation is a really important tool to convert the single data points from ground-based weather stations into continous layers. Interpolation can also be applied to singular sensors in order to fill in missing data that are caused by network outages or to increase the temporal resolution to turn hourly into sub-hourly readings. Especially with the capability to increase the temporal resolution, the question arises how this capability could be combined with moving sensors to increase the spatial coverage of a sensor network. In this work, we will discuss two approaches for the use of interpolation in urban air temperatute sensing:
+
+\begin{itemize}
+    \item ML-based interpolation for areas as a substitution for geostatistical methods, e.g. Kriging, to turn individual data points into a continuous grid, possibly with the ability to handle stationary and moving sensor data at the same time
+    \item ML-based interpolation to simulate individual virtual sensors that are derived from either low-temporal resolution stationary sensors or moving sensors to increase the temporal resolution of individual sensors and the spatial coverage of sensor networks
+\end{itemize}
+
+Research suggests that for fine-granular spatio-temporal urban air temperature maps, a sensor density of at least 1 sensor per km$^{2}$ is needed~\cite{venter2020hyperlocal}, however the denser the sensor network the better the prediction quality, as even inside a single street canyon air temperatures can easily vary by 2 to 3°C~\cite{sugawara2008temperature}.
+% TODO: write about other influence sizes, e.g. 10m -> 1km for different features, + the variability of sensors, e.g. inside a street canyon 2-3°c differences.
+In order to achive this sensor density as well as to gain insights into previously unobserved areas and to minimise prediction uncertainty for those areas, hybrid approaches combining stationary and moving sensors have shown to work better than purely stationary networks by covering more ground as well as reducing variability of purely mobile network setups in the context of urban temperature sensing~\cite{yang2019designing}. The combination of reference grade stationary sensors and moving sensors also shows promise in other related application, e.g. in the context of pollution island detection~\cite{iyer2022modeling}.\\
+In the context of this work, we discuss both ML applications and set a focus on the ability to create virtual sensors from moving sensors in order to increase spatial coverage.
+In the following, we introduce several ML algorithms that can be used for regression tasks and discuss how they need to be adapted in order to solve interpolation tasks as well as the advantages and disadvantages of each model. Afterwards, we will decide on one model that will be implemented and evaluated in Chapter~\ref{chap:Evaluation}.
+
+\section{Model Selection Criteria}
+\label{sec: model selection criteria}
 
 Before using the ML regression algorithms introduced in this section to solve the interpolation problem, the models need to be adapted to this specific use-case. This can happen either by adapting the input data and the types of features used or by adapting the model configuration. The following questions need to be answered:
 
@@ -26,10 +38,6 @@ Before using the ML regression algorithms introduced in this section to solve th
     \item \textbf{How to model the spatial correlation?:} Is spatial correlation directly incorporated in the model architecture or does it need to be modelled via features?
 \end{itemize}
 
-Next to the questions on how the models need to be adapted, we also need to consider certain selection criteria which is discussed in the next section.
-
-\subsection{Model Selection Criteria}
-
 Next to the adaptations that need to be made in order to fit a regression algorithms to the interpolation problem, there are also non-functional requirements that need to be considered when selecting a model. The most important requirements are:
 
 \begin{itemize}
@@ -37,7 +45,8 @@ Next to the adaptations that need to be made in order to fit a regression algori
     \item \textbf{Accuracy and Reliability:} Creating an accurate and reliable model is really important to increase the trust for predicted values, however there are certain trade-offs to be made, as model performance or generalisation ability are also important factors to consider.
     The accuracy of the model is mainly determined how well the choosen model can fit the underlying data, e.g. a linear model cannot fit a non-linear function, and is measured by the evaluation metrics described in section \ref{subsec:evaluation_metrics}.
     The reliability of the model is determined by the training data as well as the model architecture, as f.e. training data that is not representative of the underlying function can introduce bias into the model or can prevent the model from learning the correct function. Another important factor is the data quality, as more noise can result in worse model performance. Lastly, reliability of the model is also determined by the ability of the model to handle missing or sparse data as well as outliers. This is especially important in our context as we try to integrate moving sensors into the interpolation process, which sense data at different times and locations.
-    \item \textbf{Amount of Training Data:} The amount of training data required to train the model is another important factor to consider, as some models require more training data than others. Especially neural networks tend to need more training data than other models, as they have a lot of parameters that need to be tuned. In our context, the amount of data available is quite limited, therefore models that require less training data are preferred.
+    \item \textbf{Amount of Training Data:} The amount of training data required to train the model is another important factor to consider, as some models require more training data than others. Especially neural networks tend to need more training data than other models, as they have lots of parameters that need to be tuned. In our context, the amount of data available is quite limited, therefore models that require less training data are preferred.
+    % Reviewed until here.
     \item \textbf{Handling of Missing Data:} If the model cannot handle missing data well, there might be additonal data preprocessing steps that need to be done. One example for this would be how the model reacts to not a number (NaN) values which is a float number defined in the IEEE 754 floating-point standard~\cite{ieee754}. Each multiplication with NaN results in NaN, which can therefore lead to a model where all weights turn into NaN when there is a single NaN value in the input data. This is especially important in the context of distributed sensors, as they might not sense every feature at all times. Common strategies to handle missing values involve dropping the complete feature if it has any NaN, drop any rows in the data that has NaN values or imputation, e.g. replace the missing value with a value such as the mean or median of the feature.
     \item \textbf{Handling of Sparse Data:} Similar to missing data, handling of sparse data is also really important to prevent problems such as the NaN problem mentioned previously. The main difference to missing data is that sparse data is not missing, but rather not available at all times. In our context, moving sensors would be an example for sparse data, as they only sense data at certain times and locations. The strategies to handle missing data are also similar to those of missing data, but imputation and interpolation are more common strategies to handle sparse data.
     \item \textbf{Model Performance:} The more complex a model is, generally speaking the more training data it needs to fine-tune all it's weights and the longer it takes to train, either due to the amount of data or the amount of steps that need to be taken when updating weights in the training process. In the context of open-source and citizen participation less complex models are preferred, as they can be trained and deployed with less resources. However, a less complex model could have the downside of not being able to fit the underlying data as well as a more complex model, therefore there is a trade-off between model complexity and model performance.
@@ -66,6 +75,9 @@ Based on the domain, there already exist proposed best-practices for which algor
 
 % TODO: table with model comparison for quick overview
 
+\section{Comparison of Machine Learning Algorithms}
+\label{sec:comparison ml algorithms}
+
 \subsection{Linear Regression}
 \label{subsec: linear regression}
 
@@ -77,7 +89,9 @@ Linear regression~\cite{montgomery2021introduction} is a comparatively simple, y
 \end{equation}
 
 where $y$ is the dependent variable, $x_1$ to $x_n$ are the independent variables, $\beta_0$ to $\beta_n$ are the parameters of the model and $\epsilon$ is the error term. The relationship between the parameters is assumed to be liniear, while each variable must be independent of each other. Due to this independent assumption, there are special steps needed to make linear regression work for (geo-) spatial data, as these types of variables are usually correlated with each other. This is further discussed in~\ref{subsec:Dealing with Correlation}.\\
-Linear regression has the advantage, that it is a very simple model, therefore the majority of work needs to be done in the feature engineering process. The downside is that there is no inherent support for spatial or temporal correlation and the model cannot be used to fit non-linear functions. In order to fit no-linear functions, polynomial regression can be used, which can however lead to overfitting especially when the degree of the polynomial is high.
+Linear regression has the advantage, that it is a very simple model, therefore the majority of work needs to be done in the feature engineering process. The downside is that there is no inherent support for spatial or temporal correlation and the model cannot be used to fit non-linear functions. In order to fit no-linear functions, polynomial regression can be used, which can however lead to overfitting especially when the degree of the polynomial is high.\\
+% TODO
+Linear models seem to perform worse in urban temperature related settings, as they are unable to capture non-linear effects~\cite{voelkel2017towards}.
 
 \subsection{KNN Regression}
 
@@ -95,7 +109,7 @@ KNN is part of the family of non-parametric models, meaining they do not make an
 
 \subsection{Regression Trees and Random Forests}
 
-Decision trees are used for a wide variety of classification problems. Due to the fact that decision trees can vary significantly given similar inputs, e.g have a high variance, random forests were introduced as a counter measure. Random forests combine multiple decision trees and average their predictions in order to reduce the variance.\\ 
+Decision trees are used for a wide variety of classification problems. Due to the fact that decision trees can vary significantly given similar inputs, e.g have a high variance, random forests were introduced as a counter measure. Random forests combine multiple decision trees and training them on different features and subsets of data and average their predictions in order to reduce the variance (cite).\\ 
 When instead of a discrete target variable a continous target variable is predicted, regression trees can be used. The principle behind regression trees is to split the data into continously smaller sub-sets, and asking the correct questions at the right time in order to find the best split. Compared to decision trees which try to minimise the entropy, regression trees try to minimise an error that is compatible with a continous target variable such as mean squared error (MSE). The model can be expressed as follows:
 
 % TODO: explain equation
@@ -103,7 +117,23 @@ When instead of a discrete target variable a continous target variable is predic
     \hat{y} = \sum_{m=1}^M c_m \mathbb{1}(x \in R_m)
 \end{equation}
 
-Regression trees are easy to understand and interpret. Additionally, they do not require any scaling of variables, which is a big advantage compared to other models. However, they are prone to overfitting and are not suitable for extrapolation. Furthermore, they are discontinous at the split points, which is a big disadvantage for interpolation of spatial data. Therefore, regression trees don't seem to be suitable for the task of air temperature interpolation.
+Regression trees are easy to understand and interpret. Additionally, they do not require any scaling of variables, which is a big advantage compared to other models.\\
+The mayor disadvantages of the model are for one, that due to the averaging of different regression trees, the model cannot be used to extrapolate data, e.g.\ predict temperatures outside of the training data. This means that the model needs to be trained with a wide variety of data that includes the maximum and minimum extreme values for the given target variable. As these values might not be easily available, as extreme weather events might occur very infrequently, this could be a problem.
+Another disadvantage is that regression trees have depth as a hyperparameter that needs to be tuned. If the depth is too big, the tree might overfit the data and if the depth is too small, the underlying relationship might not be captured accurately.\\
+There are a couple of studies that use regression trees for temperature interpolation. In \cite{venter2020hyperlocal} the authors achive an average RMSE of 0.52 °C (R2 = 0.5), 1.85 °C (R2 = 0.05) and 1.46 °C (R2 = 0.33) for annual mean, daily maximum and minimum air temperature respectively for the city of Oslo, Norway by combining 20 features from satellite data and PWS from the Netatmo network. However, they do not discuss the downsides of regression trees to extrapolate data.
+
+In \cite{zumwald2021mapping} the authors used the quantile regression forest algorithm
+use regression trees to predict the daily maximum and minimum air temperature for the city of Zurich, Switzerland. They achieve an average RMSE of 1.5 °C (R2 = 0.7) and 1.4 °C (R2 = 0.7) for the daily maximum and minimum air temperature respectively by combining 20 features from satellite data and PWS from the Netatmo network.\\
+
+These studies show that regression trees can be used to predict air temperature with a high accuracy on a daily and annual basis for minimum and maximum air temperature with a high spatial resolution, but do not explore the ability to predict actual air temperature for low time resolutions, e.g.\ hourly or sub-hourly.\\
+Due to the downside of the inability to extrapolate data which is especially critical in the detection of CUHIs, e.g. air temperature maximas, we do not use regression trees in this work. However, other findings such as station density and features used can be used in this work.\\
+\\
+
+% TODO: talk about the inability to capture time series correlation
+% TODO: nice to have: add figure of inability to extrapolate maximum temperature
+% TODO: QRF method (to create)
+There is a systematic bias to underestimate high temperatures and overestimate low temperatures~\cite{zumwald2021mapping, zhang2012bias}
+Random Forests (RF) \cite{breiman2001random}
 
 \subsection{Tree Boosting}
 
@@ -116,9 +146,17 @@ As a result, appropriate counter measures need to be taken, such as using the Ma
 
 \subsection{Neural Networks}
 
+- trade off between interpretability and model capabilities
+- more data needed to train the network, because there are more weights to train
+
 Neural networks 
 
 \subsubsection{Deep Neural Networks}
+ 
+- approximation theorem
+- special form of neural networks with hidden layers
+
+- overparametrization
 
 % TODO
 
@@ -166,7 +204,11 @@ The next approach would be to convert the
 
 Todo: Techniques to turn correlated variables into uncorrelated ones
 - principal component analysis (PCA)
-- ...
+- ...\\
+
+variance inflation factor (VIF)\\
+-> over 10 = invalid model\cite{montgomery2021introduction}
+-> others more moderate with max 3 \cite{zuur2010protocol}
 
 \subsection{Dealing with Uncertainty}
 - The model has a lot of uncertainty
@@ -227,17 +269,6 @@ After listing the selection criteria, the next step is to discuss the possible m
         - convolutional neural network (CNN)
 
 
-\section{ML Model Deployment}
-Deployed as a service. Input ingested -> continous data map as output all 5 min or so (could also be smaller depending on use-case -> trade-off between cost and accurancy)
-
-\subsection{ML Model Retraing}
-Need to retrain model from time to time, e.g. if the accurracy drops below a certain threshold.
-
-
-% Implementation details
-- dealing with coordinate systems:
-    - projected coordinate system (e.g. UTM) instead of long lat alt values (important for interpolation)
-
 \section{Machine Learning in Geostatistics}
 
 Idea/Hyphothesis: ML outperforms traditional geostatistical models (in certain scenarios) as it is able to capture more complex interdependencies between features and isn't necessarily bound to the (mathematical) assumptions of geostatistical models.
@@ -278,3 +309,11 @@ The model is implemented following advice from~\cite{rey2023geographic}...
 
 Additonal ideas:
 - types of geological features (vectors, rasters) -> distance, containment, intersection, etc. 
+
+\section{Additional Considerations}
+
+\subsubsection{ML Model Deployment}
+Deployed as a service. Input ingested -> continous data map as output all 5 min or so (could also be smaller depending on use-case -> trade-off between cost and accurancy)
+
+\subsubsection{ML Model Retraing}
+Need to retrain model from time to time, e.g. if the accurracy drops below a certain threshold.
