@@ -32,7 +32,7 @@ In the following, we introduce several ML algorithms that can be used for regres
 Before using the ML regression algorithms introduced in this section to solve the interpolation problem, the models need to be adapted to this specific use-case. This can happen either by adapting the input data and the types of features used or by adapting the model configuration. The following questions need to be answered:
 
 \begin{itemize}
-    \item \textbf{How to model sensors?:} Do we want to model each sensor individually, do we want to model all sensors in the area or do we want to model the whole area at once?
+    \item \textbf{How to model sensors?:} Do we want to model each sensor individually, do we want to model all sensors in the area, e.g. like a network, or do we want to model the whole area at once similar to image processing?
     \item \textbf{How to model stationary vs. non-stationary sensors?:} Do we model stationary and non-stationary sensors differently and can the model handle the possibly unsteadily data of moving sensors, e.g. different locations or different time intervals?
     \item \textbf{How to model the temporal correlation?:} Does the model allow to model temporal correlation between sensor readings and is it only short-term or also long-term correlation?
     \item \textbf{How to model the spatial correlation?:} Is spatial correlation directly incorporated in the model architecture or does it need to be modelled via features?
@@ -45,31 +45,33 @@ Next to the adaptations that need to be made in order to fit a regression algori
     \item \textbf{Accuracy and Reliability:} Creating an accurate and reliable model is really important to increase the trust for predicted values, however there are certain trade-offs to be made, as model performance or generalisation ability are also important factors to consider.
     The accuracy of the model is mainly determined how well the choosen model can fit the underlying data, e.g. a linear model cannot fit a non-linear function, and is measured by the evaluation metrics described in section \ref{subsec:evaluation_metrics}.
     The reliability of the model is determined by the training data as well as the model architecture, as f.e. training data that is not representative of the underlying function can introduce bias into the model or can prevent the model from learning the correct function. Another important factor is the data quality, as more noise can result in worse model performance. Lastly, reliability of the model is also determined by the ability of the model to handle missing or sparse data as well as outliers. This is especially important in our context as we try to integrate moving sensors into the interpolation process, which sense data at different times and locations.
+    \item \textbf{Extrapolation Capabilities:} One important factor to consider, especially when using a model with previously unseen data, is the ability to extrapolate data. Linear regression models f.e. try to fit a linear function that can be easily be used with data that is bigger/smaller than previously seen training data as the function is continuous. In comparison, regression trees by default do not allow for extrapolation. Also, Neural Networks (NNs) typically perform unpredictably on unseen data. 
     \item \textbf{Amount of Training Data:} The amount of training data required to train the model is another important factor to consider, as some models require more training data than others. Especially neural networks tend to need more training data than other models, as they have lots of parameters that need to be tuned. In our context, the amount of data available is quite limited, therefore models that require less training data are preferred.
-    % Reviewed until here.
     \item \textbf{Handling of Missing Data:} If the model cannot handle missing data well, there might be additonal data preprocessing steps that need to be done. One example for this would be how the model reacts to not a number (NaN) values which is a float number defined in the IEEE 754 floating-point standard~\cite{ieee754}. Each multiplication with NaN results in NaN, which can therefore lead to a model where all weights turn into NaN when there is a single NaN value in the input data. This is especially important in the context of distributed sensors, as they might not sense every feature at all times. Common strategies to handle missing values involve dropping the complete feature if it has any NaN, drop any rows in the data that has NaN values or imputation, e.g. replace the missing value with a value such as the mean or median of the feature.
     \item \textbf{Handling of Sparse Data:} Similar to missing data, handling of sparse data is also really important to prevent problems such as the NaN problem mentioned previously. The main difference to missing data is that sparse data is not missing, but rather not available at all times. In our context, moving sensors would be an example for sparse data, as they only sense data at certain times and locations. The strategies to handle missing data are also similar to those of missing data, but imputation and interpolation are more common strategies to handle sparse data.
     \item \textbf{Model Performance:} The more complex a model is, generally speaking the more training data it needs to fine-tune all it's weights and the longer it takes to train, either due to the amount of data or the amount of steps that need to be taken when updating weights in the training process. In the context of open-source and citizen participation less complex models are preferred, as they can be trained and deployed with less resources. However, a less complex model could have the downside of not being able to fit the underlying data as well as a more complex model, therefore there is a trade-off between model complexity and model performance.
+    \item \textbf{Model Capabilities vs. Interpretability:} A common trade-off in ML models is between model capabilities and complexity and interpretability of the model as done by~\cite{zumwald2021mapping}, as `Neural network and deep learning approaches allow for large flexibility and predictive power but are harder to interpret than ensemble-based approaches which allow for the required flexibility, while still providing insights into the algorithms' inner workings, e.g. via variable importance and prediction uncertainty estimation'.
     \item \textbf{Other:} Next to these main requirements, there are also other requirements, such as the ability the handle massive amounts of data, live retraining or sophisticated support via ML libraries such as \textit{Tensor Flow}~\footnote{\url{https://www.tensorflow.org/}} for commercial use-cases. Due to the limited scope of this work, these requirements will be considered in less detail.
 \end{itemize}
 
 After introducing the requirements for model adaptions and selection, the next step is to introduce and compare the different ML regression algorithms.
 Generally speaking, ML algorithms can be categorised based on many different properties~\cite{sarker2021machine}, such as the type of learning, e.g. supervised, unsupervised, semi-supervised or reinforment, or the type of problem they try to solve, e.g. classification, regression or clustering. The most important differenciation for this work is to distinguish algorithms based on the type of problem they try to solve. Because we focus on solving interpolation problems, in this work we will only consider algorithms that can be used to solve regression problems, as interpolation is a form of regression.\\
-In regression analysis, the goal is to predict a (continous) target variable $y$ based on a set of input variables $X$ (cite), like it is the case for temperature interpolation. Generally speaking, this problem can be classified as a supervised learning problem, therefore the possible algorithm candiates are as follows:
-% todo: regression as a way of fitting a continous function and finding the underlying distribution
+In regression analysis, the goal is to predict a (continous) target variable $y$ based on a set of input variables $X$, like it is the case for temperature interpolation. Generally speaking, this problem can be classified as a supervised learning problem, therefore the possible algorithm candiates are as follows:
 
 \begin{itemize}
-    \item Linear Regression
-    \item KNN Regression
-    \item Neural Networks
+    \item (Multi) Linear Regression (MLR)
+    \item K-Nearest Neighbours (KNN) Regression
+    \item Regression Trees and Forests
+    \item Support Vector Regression
+    \item (Deep) Neural Networks
 
     \begin{itemize}
-        \item LSTM
+        \item Long-Short Term Memory (LSTM)
         \item RNN
     \end{itemize}
 \end{itemize}
 
-Additonally, there are also other regression such as Regression Trees and Random Forests, Tree Boosting, or Support Vector Regression, which are less popular and seem to be less suitable for the interpolation problem at hand.
+% Additonally, there are also other regression such as Regression Trees and Random Forests, Tree Boosting, or Support Vector Regression, which are less popular and seem to be less suitable for the interpolation problem at hand.
 Each model has certain benefits but also comes with drawbacks or special assumptions for the input data to the model. First, we will discuss each model and then compare these assumptions with the data coming from the data-layer, to identify suitable models for the task of air temperature interpolation. These models will then later be implemented and compared in chapter \ref{chap:Evaluation}.\\
 Based on the domain, there already exist proposed best-practices for which algorithms to use for what applications. In the context of smart cities such recommendations for topics such as intelligent transportation systems, smart grids, smart city health care and more can be found in \cite{ullah2020applications}, which unfortunately does not cover interpolation.
 
@@ -78,7 +80,7 @@ Based on the domain, there already exist proposed best-practices for which algor
 \section{Comparison of Machine Learning Algorithms}
 \label{sec:comparison ml algorithms}
 
-\subsection{Linear Regression}
+\subsection{(Multi) Linear Regression}
 \label{subsec: linear regression}
 
 Linear regression~\cite{montgomery2021introduction} is a comparatively simple, yet very powerful and widely used model for regression problems. The goal of this model is to predict a continous dependent variable based on a number of independent variables. These independent variables can be either continous or discrete. The model can be expressed as follows:
@@ -125,6 +127,10 @@ There are a couple of studies that use regression trees for temperature interpol
 In \cite{zumwald2021mapping} the authors used the quantile regression forest algorithm
 use regression trees to predict the daily maximum and minimum air temperature for the city of Zurich, Switzerland. They achieve an average RMSE of 1.5 °C (R2 = 0.7) and 1.4 °C (R2 = 0.7) for the daily maximum and minimum air temperature respectively by combining 20 features from satellite data and PWS from the Netatmo network.\\
 
+In \cite{ho2014mapping}... % TODO: add more text
+- good for reference stations
+- worse for WOW stations + stations close to the ocean\\
+
 These studies show that regression trees can be used to predict air temperature with a high accuracy on a daily and annual basis for minimum and maximum air temperature with a high spatial resolution, but do not explore the ability to predict actual air temperature for low time resolutions, e.g.\ hourly or sub-hourly.\\
 Due to the downside of the inability to extrapolate data which is especially critical in the detection of CUHIs, e.g. air temperature maximas, we do not use regression trees in this work. However, other findings such as station density and features used can be used in this work.\\
 \\
@@ -135,11 +141,7 @@ Due to the downside of the inability to extrapolate data which is especially cri
 There is a systematic bias to underestimate high temperatures and overestimate low temperatures~\cite{zumwald2021mapping, zhang2012bias}
 Random Forests (RF) \cite{breiman2001random}
 
-\subsection{Tree Boosting}
-
-% TODO
-
-\subsection{Support Vector Machines}
+\subsection{Support Vector Regression}
 
 Support Vector Machines (SVM) are typically used in classification problems, however they can be also used for regression problems, called Support Vector Regression (SVR). SVMs transform the input data into a higher dimensional space and try to find a hyperplane that separates the data into two classes. This approach is similar to linear regression, however SVMs are more robust to outliers and can be used for non-linear problems. Depending on the Kernel function used, e.g. Linear, Polynomial, Radial Basis Function (RBF) or Sigmoid, the model can suffer from the same problems as linear regression when dealing with correlated spatial data.
 As a result, appropriate counter measures need to be taken, such as using the Mahalanobis distance instead of the Euclidean distance for RBF kernels~\cite{kamada2006support}, which converts correlated features into uncorrelated features.
@@ -194,6 +196,11 @@ The next approach would be to convert the
 \subsection{Temporal Autocorrelation}
 % How different measurements are temporally related inside a time series
 
+- trends
+-> expect normally distributed temperature curve
+-> temporal lag (e.g. temperature of yesterday has influence on temperature of today)
+
+Either explicitly model 
 
 \subsection{Temporal Cross Correlation}
 % How different time series are related to each other (seasonaility)

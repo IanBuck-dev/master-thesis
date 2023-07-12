@@ -4,8 +4,12 @@
 
 Next to the ML model selected, the data used to train and evaluate the model has a major influence on its performance. If the data is not representative of the underlying process that the model should be fitted to, there can be bias or an inability to generalize well to new data. In this chapter, we take a look at potential data sources and discuss the construction process of the datasets used in this work.\\
 In the field of natural language processing (NPL) and computer vision (CV), there is an abundance of large available datasets which have a big contribution to the advancements in the field, e.g. annotated datasets as provided by Google Research~\footnote{\url{https://research.google/resources/datasets/}}. In the field of climate research, there are also many datasets, including satellite data, weather station data, and climate model data. For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g. a high sensor density and a low time interval of f.e. five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings, as discussed in~\ref{subsec: Sensing Layer}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Such requirements are not met by traditional weather station networks as the spatial coverage is too low, as seen in figure~\ref{fig:dwd sensor locations germany} which shows the weather station network of the official german weather services (DWD).
-However they are met by dense sensor networks. A mayor challenge of running such a dense sensor network in a controlled scientific environment is the potential high cost of individual sensors, e.g. high precision and calibration, and the maintenance of the network, e.g. battery replacement, damages due to environmental influences, theft etc. Therefore, there are very few such projects and currently no openly available datasets. There were projects in the past such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, but links to their datasets are unfortunately not maintained, showing the difficulty of finding and retrieving relevant datasets in this field.\\
-As an alternative, in this work we instead mainly use data from citizen run sensor networks, e.g. crowdsourced data from personal weather stations (PWS), which are either openly available or can be requested in limited fashion via provided APIs. In this work we create train and test datasets by combining openly available sensor data from the providers Sensor Community, Netatmo, and the official german weather services (DWD) for quality control. Other sources for crowdsourced weather station data include WeatherObservationsWebsite (WOW)~\footnote{\url{https://wow.metoffice.gov.uk/}} and Weather Underground~\footnote{\url{https://www.wunderground.com/}}. WOW is a platform run by the UK Met Office, which is the UK's national weather service, and has a dense sensor coverage in the UK and the Netherlands as seen in figure \ref{fig:wow sensor locations}. Weather Underground is a commercial weather service which also provides a crowdsourced weather station network. Unfortunately, Weather Underground only provides an API for users with a registered weather station or other bulk download options for historical data. The website would allow for manual download of historical data, but this is not feasible for the amount of data needed for this work.
+However, they are met by dense sensor networks. A mayor challenge of running such a dense sensor network in a controlled scientific environment is the potential high cost of individual sensors, e.g. high precision and calibration, and the maintenance of the network, e.g. battery replacement, damages due to environmental influences, theft etc. 
+There are several projects that run climate dense sensor networks~\cite{muller2013sensors}. %TODO: incoporate this into the text
+
+
+Therefore, there are very few such projects and currently no openly available datasets. There were projects in the past such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, but links to their datasets are unfortunately not maintained, showing the difficulty of finding and retrieving relevant datasets in this field.\\
+As an alternative, in this work we instead mainly use data from citizen run sensor networks, e.g. crowdsourced data from personal weather stations (PWS), also called citizen weather stations (CWS), which are either openly available or can be requested in limited fashion via provided APIs. In this work we create train and test datasets by combining openly available sensor data from the providers Sensor Community, Netatmo, and the official german weather services (DWD) for quality control. Other sources for crowdsourced weather station data include WeatherObservationsWebsite (WOW)~\footnote{\url{https://wow.metoffice.gov.uk/}} and Weather Underground~\footnote{\url{https://www.wunderground.com/}}. WOW is a platform run by the UK Met Office, which is the UK's national weather service, and has a dense sensor coverage in the UK and the Netherlands as seen in figure \ref{fig:wow sensor locations}. Weather Underground is a commercial weather service which also provides a crowdsourced weather station network. Unfortunately, Weather Underground only provides an API for users with a registered weather station or other bulk download options for historical data. The website would allow for manual download of historical data, but this is not feasible for the amount of data needed for this work.
 % TODO: talk about static data such as NDVI
 
 \begin{figure}[ht]
@@ -34,7 +38,7 @@ In Figure~\ref{fig:temperature_sensor_community_map}, where we see the greater H
     \label{fig:temperature_sensor_community_outlier}
 \end{figure}
 
-Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of these sensors, many are located in Germany and almost half of them are of type BME 280, which is a lost-cost Bosch sensor which can measure temperature, pressure and humidity, as seen in appendix~\ref{sensor_community_sensors_by_countries}. The sensor locations as of may 2023 are shown in~\ref{fig:sensor community sensor locations germany}. DHT22 sensors can measure temperature and humidity, BMP280 and BMP180 sensors can measure temperature and pressure, and BME280 sensors can measure temperature, pressure and humidity.\\
+Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of these sensors, many are located in Germany and almost half of them are of type BME 280, which is a lost-cost Bosch sensor which can measure temperature, pressure and humidity, as seen in Appendix~\ref{sensor_community_sensors_by_countries}. The sensor locations as of may 2023 are shown in~\ref{fig:sensor community sensor locations germany}. DHT22 sensors can measure temperature and humidity, BMP280 and BMP180 sensors can measure temperature and pressure, and BME280 sensors can measure temperature, pressure and humidity.\\
 
 \begin{figure}[ht]
     \centering
@@ -56,6 +60,10 @@ Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is an american company th
 
 In this work, data from Netatmo stations is primarily used as Netatmo offers a large amount of sensors in Germany, as seen in figure~\ref{fig:netatmo sensor locations germany}. Due to the limitations of the API rate limits, only data for the region of Hamburg, Germany is used.
 
+\subsubsection{Quality Considerations}
+- all sensors build in the same way, but:
+  - due to compact design, aluminium housing, poor ventilation, no radiation screen, prone to radiative errors and slow sensor-response time \cite{meier2017crowdsourcing, buchau2018modelling}
+
 \section{DWD}
 
 - german official weather service
@@ -69,11 +77,28 @@ In this work, data from Netatmo stations is primarily used as Netatmo offers a l
     \label{fig:dwd sensor locations germany}
 \end{figure}
 
+\subsubsection{Urban Climate Stations}
+
+Next to the official weather stations, the DWD also operates urban weather stations, however there are currently only four stations in the following cities:
+
+\begin{itemize}
+    \item Berlin-Alexanderplatz, Berlin, Berlin
+    \item Freiburg-Mitte, Freiburg, Baden-Württemberg
+    \item Hannover-Nordstadt, Hannover, Niedersachsen
+    \item Dresden-Neustadt, Dresden, Sachsen
+\end{itemize}
+
+The number of urban weather stations is planned to be gradually extended to reach 10 stations with the locations being primarily determined by the measurement objectives such as determining a city's maximum UHI intensity~\footnote{\url{https://www.dwd.de/EN/climate\_environment/climateresearch/climate\_impact/urbanism/urban\_heat\_island/urbanheatisland\_node.html}, last accessed 12.07.2023}. Due to the low number of weather stations, their data is not used in this work.
+
+\subsubsection{Weather Radar}
+
+The DWD also operates a network of weather radars~\footnote{\url{https://www.dwd.de/DE/leistungen/radarprodukte/radarprodukte.html}, last accessed 12.07.2023, not available in english} that are used to measure precipitation and wind speed. This data could be interesting in the context of air interpolation in order to detect precipitation events that have a mayor influence on humidity and temperature or to detect wind speeds that also play an important factor in dissapating heat and transporting it away from urban areas.
+Due to the limited scope of this work, this data is not used.
+
 \section{Quality Control}
 
 Quality control (QC) is an essential step in the process of data analysis and preparation. The goal is to identify and remove outliers in the data that are due to placement errors of sensors, sensor malfunctions, sensor inaccuracies or other errors. In the context of PWS, weather stations are placed and maintained by non-professionals, making QC even more important. One of the main challenges in the context of (hyper-) local urban air temperature data is to not flag data as outliers that is representative of the local climate in case of extreme temperature, e.g.\ heat islands, and at the same time identify erronous or wrongly placed sensors, e.g.\ too close to walls, in direct sunlight, indoors, etc. Additionally, current PWS networks do not track sufficient metadata on the sensor placement, e.g.\ sensor height, which also plays an important role in protecting the privacy of citizens and not exposing too accurate sensor locations.\\
-Due to the the popularity of Netatmo weather station data in research due to high spatio-temporal resolution, there are several 
-software libraries available that help simplify and automate the QC process. These tools were primarily developed for Netatmo temperature data, however CrowdQC and TITAN can also be used for other data sources~\cite{hahn2022observations}. The following tools are available:
+Due to the the popularity of Netatmo weather station data in research due to high spatio-temporal resolution, there are several software libraries available that help simplify and automate the QC process. These tools were primarily developed for Netatmo temperature data, however CrowdQC and TITAN can also be used for other nearly-normally distributed data sources~\cite{hahn2022observations}. The following tools are available:
 
 \begin{itemize}
     \item CrowdQC (R package~\footnote{\url{https://doi.org/10.14279/depositonce-6740.3}})
@@ -82,8 +107,54 @@ software libraries available that help simplify and automate the QC process. The
     \item NetatmoQC (Python 3 package~\footnote{\url{https://source.coderefinery.org/iOBS/wp2/task-2-3/netatmoqc}})
 \end{itemize}
 
+% TODO: table where what is used
+
+In this work, CrowdQC+ is used for QC as it offers some small improvements and bug fixes compared to CrowdQC. It's an open-source software library written in R, a popular programming language for statistical applications. The data needs to be in the following format:
+
+\begin{itemize}
+    \item \textit{p\_id}: The unique ID of the station
+    \item \textit{time}: The time of the measurement
+    \item \textit{ta}: The air temperature in degree Celsius
+    \item \textit{lon}: The longitude of the station
+    \item \textit{lat}: The latitude of the station
+    \item \textit{z}: The height of the station in meters, optional
+\end{itemize}
+
+The CrowdQC+ library implements the following required steps of QC:\ Metadata Check, Distribution Check, Data Validity, Temporal Correlation, Spatial Buddy Check. There are also the following optional steps available, that are currently not used: Temporal Interpolation, Daily Validity, Validity in Time Period, and Correction for Time Constant.
+The steps used in this work are shown and explained in Table~\ref{tab: qc_steps}, including the number of data and stations available after each step.\\
+
 CrowdQC was used in ...\\ % TODO: add where what is used
 The usage of QC lead to different percentages of data being flagged as outliers
+
+Additionally, the data needs to have a shared frequency, e.g.\ every station has a measurement for every 5 minutes. If there are missing values, the data needs to be padded with missing values. From the format specification, it is clear that only air temperature is validated, while other variables such as humidity, pressure, etc.\ are not validated and need additional QC. To validate the air temperature, also no reference meteorological data is needed, as the 
+
+
+Another quation arises about the ability to handle hybrid sensor network data.
+
+% TODO: Update table with final data
+\begin{sidewaystable}
+\label{tab: qc_steps}
+\caption{Quality Control Steps of CrowdQC+}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lllllll}
+\hline
+\textbf{}         & \textbf{Id} & \textbf{Name of Step}        & \textbf{Functionality}                                                                                                                                                                                                                                                        & \textbf{\% of Data} & \textbf{Num Stations} & \textbf{Num Values} \\ \hline
+\textbf{Required} &             &                              &                                                                                                                                                                                                                                                                               &                                                                                    &                                                                                         &                                                                  \\
+                  & m1          & Metadata Check               & \begin{tabular}[c]{@{}l@{}}Validates longitude and latitude values and removes stations with\\ identical values. Mainly aims to remove stations with default values\\ from locations from IP addresses due to improper configuration\\ by the end-user\end{tabular}           & 97.40\%                                                                            & 1077                                                                                    & 2.082.283                                                        \\
+                  & m2          & Distribution Check           & \begin{tabular}[c]{@{}l@{}}Primarily targets radiative error that lead to unrealistic high ta\\ values and sensors installed indoors\end{tabular}                                                                                                                             & 86.50\%                                                                            & 1041                                                                                    & 1.849.247                                                        \\
+                  & m3          & Data Validity                & \begin{tabular}[c]{@{}l@{}}Checks values of stations that did not pass m2. If more than 20\%\\ of data didn't pass the check, the station is considered to be faulty\\ and is removed\end{tabular}                                                                            & 85.20\%                                                                            & 845                                                                                     & 1.821.479                                                        \\
+                  & m4          & Temporal Correlation         & \begin{tabular}[c]{@{}l@{}}Checks the temporal correlation between each station and the\\ median of all stations for a specified period of time, default 1\\ month. Targets indoor stations that have weak temporal\\ correlation to the median of all stations.\end{tabular} & 79.90\%                                                                            & 829                                                                                     & 1.708.061                                                        \\
+                  & m5          & Spatial Buddy Check          & \begin{tabular}[c]{@{}l@{}}Neighbourhood-based check to identify outliers within a specific\\ area. Primarily targets radiation errors with too high ta values.\\ Defaults to radius of 3000m and 5 neighbours.\end{tabular}                                                  & 31.53\%                                                                            & 466                                                                                     & 674.004                                                          \\
+\textbf{Optional} &             &                              &                                                                                                                                                                                                                                                                               &                                                                                    &                                                                                         &                                                                  \\
+                  & o1          & Temporal Interpolation       & \begin{tabular}[c]{@{}l@{}}Step to interpolate missing values in the time-series of each\\ station to increase data availability\end{tabular}                                                                                                                                 & -                                                                                  & -                                                                                       & -                                                                \\
+                  & o2          & Daily Validity               & Verifies robust calculations of daily values                                                                                                                                                                                                                                  & -                                                                                  & -                                                                                       & -                                                                \\
+                  & o3          & Validity in Time Period      & Checks if enough values are available in a given time frame                                                                                                                                                                                                                   & -                                                                                  & -                                                                                       & -                                                                \\
+                  & o4          & Correction for Time Constant & \begin{tabular}[c]{@{}l@{}}Sensors have different times that they respond to ta changes.\\ Due to Netatmo design flaws, a\\ constant correction for all stations can be applied.\end{tabular}                                                                                 & -                                                                                  & -                                                                                       & -                                                                \\ \hline
+\end{tabular}}
+\vspace{1ex}
+
+{\raggedright This table shows the QC steps used in this work from the CrowdQC+ library, including the \% of data available after each step, the number of stations available and the number of values left after each step. Optional steps are currently not used. \par}
+\end{sidewaystable}
 
 \section{Overview Data Sources}
 
