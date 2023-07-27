@@ -111,17 +111,34 @@ KNN is part of the family of non-parametric models, meaining they do not make an
 
 \subsection{Regression Trees and Random Forests}
 
-Decision trees are used for a wide variety of classification problems. Due to the fact that decision trees can vary significantly given similar inputs, e.g have a high variance, random forests were introduced as a counter measure. Random forests combine multiple decision trees and training them on different features and subsets of data and average their predictions in order to reduce the variance (cite).\\ 
-When instead of a discrete target variable a continous target variable is predicted, regression trees can be used. The principle behind regression trees is to split the data into continously smaller sub-sets, and asking the correct questions at the right time in order to find the best split. Compared to decision trees which try to minimise the entropy, regression trees try to minimise an error that is compatible with a continous target variable such as mean squared error (MSE). The model can be expressed as follows:
+Tree predictors are used for a wide variety of classification and regression problems. Due to the fact that tree predictors are unstable, e.g.\ vary significantly given similar inputs, and tend to overfit, random forests were introduced as a counter measure. Random forests combine multiple tree predictors and train them on different features and subsets of data and either average their predictions in order to reduce the variance or use boosting methods to reduce the bias of a combined estimator~\cite{breiman2001random}.\\
+In the case of predicting a continuous target variable, regression trees can be used. The principle behind regression trees is to split the data into continously smaller sub-sets, and organise the splitting points in a way that minimises the error. Compared to decision trees which try to minimise the entropy, regression trees try to minimise an error that is compatible with a continous target variable such as mean squared error (MSE). The model can be expressed as follows:
 
-% TODO: explain equation
+% TODO: explain equation or remove.
 \begin{equation}
     \hat{y} = \sum_{m=1}^M c_m \mathbb{1}(x \in R_m)
 \end{equation}
 
-Regression trees are easy to understand and interpret. Additionally, they do not require any scaling of variables, which is a big advantage compared to other models.\\
-The mayor disadvantages of the model are for one, that due to the averaging of different regression trees, the model cannot be used to extrapolate data, e.g.\ predict temperatures outside of the training data. This means that the model needs to be trained with a wide variety of data that includes the maximum and minimum extreme values for the given target variable. As these values might not be easily available, as extreme weather events might occur very infrequently, this could be a problem.
-Another disadvantage is that regression trees have depth as a hyperparameter that needs to be tuned. If the depth is too big, the tree might overfit the data and if the depth is too small, the underlying relationship might not be captured accurately.\\
+Regression trees are comparitively easy to understand and interpret and offer certain benefits such as feature insensitivity, meaning that features do not need to be scaled before usage and can be used as is. In \cite{zumwald2021mapping} Zumwald et al.\ choose to use Quantile Regression Forests (QRF)~\cite{meinshausen2006quantile} for mapping hyperlocal air temperature in Zurich, Switzerland, due to the flexibility and predictive power of ensemble-based approaches and the ability to still gain additional insights into the algorithms' inner workings via variable importance and prediction uncertainty estimation. They note however, that Neural Network and Deep Learning approaches allow for even larger flexibility and predictive power, but lack behind in other areas such as the aforementioned interpretability.
+
+% TODO: Downsides such as hyperparameter tuning, overfitting, extrapolation, etc.
+
+% Are more ensemble related.
+\subsubsection{Bagging Methods}
+
+In order to decrease the variance of a single tree predictor, bagging is used to introduce randomization into the training process. There are several different bagging methods:
+
+\begin{itemize}
+    \item \textbf{Pasting}: Splitting the data into different subsets and training a tree predictor on each subset~\cite{breiman1999pasting}
+    \item \textbf{Bagging}: Splitting the data into different subsets but with replacement~\cite{breiman1996bagging}
+    \item \textbf{Random Subspaces}: Splitting the data into different subsets of features~\cite{ho1998random}
+    \item \textbf{Random Patches}: Splitting both samples and features into different subsets~\cite{louppe2012ensembles}
+\end{itemize}
+
+
+
+% Related work
+
 There are a couple of studies that use regression trees for temperature interpolation. In \cite{venter2020hyperlocal} the authors achive an average RMSE of 0.52 °C (R2 = 0.5), 1.85 °C (R2 = 0.05) and 1.46 °C (R2 = 0.33) for annual mean, daily maximum and minimum air temperature respectively for the city of Oslo, Norway by combining 20 features from satellite data and PWS from the Netatmo network. However, they do not discuss the downsides of regression trees to extrapolate data.
 
 In \cite{zumwald2021mapping} the authors used the quantile regression forest algorithm
@@ -139,9 +156,8 @@ Due to the downside of the inability to extrapolate data which is especially cri
 % TODO: nice to have: add figure of inability to extrapolate maximum temperature
 % TODO: QRF method (to create)
 There is a systematic bias to underestimate high temperatures and overestimate low temperatures~\cite{zumwald2021mapping, zhang2012bias}
-Random Forests (RF) \cite{breiman2001random}
 
-\subsection{Support Vector Regression}
+\subsection{Support Vector Machine Regression}
 
 Support Vector Machines (SVM) are typically used in classification problems, however they can be also used for regression problems, called Support Vector Regression (SVR). SVMs transform the input data into a higher dimensional space and try to find a hyperplane that separates the data into two classes. This approach is similar to linear regression, however SVMs are more robust to outliers and can be used for non-linear problems. Depending on the Kernel function used, e.g. Linear, Polynomial, Radial Basis Function (RBF) or Sigmoid, the model can suffer from the same problems as linear regression when dealing with correlated spatial data.
 As a result, appropriate counter measures need to be taken, such as using the Mahalanobis distance instead of the Euclidean distance for RBF kernels~\cite{kamada2006support}, which converts correlated features into uncorrelated features.

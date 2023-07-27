@@ -2,7 +2,68 @@
 \label{chap:Evaluation}
 % 2/12 pages
 
+% TODO: talk about the methodology of the evaluation
+
 TODO
+First compare only air temperature for stations that are near a reference station and have enough buddies for sensor community
+- only for june 2023 from sensor community, not january as heat islands are not as important in winter (which depends on the context ofc if the goal is f.e. to save heating costs, could be a factor)
+
+Steps in the evaluation:
+- find sensor community stations near reference stations that passed m5 QC step
+- Compare different interpolation approaches
+  - linear, forests, KNN, NNetwork
+  - with different amounts of data available (99\% -> 1\%) and see how RSME evolves
+\section{Identifying Sensors for Evaluation}
+
+- find locations that are:
+  - somewhat near reference stations for comparison
+  - high station density
+  - interesting features (e.g. parks, water, ...)
+
+- locations in Germany for Sensor.Community are:
+  - Stuttgart (birthplace of Sensor.Community) with high station density + one reference station somewhat close
+  - Hamburg with lower sensor density, but 2 reference stations (interesting to see changes between those over realtively short distances) and close to water/river (Elbe)
+  - other candidates (but with way fewer sensor and no reference stations): Cologne, Munich, Freiburg (interesting that they have an airport but no reference station), Lüneburg
+  - interesting to note, that Berlin did not have any sensor stations that passed the QC step\\
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
+    \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
+    \label{fig:qc sensor community stuttgart june 23}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_locations_hamburg_after_qc_june_23.png}
+    \caption{Locations for Sensor.Community in Hamburg, Germany, June 2023}
+    \label{fig:qc sensor community hamburg june 23}
+\end{figure}
+
+- we choose stations from Stuttgart and Hamburg for the evaluation
+-> identify stations with high mean daily temperature difference to reference station (to see if they are in a heat island)
+
+\subsection{Stuttgart}
+
+Station Locations:\\
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
+    \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
+    \label{fig:qc sensor community stuttgart june 23}
+\end{figure}
+
+DWD Reference location: 48.6883;9.2235 -> DWD id: 4931, Daily Max, Mean and Min values for June 2023\\
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/dwd_stuttgart_june_23_tair_max_mean_min.png}
+    \caption{Daily Mean, Max, and Min Air Temperature at 2m in Stuttgart, Germany, June 2023, DWD Station 4931}
+    \label{fig:dwd mean max min stuttgart june 23}
+\end{figure}
+
+
 Steps:
 - deterministic approaches
   - "naive" approach with nearest neighbor -> show high error rate

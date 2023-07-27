@@ -60,15 +60,39 @@ Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is an american company th
 
 In this work, data from Netatmo stations is primarily used as Netatmo offers a large amount of sensors in Germany, as seen in figure~\ref{fig:netatmo sensor locations germany}. Due to the limitations of the API rate limits, only data for the region of Hamburg, Germany is used.
 
+% TODO: rewrite the following:
+
+\textbf{Netatmo}: Netatmo~\footnote{\url{https://www.netatmo.com/}} is a French Smart Home Company that was founded in 2011. It has a large smart home assortment including cameras, door bells, smoke detectors, thermostats and weather stations among others. In the context of collecting meteological data, the smart weather products are of particular interest. These include a smart weather station that collects air temperature, humidity and air pressure, an anemometer that collects wind speed and direction, and a rain gauge. The sensor specifications, as reported by the vendor himself, is reported in Table \ref{tab: netatmo sensor specs}.\\
+Complementary to its smart products, Netatmo also operates a weather platform and a developer portal. The weather platform offers a weather map~\footnote{\url{https://weathermap.netatmo.com/}} containing the measurements of connected weather stations accross the whole world for air temperature, precipitation, and wind speed and directon. The developer portal~\footnote{\url{https://dev.netatmo.com/apidocumentation}} offers a way to programmatically access all sensor measurements via a REST API. In this work, we later use this REST API to collect sensor data, as discussed in Chapter \ref{chap:preparations data sets}.
+
+% precisions
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table}[]
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Measurement    & Unit    & Measurement Range      & Precision  & Recording Frequency              \\ \midrule
+Temperature    & °C      & -40°C to 65°C          & 0.3°C   & averaged over 5 min              \\
+Humidity       & \% (RH) & 0 to 100\%             & 3\%     & -                                \\
+Air Pressure   & mbar    & 260 to 1160 mbar       & 1mbar   & -                                \\
+Noise          & dB      & 35 to 120 dB           & -       & -                                \\
+Wind Speed     & m/s     & 0 to 45 m/s (160 km/h) & 0.5 m/s & every 6 sec, averaged over 5 min \\
+Wind Direction & °       & 0 to 359°              & 5°      & every 6 sec, averaged over 5 min \\
+Rainfall       & mm/h    & 0.2 to 150 mm/h        & 1mm/h   & every 5 min (bucket is emptied)  \\ \bottomrule
+\end{tabular}
+\caption{Netatmo Sensor Specifications (Vendor reported)}
+\label{tab: netatmo sensor specs}
+% todo: adjust to page size, maybe move to dataset chapter
+\end{table}
+
 \subsubsection{Quality Considerations}
-- all sensors build in the same way, but:
-  - due to compact design, aluminium housing, poor ventilation, no radiation screen, prone to radiative errors and slow sensor-response time \cite{meier2017crowdsourcing, buchau2018modelling}
+
+Netatmo sensors have a good measurement accuracy, however due to the compact design, an aluminium housing, poor ventilation due to the small case, no dedicated radiation screen resultiing in a proneness to radiative errors, and therefore overall slow sensor-response time~\cite{meier2017crowdsourcing, buchau2018modelling}, Netatmo weather stations have a systematic bias that influences data quality. Due to the uniformity of Netatmo sensors, e.g.\ all sensors are build in the same way, this bias could be corrected in the QC step.
 
 \section{DWD}
 
-- german official weather service
-- high data quality
-- low spatial coverage
+The official german weather service (DWD) has many objectives, that are defined by the DWD-law in Germany. Its tasks include meterological and climatological monitoring of the atmosphere, responsibility for meterologically securing airspace for civil aviation, monitoring the maritim climate and more. The DWD operates a large monitoring network and publishes most of it's data via its OpenData portal~\footnote{\url{https://opendata.dwd.de/}, last accessed 13.07.2023}.\\
+The main advantages of the DWD data are high data quality through reference instruments and proper setup according to WHO guidelines~\cite{oke2006guideline}. The main disadvantage is the low spatial coverage of the data, as stations are sparsely distributed to measure the overall mesoscale climate, as seen in Figure~\ref{fig:dwd sensor locations germany}. Additionally, a lot of the public weather stations are located at airports, which are usually located outside of cities, and therefore not suitable for measuring urban microclimates.
 
 \begin{figure}[ht]
     \centering
@@ -107,9 +131,7 @@ Due to the the popularity of Netatmo weather station data in research due to hig
     \item NetatmoQC (Python 3 package~\footnote{\url{https://source.coderefinery.org/iOBS/wp2/task-2-3/netatmoqc}})
 \end{itemize}
 
-% TODO: table where what is used
-
-In this work, CrowdQC+ is used for QC as it offers some small improvements and bug fixes compared to CrowdQC. It's an open-source software library written in R, a popular programming language for statistical applications. The data needs to be in the following format:
+In this work, CrowdQC+ is used for QC as it offers improvements and bug fixes compared to CrowdQC. It's an open-source software library written in R, a popular programming language for statistical applications. The data needs to be in the following format:
 
 \begin{itemize}
     \item \textit{p\_id}: The unique ID of the station
@@ -122,14 +144,33 @@ In this work, CrowdQC+ is used for QC as it offers some small improvements and b
 
 The CrowdQC+ library implements the following required steps of QC:\ Metadata Check, Distribution Check, Data Validity, Temporal Correlation, Spatial Buddy Check. There are also the following optional steps available, that are currently not used: Temporal Interpolation, Daily Validity, Validity in Time Period, and Correction for Time Constant.
 The steps used in this work are shown and explained in Table~\ref{tab: qc_steps}, including the number of data and stations available after each step.\\
+In their own study, CrowdQC+ kept 47.1\% and 69.2\% of data after steps m1-5, and only 20.7\% and 29.5\% after steps o1-o3, for the cities Amsterdam and Toulouse respectively~\cite{fenner2021crowdqc+}, given default parameters. In that setting, CrowdQC kept more data with 41.0\% in Amsterdam and 54.9\% in Toulouse. In this work, CrowdQC+ is used with default parameters excluding height validation, as this data was not available for almost all sensors. Additionally, only the first 5 required steps are used, as the optional steps are not needed for the interpolation. The input data for CrowdQC+ also needs have the same temporal resolution and intervals.\\
+In this study, we use a 10 min interval to have a high temporal resolution and use the default parameters except excluding the heigh check due to the missing values. Important to note here, that in the following, only the air temperature is validated and not other measurements such as pressure or humidity. CrowdQC+ could be used for other approximately normally distributed features, however there hasn't been more specific research in this direction. We assume that a station that seems to be setup correctly and produces good air temperature measurements, also captures the other measurements correctly for simplicity reasons.
 
-CrowdQC was used in ...\\ % TODO: add where what is used
-The usage of QC lead to different percentages of data being flagged as outliers
+\subsection{Quality Control for Sensor.Community}
 
-Additionally, the data needs to have a shared frequency, e.g.\ every station has a measurement for every 5 minutes. If there are missing values, the data needs to be padded with missing values. From the format specification, it is clear that only air temperature is validated, while other variables such as humidity, pressure, etc.\ are not validated and need additional QC. To validate the air temperature, also no reference meteorological data is needed, as the 
+Interesting findings:
+- way less data does not pass m4 in june compared to january 2023
+- more data passes m5 if combined file is used (due to more stations being available)
 
+-> we will use combined data (as both BME280 and DHT22 are good low cost sensors) that passed m5
+-> we will not validate humidity, pressure for now
 
-Another quation arises about the ability to handle hybrid sensor network data.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_qc_january_23.png}
+    \caption{QC Results for Sensor.Community Data for Germany, January 2023}
+    \label{fig:qc sensor community jan 23}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_qc_june_23.png}
+    \caption{QC Results for Sensor.Community Data for Germany, June 2023}
+    \label{fig:qc sensor community june 23}
+\end{figure}
+
+Here comes more data
 
 % TODO: Update table with final data
 \begin{sidewaystable}
@@ -156,28 +197,9 @@ Another quation arises about the ability to handle hybrid sensor network data.
 {\raggedright This table shows the QC steps used in this work from the CrowdQC+ library, including the \% of data available after each step, the number of stations available and the number of values left after each step. Optional steps are currently not used. \par}
 \end{sidewaystable}
 
-\section{Overview Data Sources}
+\subsubsection{Handling of Moving Sensors}
 
-With the rise of the Internet and Big Data, the amount of available data has increased exponentially in the last decade. Additionally, movements such as the OpenData movement have made many datasets publicly available and promoted collaboration in research. There are many different data sources available that can be categorized as fully open source, OpenData, or commercial.\\
-% Open source data sets -> user generated (e.g. OpenStreetMap)
-Open source data sets can be found via... A very popular example is the OpenStreetMap project, which aims to ...\\
-% OpenData -> government, research, ...
-OpenData...\\
-% Commercial -> satellite data, weather data, ...
-Example for commercial data providers are Netatmo...\\
-
-Reference data: DWD station data (see https://dwd-geoportal.de/products/OBS\_DEU\_PT10M\_T2M/) -> 10 min 2m height air temperature
-https://opendata.dwd.de/climate\_environment/CDC/observations\_germany/climate/10\_minutes/air\_temperature/recent/
-
-need to write script to download all files and for each file do some conversion to csv
-% Build Netatmo api connector, load data
-
-- overview of sources for good datasets for temperature and climate related research
-
-goal:
-- collect mutiple datasets (many features, fine-granualar spaciotemporal)
-- enhance datasets with additonal information (soil conditions, zoning plans, vegetation health)
-
+Another quation arises about the ability to handle hybrid sensor network data...
 
 \section{Feature Engineering}
 
@@ -191,29 +213,77 @@ The target feature in this work is the air temperature at 2m height. The input f
 
     Need to separate between reference grade data (weather station calibrated), and low-cost sensors without placement information
 
-% \section{Access to data sets}
-% \label{sec: access to data sets}
+- additonal goals:
+    - collect mutiple datasets (many features, fine-granualar spaciotemporal)
+    - enhance datasets with additonal information (soil conditions, zoning plans, vegetation health)
 
-% % overview of data collection
-% % - open data movement
-% %     - list open data catalogues (EU, more local ones)
-% % - commercial sources
-% %     - list some examples, but not focus because not accessible
-% % - overview data preperation
-% % - overview of feature selection
-% % - overview ML interpolation methods
+% TODO: Feature selection? -> remove features that are sparse etc.
 
-% As part of this thesis, the collection of own data via sensors or other means is not feasible due to time and resource constraints. However, there are many onlie sources and portals/catalogues that give access to a wide variety of data-sets.
+Next to sensor readings captured for a given area, there are also other types of information that could be useful for ML applications. Alonso and Renard~\cite{alonso2020new} used these additional indexes to predict air temperature:
 
-% \subsection{OpenData Movement}
-%  - portals
-%         - official:
-%             - EU: https://data.europa.eu/data/datasets?query=temperature\&locale=en (combinas many governmental and local catalogues) / https://data.europa.eu/data/catalogues?locale=en
-%             - USA: https://data.gov/
-%             - UK: https://www.data.gov.uk/
-%         - private: https://www.kaggle.com/
+% Todo: make into table on one page
+\begin{itemize}
+    \item Vegetation Index
+    \begin{itemize}
+        \item Normalized Difference Vegetation Index (NDVI)
+        \item Soil Adjusted Vegetation Index (SAVI)
+        \item Enhanced Vegetation Index (EVI)
+        \item Tasseled Cap Transformation greenness (GVI)
+        \item Density of low vegetation
+        \item Density of medium vegetation
+        \item Density of high vegetation
+    \end{itemize}
+    \item Water Presence Index
+    \begin{itemize}
+        \item Modified Normalized Difference Water Index (MNDWI)
+        \item Normalized Difference Water Index (NDWI)
+    \end{itemize}
+    \item Moisture Index
+    \begin{itemize}
+        \item Tasseled cap Transformation Wetness
+        \item Normalized Difference Moisture Index (NDMI)
+    \end{itemize}
+    \item Bare Soil Index
+    \begin{itemize}
+        \item Normalized Difference Bareness Index (NDBaI)
+        \item Bare Soil Index (BI)
+        \item Enahnced Build-Up and Bareness Index (EBBI)
+        \item Density of bare soil
+    \end{itemize}
+    \item Radiation Index
+    \begin{itemize}
+        \item Spectral radiance
+        \item Emissivity
+        \item Tasseled Cap Transformation Brightness
+    \end{itemize}
+    \item Building Index
+    \begin{itemize}
+        \item Normalized Difference Build-Up Index (NDBI)
+        \item Urban Index (UI)
+        \item Index-based Build-Up Index (IBI)
+        \item Building Density
+    \end{itemize}
+    \item Topographic
+    \begin{itemize}
+        \item Slope (°)
+        \item Exposure
+        \item Curvature
+    \end{itemize}
+    \item Urban morphology
+    \begin{itemize}
+        \item Sky View Factor
+        \item Standard Deviation (STD) of Building Height (building height variation)
+    \end{itemize}
+    \item Land use
+    \begin{itemize}
+        \item Distance to railway tracks
+        \item Distance to points of tourist interest
+        \item Distance to subway entrances
+        \item Distances to fountains
+        \item Water area
+    \end{itemize}
+\end{itemize}
 
-% - strategies:
-%     - self procurement (test beds -> Helsinki Testbed (climate research meso sclae), UK Birmingham Testbed (climate + smart city), )
+These types of data can be sourced either directly via satellites like LiDAR or Landsat 8, or via geoportals that publish such data, like the State Office for Geoinformation and Surveying Hamburg~\footnote{\url{https://geoportal-hamburg.de/geo-online/}} on a regional basis or the EU Inspire Geoportal~\footnote{\url{https://inspire-geoportal.ec.europa.eu/}} on a continental basis.
 
-% TODO: simulate low-resolution temporal moving sensors with stationary sensors and rmeoving available sensor readings (e.g. at day 30 min intervals + 2h interval at night?)
+ref to google earth engine~\cite{gorelick2017google}
