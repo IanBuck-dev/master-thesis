@@ -1,23 +1,17 @@
 \chapter{Related Work}
 \label{chap:Related Work}
 
-In the following chapter we lay the foundation for the research conducated in this thesis. We start off with an introduction on the topic of urban heat island (UHI) and their detection, which is one of the motivating factors behind this work. UHI research is part of the discipline of modern climatology and relies on many different sub-disciplines like meteorology, thermal dynamics, geology and more.
-After discussing traditional ways to detect UHIs, such as using remote satellite data, we discuss newer approaches, especially in the context of smart cities, that focus on collecting air temperatures in urban environments. Measuring data in the urban environment comes with many challenges~\cite{oke2006guideline}, that can lead to missing or wrong observations for given places.
-
-In order to improve data availibility in the urban climate context we compare traditional interpolation techniques based on (geo-)statistics with more recent machine-learning based approaches, that could be used in this highly complex urban setting. This interpolated data could be used to improve interpolation or prediction models and give additional insights into the influences of urban environments, f.e. in the context of UHIs and their detection and analysis.
-Finally, in order to compare traditional geostatistical models with ML-based models, we need comprehensive data-sets of urban climate data. An overview of available data sources is given in section \ref{sec: access to data sets} together with an introduction to the OpenData movement.
+Before we can start to investigate the usage of machine-learning based interpolation techniques in the context of urban climate data, we first need to understand what UHIs are and how they can be classified and detected in order to define requirements for the ML models later on. Especially in the context of smart cities with new possibilities such as sensor networks, we need to understand how urban climate data can be collected and what challenges arise such as spatial and temporal data availability, data quality and more. Due to the complexity of the urban climate~\cite{oke2006guideline}, special domain knowledge is needed to understand the data and the underlying processes.
+Finally, we need to get an understanding of existing interpolation techniques, traditionally in the form of regression analyses or in the context of climate data, geostatistical models, in order to define a baseline for the evaluation of ML-based models.
 
 \section{Urban Heat Islands (UHI)}
 
 UHIs have been the center of a lot of attention for quite some time in the scientific community. As early as 1833, with the research of Luke Howard in London which observed higher temperatures inside London than in surrounding areas~\cite{howard1833climate}, UHIs have seen a steadily increase in scientific contributions. The term \textit{Urban Heat Island} was first introduced in the 1940s~\cite{balchin1947micro}. The recording and investigation of UHIs has seen mayor steps since the begin of modern climatology, also known as the Sundborg's era beginning with Sundborg's 1951 classic heat island study of Uppsala~\cite{sundborg1951climatological}. UHIs occur in many cities around the globe~\cite{peng2012surface} in different climatic zones, during different times of day and in different intensities.\\
-
-\subsubsection{Shared UHI Challenges}
-
-Some shared challenges are: 1. Define what \textit{urban} means in the context of UHIs~\cite{stewart2009newly}. The term urban is widely used to identify areas that are more densly populated than the surrounding rural areas. Having this distinction between urban and rural~\cite{lowry1977empirical} helped researchers to better define the UHI magnitude (cite), but this simple distinction also lead to problems~\cite{stewart2011systematic}. The problem lies in the fact that there is no clear border between urban and rural areas, but a fluent transition. Especially for larger metropolitan areas, like Tokyo, the urban area could span 10s to 100s of kilometers, making the collection of reference rural temperatures hard. The reference rural temperature has a direct influence on the UHI magnitude, which is `the most widely recognized indicator of city climate modification in the encironmental sciences'~\cite{stewart2009newly}. As a solution, different classification into local climate zones were proposed~\cite{stewart2012local, stewart2009newly}, that classify areas based on surface roughness, building densities, building heights etc. 2. Measuring the influence of other local urban or meterological phenomena on the temperatures collected. The urban climate is extremly complex, due to many different influences, such as antropological energy,... (cite, todo find the influence factors). Additionally, the urban climate is also influenced by surrounding regional/meso-scale climate phenomena such as storms, valleys, mountains, large waterbodies, costlines and more (cite).
+UHIs are so important, because heat related deaths are rising across the globe~\cite{kovats2008heat} and extreme heat waves are projected to occur more often and extreme with the ongoing climate change~\cite{lorenz2019detection}. Heat also has significant impact on human performance~\cite{kjellstrom2016heat}, mental health~\cite{obradovich2018empirical}, or might disrupt sleep~\cite{obradovich2017nighttime} and causes other issues such as overheating that causes urban infrastrcuture to fail, decreased air quality and low outdoor thermal comfort levels~\cite{stone2013climate}.
 
 \subsection{UHI Classification}
 
-UHIs can be classified in many different ways. Typically, there is a horizontal classification, defining the superficial extension of the UHI from micro-, to local- to meso-scale, and a vertical classification, defining in which vertical layer of the urban area the heat island is observed. To better understand these scales and the anatomy of the planitory/urban boundary layer, figures \ref{fig:mesoscale boundary layer} to \ref{fig:microscale boundary layer} show a detailed view of the meso-, local- and micro-scale of the urban climate, as illustrated by Oke 2006~\cite{oke2006guideline}.
+UHIs can be classified in many different ways. Typically, there is a horizontal classification, defining the superficial extension of the UHI from micro-, to local- to meso-scale, and a vertical classification, defining in which vertical layer of the urban area the heat island is observed. To better understand these scales and the anatomy of the planitory/urban boundary layer, figures \ref{fig:mesoscale boundary layer}, \ref{fig:localscale boundary layer}, and \ref{fig:microscale boundary layer} show a detailed view of the meso-, local- and micro-scale of the urban climate respectively, as illustrated by Oke 2006~\cite{oke2006guideline}.
 
 \begin{figure}[h]
     \centering
@@ -26,7 +20,7 @@ UHIs can be classified in many different ways. Typically, there is a horizontal 
     \label{fig:mesoscale boundary layer}
 \end{figure}
 
-The mesoscale, as depicted in fig. \ref{fig:mesoscale boundary layer}, spans the whole urban environment of a city, typically tens of kilometres. There are several boundary layers, that comprise different scales. The planetary boundary layer (PBL)~\cite{wyngaard1985structure} is the lowest layer of the Earth's atmosphere and spans from the surface to a height of several hundred meters up to several kilometers. It is characterised by the turbulent mixing of air, forming wind currents, that are mayorly influenced by the underlying surface.
+The mesoscale, as depicted in Fig~\ref{fig:mesoscale boundary layer}, spans the whole urban environment of a city, typically tens of kilometres. There are several boundary layers, that comprise different scales. The planetary boundary layer (PBL)~\cite{wyngaard1985structure} is the lowest layer of the Earth's atmosphere and spans from the surface to a height of several hundred meters up to several kilometers. It is characterised by the turbulent mixing of air, forming wind currents, that are mayorly influenced by the underlying surface.
 
 \begin{figure}[h]
     \centering
@@ -36,33 +30,37 @@ The mesoscale, as depicted in fig. \ref{fig:mesoscale boundary layer}, spans the
 \end{figure}
 
 The localscale is situated closer to the surface and contains landscape features such as topography, but does not yet include microscale effects. At this layer, the underlying microclimatic effects in form of fluxes mix together to form a more average and representative view of the source area, typically at the scale of one to several kilometers. This layer is monitored by weather stations that are located at/or sligthly above the canopy height.
-Todo: more infos
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{images/Localscale Boundary Layer.png}
+    \includegraphics[width=\textwidth]{images/microscale boundary layer.png}
     \caption{Microscale view of the urban climate, redrawn from~\cite{oke2006guideline}, (Todo)}
     \label{fig:microscale boundary layer}
 \end{figure}
 
-The microscale deals with the characteristics of each individual surface area. On of the main measurements on this layer is the surface temperature, which is primarily influenced by solar radiation. It is important to note, that surface and air temperatures are correlated, but this correlation varies greatly based on other surrounding influences such as wind velocity or humidity~\cite{stoll1992surface}.
-todo: more\\
+The microscale usually ranges from a neighborhood scale to individual street canyons or even microclimates created by individual buildings. It is mayorly influenced by the overall energy balance, which is influenced by cloud coverage, solar radiation and more. Single weather stations are not enough to capture the complex microscale~\cite{oke2004siting}, therefore a dense network of sensors closer to the ground is needed to capture the microscale. Additionally, the microclimate is influenced by surface temperature (LST), however the correlation between air and surface temperature varies greatly based on other surrounding influences such as wind velocity or humidity~\cite{stoll1992surface}, especially in cases of extreme temperatures~\cite{good2016situ}. The closer the air temperature is measured to the surface, the more local the measurement, therefore air temperature of the canopy is usually measured at 2m height, so the different energy fluxes have enough time to mix together and form a more representative average for a bigger area.\\
 \\
-Vertically UHIs can be devided into three mayor types~\cite{oke1976distinction, oke2017urban}, namely Boundary Layer Heat Island (BUHI), Canopy Urban Heat Island (CUHI) and Surface Urban Heat Islands (SUHI), that correspond with the boundary layer they can be monitored/measured in.
-todo: more
-
-\subsection{Canopy Urban Heat Island (CUHI)}
-
-The canopy UHI is measured in the canopy boundary layer several meters above ground slightly below or on the average roof layer of the surrounding buildings, as seen in fig.~\ref{fig:microscale boundary layer}. The primary measurement in the canopy is air temperature, which is used to measure the urban heat island intensity (UHII)~\cite{oke1973city}, the most commonly used way of describing the heat island maginitude~\cite{kim2021urban}.\\
-Since the beginning of modern climatology, mayor progress has been made in this research field, but methodologies and scientific rigor in CUHI research still seems to be lacking, as discussed by Stewart in 2011~\cite{stewart2011systematic}. Stewart found, that over 54\% of CUHI research was lacking proper methodologies or had other shortcommings such as a lack of site desciptions, where sensors were placed, or the disregard of non-urban factors such as local weather phenomena. In response, progress has been made in recent years by improving methodologies and ensuring correct measurements of climate-related data and study design and execution through various guidelines~\cite{oke2006guideline}, especially in urban settings, that require special care due to the huge amount of possible influences on local recording sites.\\
-
-Todo: more
+Vertically UHIs can be devided based on these boundary layers into three mayor types~\cite{oke1976distinction, oke2017urban}, namely Boundary Layer Heat Island (BUHI), Canopy Urban Heat Island (CUHI) and Surface Urban Heat Islands (SUHI), corresponding to the boundary layer they can be measured in.\\
+% Night vs Day time UHI
+Another differenciating factor is the time of day at which UHIs get detected. For example Steward~\cite{stewart2011systematic} in his review focussed on night time UHIs, whereas Peng et al.~\cite{peng2012surface} focussed on both day and night time UHIs.
 
 \subsection{Surface Urban Heat Island (SUHI)}
 
 The surface temperature is measured directly at the surface of an object and is the main indicator of the surface urban heat island (SUHI). Surface temperature, in contrast to air temperature, typically is measured via remote sensing technologies like LST via satellites. Well-known satellites include MODIS, Landsat ... (todo list all), that all carry different types of instruments and sensors, that are able to take various measurements. Through the use of satellites, the spatial coverage is great, but raster sizes usually range from one kilometer to a hundred, so the spatial resolution is not that great compared to denser sensor networks. Additionally, these satellites are not geostionary to cover a wide range and therefore only take measurements during a handfull of times a day (todo: number of fly overs with example). Another downside is that satellites in many cases need clear-sky condidtions to measure surface temperature at ground level, as their sensors are not able to penetrate the cloud surface. As a solution, some technologies such as LIDAR (todo check if true) offer the approximation of the underlying surface temperature below clouds by measuring the out-going radiation of the surface.
 todo: List of measurement types (microwaves etc.) with disadvantages\\
 Surface and air temperatures can vary greatly, therefore a SUHI does not necessarily also imply a CUHI. Especially in extreme heat events, LST and air temperature can deviate greatly~\cite{good2016situ}.
+
+todo: \cite{voogt2003thermal}
+
+\subsection{Canopy Urban Heat Island (CUHI)}
+
+The canopy UHI is measured in the canopy boundary layer several meters above ground slightly below or on the average roof layer of the surrounding buildings, as seen in fig.~\ref{fig:microscale boundary layer}. The primary measurement in the canopy is air temperature, which is used to measure the urban heat island intensity (UHII)~\cite{oke1973city}, the most commonly used way of describing the heat island maginitude~\cite{kim2021urban}.\\
+Since the beginning of modern climatology, mayor progress has been made in this research field, but methodologies and scientific rigor in CUHI research still seems to be lacking, as discussed by Stewart in 2011~\cite{stewart2011systematic}. Stewart found, that over 54\% of CUHI research was lacking proper methodologies or had other shortcommings such as a lack of site desciptions, where sensors were placed, or the disregard of non-urban factors such as local weather phenomena. In response, progress has been made in recent years by improving methodologies and ensuring correct measurements of climate-related data and study design and execution through various guidelines~\cite{oke2006guideline}, especially in urban settings, that require special care due to the huge amount of possible influences on local recording sites.\\
+Additionally, the UHII is highly related to other climatic factors such as wind, cloud cover, and precipitation and is tightly linked to the selection of the recording site~\cite{fenner2019contrasting}, therefore such factors need to be taken into account when measuring the UHII.
+
+\subsubsection{Shared UHI Challenges} % TODO: Rewrite to UHII and UCZ
+
+Some shared challenges are: 1. Define what \textit{urban} means in the context of UHIs~\cite{stewart2009newly}. The term urban is widely used to identify areas that are more densly populated than the surrounding rural areas. Having this distinction between urban and rural~\cite{lowry1977empirical} helped researchers to better define the UHI magnitude (cite), but this simple distinction also lead to problems~\cite{stewart2011systematic}. The problem lies in the fact that there is no clear border between urban and rural areas, but a fluent transition. Especially for larger metropolitan areas, like Tokyo, the urban area could span 10s to 100s of kilometers, making the collection of reference rural temperatures hard. The reference rural temperature has a direct influence on the UHI magnitude, which is `the most widely recognized indicator of city climate modification in the encironmental sciences'~\cite{stewart2009newly}. As a solution, different classification into local climate zones were proposed~\cite{stewart2012local, stewart2009newly}, that classify areas based on surface roughness, building densities, building heights etc. 2. Measuring the influence of other local urban or meterological phenomena on the temperatures collected. The urban climate is extremly complex, due to many different influences, such as antropological energy,... (cite, todo find the influence factors). Additionally, the urban climate is also influenced by surrounding regional/meso-scale climate phenomena such as storms, valleys, mountains, large waterbodies, costlines and more (cite).
 
 \section{Smart Cities}
 
@@ -175,13 +173,15 @@ More honorable mentions from outside the EU:\\
 
 \section{Sensing Applications}
 
-\subsubsection{Remote Sensing}
+\subsection{Remote Sensing}
 
 In comparison to stationary sensors that are installed directly in the environment they are observing, remote sensing describes the process of observing a target environment from afar~\cite{campbell2011introduction}. In climatology, remote sensing is used to collect meteological data via satellites, planes or ballons by either capturing image data, that can be used to identify things like cloud and land coverage, by measuring passive radiation, or by actively sending out microwaves or using LIDAR to detect features such as surface temperature, e.g. LST data. Remote sensing comes with its own set of advantages and challenges.\\
 The major upside of sensors moving way above ground is the high spatial coverage, that allows for meso- and planetary-scale anaylsis of weather phenomena. Another upside is the great data availibility, as many satellite providers, such as ESA..., publish their satellite data. This creates many research opportunities, and many services directly rely on these measurements (todo list).\\ % gridded data
 % remote sensing challenges
 Remote sensing also comes with some downsides. The primary downside is the low spatio-temporal resolutions. Weather satellites usually are not orbit-stationary and move around earth on a predetermined orbit. As a consequence, satellites only pass over each individual area a couple times a day, making real-time applications for currently unobserved areas impossible. Additinally, the spatial resolution can be too low for micro-/local-scale analysis, with typical LST resolution spanning from 1 km$^{2}$ to tens or even hundreds of km$^{2}$ per data point/grid field. In the atmosphere, there is also a lot of environmental noise, like radiation, that can have a negative influence on the measurement accuracy. Another disturbing factor can be clouds or other types of particles like rain, that absorb radiation/microwaves sent from the sensors, traditionally making measuring under cloudy/rainy conditions either impossible (example) or less accurate (example), by instead relying on outgoing radiation from the surface. These restrictions highly depend on the sensor used, as different sensors use different 
 sensors use different technologies, e.g. microwaves with different wave lengths or higher resolution sensors.
+
+
 
 % todo: potentially more to the downsides of each sensor type / overview of types of satellites
 
