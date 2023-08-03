@@ -202,6 +202,7 @@ Here comes more data
 Another quation arises about the ability to handle hybrid sensor network data...
 
 \section{Feature Engineering}
+\label{sec:feature_engineering}
 
 The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models.
 The target feature in this work is the air temperature at 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, as well as additonal meta data such as soil conditions, zoning plans, vegetation health, and satellite data.\\
@@ -287,3 +288,13 @@ Next to sensor readings captured for a given area, there are also other types of
 These types of data can be sourced either directly via satellites like LiDAR or Landsat 8, or via geoportals that publish such data, like the State Office for Geoinformation and Surveying Hamburg~\footnote{\url{https://geoportal-hamburg.de/geo-online/}} on a regional basis or the EU Inspire Geoportal~\footnote{\url{https://inspire-geoportal.ec.europa.eu/}} on a continental basis.
 
 ref to google earth engine~\cite{gorelick2017google}
+
+Features:
+- completed:
+    - ndvi, evi (modis) -> 500m, 16 days
+- todo:
+    - lai, nb
+
+
+Hyperlocal Mapping in Oslo:
+Red Landsat 7, 8 and Sentinel 2 Open source L: 30 m, S: 10 m Green Blue Near infrared Short-wave infrared 1 L: 30 m, S: 20 m Short-wave infrared 2 NDVI L: 30 m, S: 10 m IBI L: 30 m, S: 20 m Land surface temperature Landsat 7, 8 30 m Elevation above sea STRM 30 m Terrain aspect Terrain slope Terrain ruggedness CHM LiDAR Closed source 1m CHM slope CHM aspect CHM shadow/SVI Building height LiDAR + building footprint Building height sd 1–4m Building height sd 4–20 m Building height sd 20–100 m Fractional tree cover LiDAR + orthophoto Tree height Distance to coast Global water occurrence Open source 30 m Distance to fresh water

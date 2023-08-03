@@ -13,6 +13,30 @@ Steps in the evaluation:
 - Compare different interpolation approaches
   - linear, forests, KNN, NNetwork
   - with different amounts of data available (99\% -> 1\%) and see how RSME evolves
+
+1. Data Collection and rough analysis
+  1.1. Get data from Sensor.Community
+  1.2. Get data from DWD
+  1.3. Get data from satellites via Google Earth Engine
+  1.4. Get data from Netatmo (Hamburg, try to get Stuttgart as reference with historical data via API)
+2. QC steps (TA first)
+  2.1. Try to remove indoor stations and stations with irregular data
+  2.2. Remove stations based on buddy check (removes a lot of sensor community stations due to lower density)
+  2.3. Reference station has high quality data already, but can be used as a reference (interesting the comparison from 2m TA to 5cm TA)
+  2.4. Discuss QA for other parameters (Humidity, Pressure etc.)
+3. Comparison of models
+  3.1. Simple models with only coordinates as input features and TA as target feature
+  3.2. Add additional features (land coverage (NDVI, EVI)) and see how they improve the model
+    3.2.1. For land coverage etc.\ compare different satellites and resolutions
+    3.2.2. For coordinates/distances, compare different ways of calculating distances or modelling them in the model
+    3.2.3. Compare influence of normalization
+  3.3. Try to create a more complex NN model to show capabilities of NNs and try out LSTM for time series
+  3.4. Compare different loss functions and metrics (MSE, MAE, RMSE)
+  3.5. Choose final candidate that seems the most promissing and compare with reference approach
+4. Comparison with refrence approaches
+  4.1. Compare with simple Ordinary Kriging approach (with different kernels)
+  4.2. Discuss problem of not being able to extrapolate
+
 \section{Identifying Sensors for Evaluation}
 
 - find locations that are:
@@ -31,10 +55,7 @@ Steps in the evaluation:
     \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
     \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
     \label{fig:qc sensor community stuttgart june 23}
-\end{figure}
 
-\begin{figure}[ht]
-    \centering
     \includegraphics[width=1\textwidth]{images/sensor_community_locations_hamburg_after_qc_june_23.png}
     \caption{Locations for Sensor.Community in Hamburg, Germany, June 2023}
     \label{fig:qc sensor community hamburg june 23}
@@ -51,7 +72,6 @@ Station Locations:\\
     \centering
     \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
     \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
-    \label{fig:qc sensor community stuttgart june 23}
 \end{figure}
 
 DWD Reference location: 48.6883;9.2235 -> DWD id: 4931, Daily Max, Mean and Min values for June 2023\\
@@ -79,7 +99,7 @@ Steps:
 
 - deep learning approach with neural networks -> itteratively improve model by adding additional features, compare with reference approach
 
-\section{Geostatical Interpolation Baseline}
+\section{Geostatical Interpolation Comparison}
 In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) or k-nearest neighbours (KNN) that are easy and performant, but struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Krigin, which is based on a gaussian process and uses a covariance function to model the spatial correlation between data points. The covariance function is a measure of the similarity between two data points, which is used to calculate the weight of the data point in the interpolation process. There are different types of Krigin methods available, each suited for different use cases, including:
 
 \begin{enumerate}
@@ -123,4 +143,26 @@ Use 70\% of data for training, 30\% for test. cross-validation
 
 measurement uncertainty, contextual uncertainty, prediction uncertainty
 
-\section{}
+% Overall steps
+
+1. Data Collection and rough analysis
+  1.1. Get data from Sensor.Community
+  1.2. Get data from DWD
+  1.3. Get data from satellites via Google Earth Engine
+  1.4. Get data from Netatmo (Hamburg, try to get Stuttgart as reference with historical data via API)
+2. QC steps (TA first)
+  2.1. Try to remove indoor stations and stations with irregular data
+  2.2. Remove stations based on buddy check (removes a lot of sensor community stations due to lower density)
+  2.3. Reference station has high quality data already, but can be used as a reference (interesting the comparison from 2m TA to 5cm TA)
+  2.4. Discuss QA for other parameters (Humidity, Pressure etc.)
+3. Comparison of models
+  3.1. Simple models with only coordinates as input features and TA as target feature
+  3.2. Add additional features (land coverage (NDVI, EVI)) and see how they improve the model
+    3.2.1. For land coverage etc.\ compare different satellites and resolutions
+    3.2.2. For coordinates/distances, compare different ways of calculating distances or modelling them in the model
+    3.2.3. Compare influence of normalization
+  3.3. Try to create a more complex NN model to show capabilities of NNs and try out LSTM for time series
+  3.4. Choose final candidate that seems the most promissing and compare with reference approach
+4. Comparison with refrence approaches
+  4.1. Compare with simple Ordinary Kriging approach (with different kernels)
+  4.2. Discuss problem of not being able to extrapolate
