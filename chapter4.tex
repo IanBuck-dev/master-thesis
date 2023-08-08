@@ -121,6 +121,11 @@ In the case of predicting a continuous target variable, regression trees can be 
 
 Regression trees are comparitively easy to understand and interpret and offer certain benefits such as feature insensitivity, meaning that features do not need to be scaled before usage and can be used as is. In \cite{zumwald2021mapping} Zumwald et al.\ choose to use Quantile Regression Forests (QRF)~\cite{meinshausen2006quantile} for mapping hyperlocal air temperature in Zurich, Switzerland, due to the flexibility and predictive power of ensemble-based approaches and the ability to still gain additional insights into the algorithms' inner workings via variable importance and prediction uncertainty estimation. They note however, that Neural Network and Deep Learning approaches allow for even larger flexibility and predictive power, but lack behind in other areas such as the aforementioned interpretability.
 
+% TODO: talk about boosting methods
+See: \cite{apaydin2022evaluation}
+
+Related: Canada with Weather Undergorund (WoW)~\cite{ho2014mapping} -> RMSE = 2.31 °C
+
 % TODO: Downsides such as hyperparameter tuning, overfitting, extrapolation, etc.
 
 % Are more ensemble related.
@@ -302,23 +307,21 @@ On important point to mention, is that different meteological features have diff
 - Dealing with extreme weather events (e.g. heat waves, blizzards, etc.)
 - how can a ML model be trained if no such data exists for a given area? -> transfer learning
 
-\subsection{Temperature Interpolation}
+\subsubsection{Temperature Interpolation}
 - difference between air and surface temperature
 
 surface temperature -> solar radiation, surface roughness, emissivity, soil moisture, soil temperature, vegetation cover, snow cover, and surface slope
 
 air temperature -> surface temperature
 
-\subsection{Wind Speed and Direction Interpolation}
+\subsubsection{Wind Speed and Direction Interpolation}
 prob not easily archivable with ML -> depends on high/low pressure areas
 
-\subsection{Relative Humidity Interpolation}
+\subsubsection{Relative Humidity Interpolation}
 Data preprocessing: scale to [0, 1]
 does not seem to work well with kriging, maybe just nearest neighbor approach/linear, or the input values are just not accurate
 
-\subsection{Percipitation Interpolation}
-
-
+\subsubsection{Percipitation Interpolation}
 
 DeepLearning Lecture
 - sequence modeling design criteria

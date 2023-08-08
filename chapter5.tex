@@ -2,43 +2,38 @@
 \label{chap:preparations data sets}
 % Todo: 6 pages?
 
-Next to the ML model selected, the data used to train and evaluate the model has a major influence on its performance. If the data is not representative of the underlying process that the model should be fitted to, there can be bias or an inability to generalize well to new data. In this chapter, we take a look at potential data sources and discuss the construction process of the datasets used in this work.\\
-In the field of natural language processing (NPL) and computer vision (CV), there is an abundance of large available datasets which have a big contribution to the advancements in the field, e.g. annotated datasets as provided by Google Research~\footnote{\url{https://research.google/resources/datasets/}}. In the field of climate research, there are also many datasets, including satellite data, weather station data, and climate model data. For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g. a high sensor density and a low time interval of f.e. five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings, as discussed in~\ref{subsec: Sensing Layer}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Such requirements are not met by traditional weather station networks as the spatial coverage is too low, as seen in figure~\ref{fig:dwd sensor locations germany} which shows the weather station network of the official german weather services (DWD).
-However, they are met by dense sensor networks. A mayor challenge of running such a dense sensor network in a controlled scientific environment is the potential high cost of individual sensors, e.g. high precision and calibration, and the maintenance of the network, e.g. battery replacement, damages due to environmental influences, theft etc. 
-There are several projects that run climate dense sensor networks~\cite{muller2013sensors}. %TODO: incoporate this into the text
+Next to the ML model selected, the data used to train and evaluate the model has a major influence on its performance. If the data is not representative or information is missing about the underlying process that the model should be fitted to, there can be errors, bias or an inability to generalize well to new data. In this chapter, we take a look at potential features for air temperature, at data sources for these features, and discuss the construction process of the datasets used in this work.\\
+% Overall dataset availability
+In the field of natural language processing (NPL) and computer vision (CV), there is an abundance of large available datasets which have a big contribution to the advancements in the field, like annotated datasets as provided by Google Research~\footnote{\url{https://research.google/resources/datasets/}, \textit{last accessed: 05.08.2023}}. In comparison in the field of climate research, there are also many datasets, including satellite data, weather station data, and climate model data, however they are highly distrubuted or often not openly available. Platforms such as Google Earth Engine~\cite{gorelick2017google} try to address this issue, however the dataset catalog~\footnote{\url{https://developers.google.com/earth-engine/datasets}, \textit{last accessed: 05.08.2023}} is still limited and does not include datasets offered by local authorities or other research institutions, such as universities.\\
+% How does the perfect dataset for air temperature look like?
+For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g.\ a high sensor density and a low time interval of f.e.\ five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings~\cite{oke2006guideline}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Such requirements are not met by traditional weather station networks as the spatial coverage is too low, as a single weather station is not enough to capture the urban microclimate~\cite{oke2017urban}. The weather station locations of the DWD are shown in figure~\ref{fig:dwd sensor locations germany}, which shows that usually at most one weather station is available per city. The weather stations however offer a high temporal resolution in addition to very high quality sensors, which is why they can be used as refrence stations for quality control of other sensors, as discussed in section~\ref{sec:quality control}.\\
+A solution to the problem of low spatial coverage is the usage of sensor networks. There are several projects that run dense urban-climate monitoring networks~\cite{muller2013sensors} such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, however access to those datasets is limited, for example due to outdated links or the need to request access. Due to the high cost of running such dense sensor networks with high sensor and maintenance costs, professionally run sensor networks are rare and are often only run for a limited time period until project funds run out.\\
+As an alternative, sensor networks can also be crowdsourced and run by citizens, distributing the cost of individual sensors as well as maintenance costs among many. Especially with advances in sensor technologies, lost cost and compact sensors are more affordable than ever while still providing good data quality~\cite{grimmond2006progress, rundel2009environmental}. In the context of meterological data, such such sensor networks are often referred to as citizen weather station (CWS)~\cite{meier2017crowdsourcing} or personal weather station (PWS)~\cite{hahn2022observations} networks. In this work, we use the term PWS.\\
+The main downside of this approach is the lack of quality control and meta data, as the sensors are usually placed by non-professionals in suboptimal locations, e.g.\ in direct sunlight or too close to walls, leading to incorrect readings or bias in the data. A lack in meta data can also lead to issues, if for example exact positions of the sensors are not known and information about the height of the sensor above ground is missing. However, other concerns such as data privacy also need to be accounted for, as such weather stations are often placed on private property.\\
+In this work, data from PWS networks is used to create datasets for the training and evaluation of ML models for air temperature interpolation. In the following sections, we take a look at available PWS providers and their data, look at potential features for air temperature interpolation, discuss additonal pre-processing steps such as quality control or sensor height correction, and finally discuss the construction of the datasets used in this work.
 
+\section{Private Weather Station Network Providers}
 
-Therefore, there are very few such projects and currently no openly available datasets. There were projects in the past such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, but links to their datasets are unfortunately not maintained, showing the difficulty of finding and retrieving relevant datasets in this field.\\
-As an alternative, in this work we instead mainly use data from citizen run sensor networks, e.g. crowdsourced data from personal weather stations (PWS), also called citizen weather stations (CWS), which are either openly available or can be requested in limited fashion via provided APIs. In this work we create train and test datasets by combining openly available sensor data from the providers Sensor Community, Netatmo, and the official german weather services (DWD) for quality control. Other sources for crowdsourced weather station data include WeatherObservationsWebsite (WOW)~\footnote{\url{https://wow.metoffice.gov.uk/}} and Weather Underground~\footnote{\url{https://www.wunderground.com/}}. WOW is a platform run by the UK Met Office, which is the UK's national weather service, and has a dense sensor coverage in the UK and the Netherlands as seen in figure \ref{fig:wow sensor locations}. Weather Underground is a commercial weather service which also provides a crowdsourced weather station network. Unfortunately, Weather Underground only provides an API for users with a registered weather station or other bulk download options for historical data. The website would allow for manual download of historical data, but this is not feasible for the amount of data needed for this work.
-% TODO: talk about static data such as NDVI
+PWS providers offer a platform for users to upload their sensor data and either sell weather stations and sensors themselves such as Netatmo, or provide guides to allow users to connect their own sensors to the platform such as Sensor.Community. Netatmo data in particular has been used in several studies~\cite{meier2017crowdsourcing, hahn2022observations, venter2020hyperlocal, zumwald2021mapping} and has seen complementary studies for example discussing QC processes~\cite{fenner2021crowdqc+}, later seen in Section~\ref{sec:quality control}. There are also other PWS network providers such as Sensor.Community or Weather Underground (WOW) that have been used in several studies~\cite{ho2014mapping}. In order to find out which provider best fits our needs in this work, the following section compares the different providers and their data.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1\textwidth]{images/wow_sensor_locations.png}
-    \caption{Temperature sensor locations from WOW, acessed on 05.07.2023}
-    \label{fig:wow sensor locations}
-\end{figure}
+\subsection{Sensor.Community}
 
-\section{Sensor Community}
-
-Sensor Community~\footnote{\url{https://sensor.community/en/}} is a contributers driven global sensor community that creates Open Environmental Data, and has an archive available~\footnote{\url{https://archive.sensor.community/}} of their historical sensor data world wide. There are no quality measures recorded for each sensor, but as crowd-sourced sensor data tends to have a lower quality than professsionally setup sensors, e.g. sensor placement by non-professionals, we need to explore how the data quality looks like.
-In Figure~\ref{fig:temperature_sensor_community_map}, where we see the greater Hamburg area with a currently reported temperature of 25°C by the DWD Fuhlsbüttel station, there are multiple sensors that report a temperature of 30°C and above, which could be either due to the sensor being placed in direct sunlight or due to the sensor being faulty. An outlier near Pinneberg is shown in fig.~\ref{fig:temperature_sensor_community_outlier}, where one sensor reports 25°C, as currently expected, and one sensor reporting 50°C, which is clearly an outlier. This data quality issue needs to be adressed in the data pre-processing step and can result in a significant reduction of available data. This was also an issue dicussed in~\cite{meier2017crowdsourcing}, as ``erroneous metadata, failure of data collection, and unsuitable exposure of sensors lead to a reduction of data availability by 53 \%``.
+Sensor Community~\footnote{\url{https://sensor.community/en/}, \textit{last accessed: 05.08.2023}} is a contributers driven global sensor community that creates Open Environmental Data, and has an archive~\footnote{\url{https://archive.sensor.community/}, \textit{last accessed: 05.08.2023}} of their historical sensor data world wide. There are no quality measures recorded for each sensor, but as crowd-sourced sensor data tends to have a lower quality than professsionally setup sensors, e.g.\ sensor placement by non-professionals, we need to explore how the data quality looks like.
+In Figure~\ref{fig:temperature_sensor_community_map}, where we see the greater Hamburg area with a currently reported temperature of 25°C by the DWD Fuhlsbüttel station, there are multiple sensors that report a temperature of 30°C and above, which could be either due to the sensor being placed in direct sunlight or due to the sensor being faulty. An outlier near Pinneberg is shown in Figure~\ref{fig:temperature_sensor_community_outlier}, where one sensor reports 25°C, as currently expected, and one sensor reporting 50°C, which is clearly an outlier. This data quality issue needs to be adressed in the data pre-processing step and can result in a significant reduction of available data. This was also an issue dicussed in~\cite{meier2017crowdsourcing}, as ``erroneous metadata, failure of data collection, and unsuitable exposure of sensors lead to a reduction of data availability by 53 \%``.
+From a meta-data perspective, there is no information on the sensor height above ground as well as no quality measures for each sensor, or information on the sensor location accuracy.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1\textwidth]{images/sensor_community_temperature_map.png}
     \caption{Temperature map from Sensor Community for Hamburg, Germany, on 22.06.2023 12:51h with the DWD reference at 25°C}
     \label{fig:temperature_sensor_community_map}
-\end{figure}
 
-\begin{figure}[ht]
-    \centering
     \includegraphics[width=0.8\textwidth]{images/sensor_community_outliers.png}
     \caption{Temperature outlier from Sensor Community for Hamburg, Germany, on 22.06.2023 12:51h with the DWD reference at 25°C}
     \label{fig:temperature_sensor_community_outlier}
 \end{figure}
 
-Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of these sensors, many are located in Germany and almost half of them are of type BME 280, which is a lost-cost Bosch sensor which can measure temperature, pressure and humidity, as seen in Appendix~\ref{sensor_community_sensors_by_countries}. The sensor locations as of may 2023 are shown in~\ref{fig:sensor community sensor locations germany}. DHT22 sensors can measure temperature and humidity, BMP280 and BMP180 sensors can measure temperature and pressure, and BME280 sensors can measure temperature, pressure and humidity.\\
+Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of these sensors, many are located in Germany, as seen in Appendix~\ref{sensor_community_sensors_by_countries}, and almost half of them are of type BME 280, which is a lost-cost Bosch sensor which can measure temperature, pressure and humidity. The sensor locations as of may 2023 are shown in~\ref{fig:sensor community sensor locations germany}. DHT22 sensors can measure temperature and humidity, BMP280 and BMP180 sensors can measure temperature and pressure, and BME280 sensors can measure temperature, pressure and humidity.\\
 
 \begin{figure}[ht]
     \centering
@@ -47,23 +42,10 @@ Overall, there are around 11.738 active sensors~\footnote{as of 24.06.2023}. Of 
     \label{fig:sensor community sensor locations germany}
 \end{figure}
 
-\section{Netatmo}
+\subsection{Netatmo}
 
-Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is an american company that sells smart-home devices including weather stations. They host a weather map~\footnote{\url{https://weathermap.netatmo.com/}} where customers can share their weather station data. The provide an API to access current weather station data. They provide historical and current weather data for commercial partners or partners in the research and education sector. They are part of the EUMETNET project~\footnote{\url{https://www.eumetnet.eu/}} which is a network of 31 European meteological and hydrological services (NMHSs). The project aims to facilitate the exchange of weather data and to improve the quality of weather forecasts, especially in the context of PWS~\cite{hahn2022observations}. There are currently no openly historical datasets available, only private datasets such as \url{https://catalogue.ceda.ac.uk/uuid/e8793d74a651426692faa100e3b2acd3} (last acessed 05.07.2023), that are only available for EUMETNET members. They offer an educational program~\footnote{\url{https://www.netatmo.com/en-eu/weather-with-netatmo}} to acess limited amounts of data that is usually only available to commercial partners.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1\textwidth]{images/netatmo_sensor_locations_germany.png}
-    \caption{Sensor locations of Netatmo in Hamburg, Germany, as of 28.06.2023}
-    \label{fig:netatmo sensor locations germany}
-\end{figure}
-
-In this work, data from Netatmo stations is primarily used as Netatmo offers a large amount of sensors in Germany, as seen in figure~\ref{fig:netatmo sensor locations germany}. Due to the limitations of the API rate limits, only data for the region of Hamburg, Germany is used.
-
-% TODO: rewrite the following:
-
-\textbf{Netatmo}: Netatmo~\footnote{\url{https://www.netatmo.com/}} is a French Smart Home Company that was founded in 2011. It has a large smart home assortment including cameras, door bells, smoke detectors, thermostats and weather stations among others. In the context of collecting meteological data, the smart weather products are of particular interest. These include a smart weather station that collects air temperature, humidity and air pressure, an anemometer that collects wind speed and direction, and a rain gauge. The sensor specifications, as reported by the vendor himself, is reported in Table \ref{tab: netatmo sensor specs}.\\
-Complementary to its smart products, Netatmo also operates a weather platform and a developer portal. The weather platform offers a weather map~\footnote{\url{https://weathermap.netatmo.com/}} containing the measurements of connected weather stations accross the whole world for air temperature, precipitation, and wind speed and directon. The developer portal~\footnote{\url{https://dev.netatmo.com/apidocumentation}} offers a way to programmatically access all sensor measurements via a REST API. In this work, we later use this REST API to collect sensor data, as discussed in Chapter \ref{chap:preparations data sets}.
+Netatmo~\footnote{\url{https://www.netatmo.com/en-eu}} is a French company that sells smart-home devices including outdoor weather stations, indoor sensors for air quality, as well as other products such as smart cameras. They host a weather map~\footnote{\url{https://weathermap.netatmo.com/}, \textit{last accessed: 06.08.2023}} where customers can share their outdoor weather station data. They provide an API to access current weather station data as well historic data from individual outddor sensors and modules.
+They provide their historical and current weather data for commercial partners or partners in the research and education sector. They are part of the EUMETNET project~\footnote{\url{https://www.eumetnet.eu/}, \textit{last accessed: 06.08.2023}} which is a network of 31 European meteological and hydrological services (NMHSs). The project aims to facilitate the exchange of weather data and to improve the quality of weather forecasts, especially in the context of PWS~\cite{hahn2022observations}. There are currently no openly historical datasets available from Netatmo data, only private datasets~\footnote{\url{https://catalogue.ceda.ac.uk/uuid/e8793d74a651426692faa100e3b2acd3}, \textit{last accessed: 06.08.2023}} that are only available for partners such as EUMETNET members. They offer an educational program~\footnote{\url{https://www.netatmo.com/en-eu/weather-with-netatmo}} to acess temporally and spatially limited amounts of data that is usually only available to commercial partners.
 
 % precisions
 % Please add the following required packages to your document preamble:
@@ -85,14 +67,46 @@ Rainfall       & mm/h    & 0.2 to 150 mm/h        & 1mm/h   & every 5 min (bucke
 % todo: adjust to page size, maybe move to dataset chapter
 \end{table}
 
+In the context of collecting meteological data, the smart weather products are of particular interest. These include a smart outdoor weather station that collects air temperature, humidity and air pressure, an anemometer that collects wind speed and direction, and a rain gauge. The sensor specifications, as reported by the vendor himself, is reported in Table~\ref{tab: netatmo sensor specs}.\\
+In this work, data from Netatmo stations is used as Netatmo offers a large amount of sensors in Germany in urban areas, exemplified by Figure~\ref{fig:netatmo sensor locations hamburg} for the region of Hamburg, and by Figure~\ref{fig:netatmo sensor locations stuttgart} for the region of Stuttgart.
+The developer portal~\footnote{\url{https://dev.netatmo.com/apidocumentation}} offers a way to programmatically access all public sensor measurements via a REST API, however each request has a limit on the spatial extend of the requested area for the current weather data. For historic data, the limit per request per sensor is 1024 data points. The API has a tight rate limit per application. For applications below 100 users, the rate limit is 2000 requests every hour and 200 requests every 10 seconds across all users, and 500 requests every hours and 50 requests every 10 seconds per user~\footnote{\url{https://dev.netatmo.com/guideline\#rate-limits}, \textit{last accessed: 06.08.2023}}. In this work, we use the REST API to collect sensor data from Netatmo sensors.
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/netatmo_sensor_locations_hamburg.png}
+    \caption{Sensor locations of Netatmo in Hamburg, Germany, as of 28.06.2023}
+    \label{fig:netatmo sensor locations hamburg}
+
+    \includegraphics[width=1\textwidth]{images/netatmo_sensor_locations_stuttgart.png}
+    \caption{Sensor locations of Netatmo in Stuttgart, Germany, as of 19.06.2023}
+    \label{fig:netatmo sensor locations stuttgart}
+\end{figure}
+
 \subsubsection{Quality Considerations}
 
-Netatmo sensors have a good measurement accuracy, however due to the compact design, an aluminium housing, poor ventilation due to the small case, no dedicated radiation screen resultiing in a proneness to radiative errors, and therefore overall slow sensor-response time~\cite{meier2017crowdsourcing, buchau2018modelling}, Netatmo weather stations have a systematic bias that influences data quality. Due to the uniformity of Netatmo sensors, e.g.\ all sensors are build in the same way, this bias could be corrected in the QC step.
+Netatmo sensors have a good measurement accuracy, however due to the compact design, an aluminium housing, poor ventilation due to the small case, no dedicated radiation screen resultiing in a proneness to radiative errors, and therefore overall slow sensor-response time~\cite{meier2017crowdsourcing, buchau2018modelling}, Netatmo weather stations have a systematic bias that influences data quality. Due to the uniformity of Netatmo sensors, e.g.\ all sensors are build in the same way, this bias could be corrected in the QC step, however this is not further explored in this work.
 
-\section{DWD}
+\subsection{Other Providers}
 
-The official german weather service (DWD) has many objectives, that are defined by the DWD-law in Germany. Its tasks include meterological and climatological monitoring of the atmosphere, responsibility for meterologically securing airspace for civil aviation, monitoring the maritim climate and more. The DWD operates a large monitoring network and publishes most of it's data via its OpenData portal~\footnote{\url{https://opendata.dwd.de/}, last accessed 13.07.2023}.\\
-The main advantages of the DWD data are high data quality through reference instruments and proper setup according to WHO guidelines~\cite{oke2006guideline}. The main disadvantage is the low spatial coverage of the data, as stations are sparsely distributed to measure the overall mesoscale climate, as seen in Figure~\ref{fig:dwd sensor locations germany}. Additionally, a lot of the public weather stations are located at airports, which are usually located outside of cities, and therefore not suitable for measuring urban microclimates.
+Other sources for crowdsourced weather station data include WeatherObservationsWebsite (WOW)~\footnote{\url{https://wow.metoffice.gov.uk/}} and Weather Underground~\footnote{\url{https://www.wunderground.com/}}.
+WOW is a platform run by the UK Met Office, which is the UK's national weather service, and has a dense sensor coverage in the UK and the Netherlands as seen in figure~\ref{fig:wow sensor locations}.
+Weather Underground is a commercial weather service which also provides a crowdsourced weather station network. Unfortunately, Weather Underground only provides an API for users with a registered weather station or other bulk download options for historical data. The website would allow for manual download of historical data, but this is not feasible for the amount of data needed for this work.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/wow_sensor_locations.png}
+    \caption{Temperature sensor locations from WOW, acessed on 05.07.2023}
+    \label{fig:wow sensor locations}
+\end{figure}
+
+\section{Reference Data Providers}
+
+In order to add additional validation to crowdsourced weather data, reference data from (official) weather stations can be used. These weather stations should be setup according to current World Meterological Organization (WMO) guidelines~\cite{wmo2018guide} in order to ensure high data quality. These standards are either achived by offical weather services, or by institutions such as universities whose sensors are maintained by experts.
+
+\subsection{DWD}
+
+The official german weather service (DWD) has many objectives, that are defined by the DWD-law in Germany. Its tasks include meterological and climatological monitoring of the atmosphere, meterologically securing the airspace for civil aviation, monitoring the maritim climate, and more. The DWD operates a large monitoring network and publishes most of it's data via its OpenData portal~\footnote{\url{https://opendata.dwd.de/}, last accessed 13.07.2023}.\\
+The main advantages of the DWD data are high data quality through reference instruments and proper setup according to WMO guidelines~\cite{wmo2018guide}. The main disadvantage is the low spatial coverage of the data, as stations are sparsely distributed to measure the overall mesoscale climate, as seen in Figure~\ref{fig:dwd sensor locations germany}. Additionally, a lot of the public weather stations are located close to airports, which are usually located outside of cities, and therefore not suitable for measuring urban microclimates.
 
 \begin{figure}[ht]
     \centering
@@ -116,10 +130,26 @@ The number of urban weather stations is planned to be gradually extended to reac
 
 \subsubsection{Weather Radar}
 
-The DWD also operates a network of weather radars~\footnote{\url{https://www.dwd.de/DE/leistungen/radarprodukte/radarprodukte.html}, last accessed 12.07.2023, not available in english} that are used to measure precipitation and wind speed. This data could be interesting in the context of air interpolation in order to detect precipitation events that have a mayor influence on humidity and temperature or to detect wind speeds that also play an important factor in dissapating heat and transporting it away from urban areas.
-Due to the limited scope of this work, this data is not used.
+The DWD also operates a network of weather radars~\footnote{\url{https://www.dwd.de/DE/leistungen/radarprodukte/radarprodukte.html}, \textit{last accessed 12.07.2023, not available in english}} that are used to measure precipitation and wind speed. This data could be interesting in the context of air interpolation in order to detect precipitation events that have a mayor influence on humidity and temperature or to detect wind speeds that also play an important factor in dissapating heat and transporting it away from urban areas.
+Due to the limited scope of this work, this data is currently not used.
+
+\subsection{Locally Operated Weather Stations}
+
+Next to offical weather services, many public and private institutions operate weather stations. The following section lists two examples of such institutions, the Meterological Institute of the University of Hamburg and the Office for Environmental Protection of the City of Stuttgart.
+
+\subsubsection{University of Hamburg – Meterological Institute}
+
+- address local climate concerns and support decision making
+- Projekt HUSCO (Hamburg Urban Soil Climate Observatory)
+
+\subsubsection{City of Stuttgart – Office for Environmental Protection}
+
+The Office for Environmental Protection of the city of Stuttgart has the goal of monitoring the climate in Stuttgart and the surrounding area and improve the living conditions of the citizens. The main focus of the office is on air quality, noise, and (urban) climate. It operates several weather stations in the city of Stuttgart, which are shown in Figure~\ref{fig:stuttgart weather station locations}.
+
+% TODO: figure
 
 \section{Quality Control}
+\label{sec:quality control}
 
 Quality control (QC) is an essential step in the process of data analysis and preparation. The goal is to identify and remove outliers in the data that are due to placement errors of sensors, sensor malfunctions, sensor inaccuracies or other errors. In the context of PWS, weather stations are placed and maintained by non-professionals, making QC even more important. One of the main challenges in the context of (hyper-) local urban air temperature data is to not flag data as outliers that is representative of the local climate in case of extreme temperature, e.g.\ heat islands, and at the same time identify erronous or wrongly placed sensors, e.g.\ too close to walls, in direct sunlight, indoors, etc. Additionally, current PWS networks do not track sufficient metadata on the sensor placement, e.g.\ sensor height, which also plays an important role in protecting the privacy of citizens and not exposing too accurate sensor locations.\\
 Due to the the popularity of Netatmo weather station data in research due to high spatio-temporal resolution, there are several software libraries available that help simplify and automate the QC process. These tools were primarily developed for Netatmo temperature data, however CrowdQC and TITAN can also be used for other nearly-normally distributed data sources~\cite{hahn2022observations}. The following tools are available:
@@ -204,8 +234,9 @@ Another quation arises about the ability to handle hybrid sensor network data...
 \section{Feature Engineering}
 \label{sec:feature_engineering}
 
-The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models.
-The target feature in this work is the air temperature at 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, as well as additonal meta data such as soil conditions, zoning plans, vegetation health, and satellite data.\\
+The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models. Especially in the context of air temperature interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the air temperature at canopy height, e.g. 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, satellite data such as land cover and vegetation health or LST, and additonal meta data such as soil conditions or zoning plans.\\
+
+
 
 - target variable: air temperature
 - input features:
@@ -298,3 +329,42 @@ Features:
 
 Hyperlocal Mapping in Oslo:
 Red Landsat 7, 8 and Sentinel 2 Open source L: 30 m, S: 10 m Green Blue Near infrared Short-wave infrared 1 L: 30 m, S: 20 m Short-wave infrared 2 NDVI L: 30 m, S: 10 m IBI L: 30 m, S: 20 m Land surface temperature Landsat 7, 8 30 m Elevation above sea STRM 30 m Terrain aspect Terrain slope Terrain ruggedness CHM LiDAR Closed source 1m CHM slope CHM aspect CHM shadow/SVI Building height LiDAR + building footprint Building height sd 1–4m Building height sd 4–20 m Building height sd 20–100 m Fractional tree cover LiDAR + orthophoto Tree height Distance to coast Global water occurrence Open source 30 m Distance to fresh water
+
+Hamburg ICDC overview:
+- atmospheric data
+    - air temperature
+    - pressure
+    - wind
+    - reciptation
+    - clouds
+    - aerosols
+    - humidity
+    - radiation
+    - climate indices
+- ocean
+    - water temperature
+    - wave height (SSH)
+    - salt content
+    - tide
+    - ocean color (e.g. plankton etc.)
+    - climatology
+    - ocean currents
+- ice/snow
+    - sea ice coverage
+    - sea ice thickness
+    - sea ice type
+    - snow thickness (ice)
+    - snow water equivalent (SWE)
+    - land snow cover
+    - glacier thickness
+    - melting ponds
+- land
+    - albedo
+    - surface temperature
+    - vegetation
+    - soil moisture
+    - topography
+    - short-wave radiation
+    - perma-frost
+- society
+    - social science parameters
