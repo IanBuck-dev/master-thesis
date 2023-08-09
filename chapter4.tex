@@ -194,7 +194,7 @@ Generally, there are different types of input features. Firstly, there are discr
 % data from gridded data sources (e.g. affiliation to postal code, district...)
 In the following chapter, we discuss how different types of correlation between measurements can be taken into account to improve the model and gain additional insights into local (meteological) dynamics.
 
-\subsection{Spatial Autocorrelation}
+\subsubsection{Spatial Autocorrelation}
 % How different measurements are spatially related inside a time series
 
 As discussed in chapter \ref{chap:Related Work}, there is a dependency between air temperature and other meteological features and the location of the sensors. The closer a sensor is to another sensor, the more correlated the sensor readings should be.
@@ -214,7 +214,7 @@ The next approach would be to convert the
 
 - area n x m grid of data points, each grid cell with n x n size (depending on the resulution), 4D space with location as x and y coordinates (euclidean distance -> but only for smaller areas such as city of Hamburg and suroundings), time as z coordinate and feature values as w coordinate.\\
 
-\subsection{Temporal Autocorrelation}
+\subsubsection{Temporal Autocorrelation}
 % How different measurements are temporally related inside a time series
 
 - trends
@@ -223,11 +223,11 @@ The next approach would be to convert the
 
 Either explicitly model 
 
-\subsection{Temporal Cross Correlation}
+\subsubsection{Temporal Cross Correlation}
 % How different time series are related to each other (seasonaility)
 
 % TODO
-\subsection{Dealing with Correlation}
+\subsubsection{Dealing with Correlation}
 \label{subsec:Dealing with Correlation}
 
 Todo: Techniques to turn correlated variables into uncorrelated ones
@@ -238,7 +238,7 @@ variance inflation factor (VIF)\\
 -> over 10 = invalid model\cite{montgomery2021introduction}
 -> others more moderate with max 3 \cite{zuur2010protocol}
 
-\subsection{Dealing with Uncertainty}
+\subsubsection{Dealing with Uncertainty}
 - The model has a lot of uncertainty
 - model uncertainty in input data? (depending on sensor type, sensor age, placement...)
 
@@ -262,12 +262,6 @@ The disadvantages of Multi-layer Perceptron (MLP) include:
 
 
 - random forest regression
-...
-
-\subsection{Evaluation Metrics}
-\label{subsec:evaluation_metrics}
-
-- Mean absolute error, mean absolute relative, mean quared error, r-squared, root mean squared error (RMSE)
 
 \section{Model Selection}
 % Possible model candidates

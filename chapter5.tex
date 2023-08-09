@@ -177,6 +177,18 @@ The steps used in this work are shown and explained in Table~\ref{tab: qc_steps}
 In their own study, CrowdQC+ kept 47.1\% and 69.2\% of data after steps m1-5, and only 20.7\% and 29.5\% after steps o1-o3, for the cities Amsterdam and Toulouse respectively~\cite{fenner2021crowdqc+}, given default parameters. In that setting, CrowdQC kept more data with 41.0\% in Amsterdam and 54.9\% in Toulouse. In this work, CrowdQC+ is used with default parameters excluding height validation, as this data was not available for almost all sensors. Additionally, only the first 5 required steps are used, as the optional steps are not needed for the interpolation. The input data for CrowdQC+ also needs have the same temporal resolution and intervals.\\
 In this study, we use a 10 min interval to have a high temporal resolution and use the default parameters except excluding the heigh check due to the missing values. Important to note here, that in the following, only the air temperature is validated and not other measurements such as pressure or humidity. CrowdQC+ could be used for other approximately normally distributed features, however there hasn't been more specific research in this direction. We assume that a station that seems to be setup correctly and produces good air temperature measurements, also captures the other measurements correctly for simplicity reasons.
 
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_qc_january_23.png}
+    \caption{QC Results for Sensor.Community Data for Germany, January 2023}
+    \label{fig:qc sensor community jan 23}
+
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_qc_june_23.png}
+    \caption{QC Results for Sensor.Community Data for Germany, June 2023}
+    \label{fig:qc sensor community june 23}
+\end{figure}
+
 \subsection{Quality Control for Sensor.Community}
 
 Interesting findings:
@@ -186,21 +198,7 @@ Interesting findings:
 -> we will use combined data (as both BME280 and DHT22 are good low cost sensors) that passed m5
 -> we will not validate humidity, pressure for now
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1\textwidth]{images/sensor_community_qc_january_23.png}
-    \caption{QC Results for Sensor.Community Data for Germany, January 2023}
-    \label{fig:qc sensor community jan 23}
-\end{figure}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1\textwidth]{images/sensor_community_qc_june_23.png}
-    \caption{QC Results for Sensor.Community Data for Germany, June 2023}
-    \label{fig:qc sensor community june 23}
-\end{figure}
-
-Here comes more data
+Here comes more data\\
 
 % TODO: Update table with final data
 \begin{sidewaystable}
@@ -227,108 +225,26 @@ Here comes more data
 {\raggedright This table shows the QC steps used in this work from the CrowdQC+ library, including the \% of data available after each step, the number of stations available and the number of values left after each step. Optional steps are currently not used. \par}
 \end{sidewaystable}
 
-\subsubsection{Handling of Moving Sensors}
+\subsection{Quality Control for Netatmo}
 
-Another quation arises about the ability to handle hybrid sensor network data...
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=1\textwidth]{images/netatmo_qc_june_23.png}
+    \caption{QC Results for Netatmo Data for Hamburg, June 2023}
+    \label{fig:qc netatmo june 23}
+\end{figure}
 
 \section{Feature Engineering}
 \label{sec:feature_engineering}
 
-The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models. Especially in the context of air temperature interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the air temperature at canopy height, e.g. 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, satellite data such as land cover and vegetation health or LST, and additonal meta data such as soil conditions or zoning plans.\\
+The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. Based on the features, different models can be used for completely different tasks such as interpolation compared to extrapolation. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models.
+Especially in the context of air temperature interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the air temperature at canopy height, e.g. 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, satellite data such as land cover and vegetation health or LST, and additonal meta data such as soil conditions or zoning plans. The goal of this section is to give an overview of the different features that can be used for air temperature interpolation and discuss several highly important features that are especially relevant in the context of urban microclimate.
 
+\subsection{Feature Overview}
 
+\subsubsection{Essential Climate Variables}
 
-- target variable: air temperature
-- input features:
-    - weather station measurements (air temperature, humidity, wind speed, wind direction, percipitation)
-    - satellite data (surface temperature, surface roughness, soil temperature, land coverage indexes, sky view factor, ...)
-
-    Need to separate between reference grade data (weather station calibrated), and low-cost sensors without placement information
-
-- additonal goals:
-    - collect mutiple datasets (many features, fine-granualar spaciotemporal)
-    - enhance datasets with additonal information (soil conditions, zoning plans, vegetation health)
-
-% TODO: Feature selection? -> remove features that are sparse etc.
-
-Next to sensor readings captured for a given area, there are also other types of information that could be useful for ML applications. Alonso and Renard~\cite{alonso2020new} used these additional indexes to predict air temperature:
-
-% Todo: make into table on one page
-\begin{itemize}
-    \item Vegetation Index
-    \begin{itemize}
-        \item Normalized Difference Vegetation Index (NDVI)
-        \item Soil Adjusted Vegetation Index (SAVI)
-        \item Enhanced Vegetation Index (EVI)
-        \item Tasseled Cap Transformation greenness (GVI)
-        \item Density of low vegetation
-        \item Density of medium vegetation
-        \item Density of high vegetation
-    \end{itemize}
-    \item Water Presence Index
-    \begin{itemize}
-        \item Modified Normalized Difference Water Index (MNDWI)
-        \item Normalized Difference Water Index (NDWI)
-    \end{itemize}
-    \item Moisture Index
-    \begin{itemize}
-        \item Tasseled cap Transformation Wetness
-        \item Normalized Difference Moisture Index (NDMI)
-    \end{itemize}
-    \item Bare Soil Index
-    \begin{itemize}
-        \item Normalized Difference Bareness Index (NDBaI)
-        \item Bare Soil Index (BI)
-        \item Enahnced Build-Up and Bareness Index (EBBI)
-        \item Density of bare soil
-    \end{itemize}
-    \item Radiation Index
-    \begin{itemize}
-        \item Spectral radiance
-        \item Emissivity
-        \item Tasseled Cap Transformation Brightness
-    \end{itemize}
-    \item Building Index
-    \begin{itemize}
-        \item Normalized Difference Build-Up Index (NDBI)
-        \item Urban Index (UI)
-        \item Index-based Build-Up Index (IBI)
-        \item Building Density
-    \end{itemize}
-    \item Topographic
-    \begin{itemize}
-        \item Slope (°)
-        \item Exposure
-        \item Curvature
-    \end{itemize}
-    \item Urban morphology
-    \begin{itemize}
-        \item Sky View Factor
-        \item Standard Deviation (STD) of Building Height (building height variation)
-    \end{itemize}
-    \item Land use
-    \begin{itemize}
-        \item Distance to railway tracks
-        \item Distance to points of tourist interest
-        \item Distance to subway entrances
-        \item Distances to fountains
-        \item Water area
-    \end{itemize}
-\end{itemize}
-
-These types of data can be sourced either directly via satellites like LiDAR or Landsat 8, or via geoportals that publish such data, like the State Office for Geoinformation and Surveying Hamburg~\footnote{\url{https://geoportal-hamburg.de/geo-online/}} on a regional basis or the EU Inspire Geoportal~\footnote{\url{https://inspire-geoportal.ec.europa.eu/}} on a continental basis.
-
-ref to google earth engine~\cite{gorelick2017google}
-
-Features:
-- completed:
-    - ndvi, evi (modis) -> 500m, 16 days
-- todo:
-    - lai, nb
-
-
-Hyperlocal Mapping in Oslo:
-Red Landsat 7, 8 and Sentinel 2 Open source L: 30 m, S: 10 m Green Blue Near infrared Short-wave infrared 1 L: 30 m, S: 20 m Short-wave infrared 2 NDVI L: 30 m, S: 10 m IBI L: 30 m, S: 20 m Land surface temperature Landsat 7, 8 30 m Elevation above sea STRM 30 m Terrain aspect Terrain slope Terrain ruggedness CHM LiDAR Closed source 1m CHM slope CHM aspect CHM shadow/SVI Building height LiDAR + building footprint Building height sd 1–4m Building height sd 4–20 m Building height sd 20–100 m Fractional tree cover LiDAR + orthophoto Tree height Distance to coast Global water occurrence Open source 30 m Distance to fresh water
+Essential Climate Variables (ECV) are a list of currently 50 variables that are proposed by the WMO to measure climate and climate change. The WMO regularily publishes updates on which climate variables to use and how to measure them~\cite{wmo2018guide}. ECVs are generally more focused on measuring climate on a global scale, however they also contain many variables that are relevant for urban microclimate, such as air temperature and land cover. There are three categories of ECVs, namely Atmosphere, Land, and Ocean. And overview of the ECVs can be found online~\footnote{\url{https://gcos.wmo.int/en/essential-climate-variables/table}, \textit{last accessed: 08.08.2023}}.\\
 
 Hamburg ICDC overview:
 - atmospheric data
@@ -368,3 +284,126 @@ Hamburg ICDC overview:
     - perma-frost
 - society
     - social science parameters
+
+\subsubsection{Features used in Related Work}
+
+Related studies can give a good overview of which features work best for air temperature interpolation. The used features can be roughly divided into three categories: in-situ measurements, satellite data, and additional meta data.
+An important way to use satellite data is to calculate indexes out of the raw data. Alonso and Renard~\cite{alonso2020new} used among other data the indexes shown in Table~\ref{tab:alonso_indexes} to predict air temperature.
+
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[ht]
+\footnotesize
+\centering
+\begin{tabular}{|lll|lll|}
+\hline
+\textbf{}                & \textbf{Variables (Units)}                                                                   & \multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Acquisition\\ Source\end{tabular}}} & \textbf{}                & \textbf{Variables (Units)}                                                            & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Acquisition\\ Source\end{tabular}}} \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+                         & \textbf{Vegetation Index}                                                                    &                                                                                           &                          & \textbf{Radiation Index}                                                              &                                                                                            \\
+                         & \begin{tabular}[c]{@{}l@{}}Normalized Difference Vegetation\\ Index (NDVI)\end{tabular}      & Landsat 8                                                                                 &                          & Spectral Radiance                                                                     & Landsat 8                                                                                  \\
+                         & Enhanced Vegetation Index (EVI)                                                              & Landsat 8                                                                                 &                          & Emissivity                                                                            & Landsat 8                                                                                  \\
+                         & \begin{tabular}[c]{@{}l@{}}Soil Adjusted Vegetation Index\\ (SAVI)\end{tabular}              & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Brightness\end{tabular}      & Landsat 8                                                                                  \\
+                         & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Greenness (GVI)\end{tabular}        & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Building Index}                                       & \cellcolor[HTML]{EFEFEF}                                                                   \\
+                         & Density of Low Vegetation                                                                    & LiDAR                                                                                     &                          & \begin{tabular}[c]{@{}l@{}}Normalized Difference Buit-Up\\ Index (NDBI)\end{tabular}  & Landsat 8                                                                                  \\
+                         & Density of Medium Vegetation                                                                 & LiDAR                                                                                     &                          & Urban Index (UI)                                                                      & Landsat 8                                                                                  \\
+                         & Density of High Vegetation                                                                   & LiDAR                                                                                     &                          & Index-based Built-Up Index (IBI)                                                      & Landsat 8                                                                                  \\
+\cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Water Presence Index}                                        & \cellcolor[HTML]{EFEFEF}                                                                  &                          & Building Density                                                                      & LiDAR                                                                                      \\
+                         & \begin{tabular}[c]{@{}l@{}}Modified Normalized Difference\\ Water Index (MNDWI)\end{tabular} & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Urban Morphology}                                     & \cellcolor[HTML]{EFEFEF}                                                                   \\
+                         & \begin{tabular}[c]{@{}l@{}}Normalized Difference Water\\ Index (NDWI)\end{tabular}           & Landsat 8                                                                                 &                          & Sky View Factor                                                                       & LiDAR                                                                                      \\
+\cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Bare Soil Index}                                             & \cellcolor[HTML]{EFEFEF}                                                                  &                          & \begin{tabular}[c]{@{}l@{}}Standard Deviation (STD) of\\ Building Height\end{tabular} & \begin{tabular}[c]{@{}l@{}}Local\\ Authority\end{tabular}                                  \\
+                         & \begin{tabular}[c]{@{}l@{}}Normalized Difference Bareness\\ Index (NDBaI)\end{tabular}       & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Moisture Index}                                       & \cellcolor[HTML]{EFEFEF}                                                                   \\
+                         & Bare Soil Index (BI)                                                                         & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Index\end{tabular}           & Landsat 8                                                                                  \\
+                         & \begin{tabular}[c]{@{}l@{}}Enhanced Built-Up and Bareness\\ Index (EBBI)\end{tabular}        & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Normalized Difference Moisture\\ Index (NDMI)\end{tabular} & Landsat 8                                                                                  \\
+                         & Density of Bare Soil                                                                         & LiDAR                                                                                     &                          &                                                                                       &                                                                                            \\ \hline
+\end{tabular}
+
+\caption{Indexes used by Alonso and Renard~\cite{alonso2020new} to predict air temperature.}
+\label{tab:alonso_indexes}
+\end{table}
+
+These indexes are either available as precalculated datasets, or can be calculated from raw satellite data. Especially the Google Earth Engine platform provides a lot of precalculated datasets from various sources such as MODIS~\cite{didan2021modis}, however each index is separately available, therefore requiring a lot of manual work to combine them into a single dataset. Due to the interference from clouds, these indexes usually also include quality bands, which indicate the quality of the index value for a given pixel, as well as missing values.\\
+In comparison to MODIS, Sentinel satellite data provides a significantly higher resolution at 10 - 60 m$^2$ per pixel compared to 500-1000 m$^2$ per pixel for MODIS but there are no precalculated indexes available for Sentinel data on the Google Earth Engine platform. However, there exist scripts published by other researchers to manually calculate such indexes for example the NDVI index from Sentinel data by the Free University of Berlin~\footnote{\url{https://www.geo.fu-berlin.de/en/v/geo-it/gee/2-monitoring-ndvi-nbr/2-2-calculating-indices/ndvi-s2/index.html}, \textit{last accessed: 09.08.2023}}.\\
+In comparison to MODIS and Sentinel, many LiDAR datasets are closed-source and are not available for research purposes. This is unfortunate as LiDAR data provides a very high resolution of 5-10 cm$^2$ per pixel and enables the capturing of detailed elevation data. Especially in the context of urban areas and building heights this information can be very useful, for example to calculate the sky view factor which seems to have a significant impact on air temperature modlling~\cite{dirksen2019sky}.\\
+Next to index data from remote sensing, there are also other types of information that could be useful for ML applications. Alonso and Renard~\cite{alonso2020new} also used the following information:
+
+% Todo: make into table on one page
+\begin{itemize}
+    \item Topographic
+
+    \begin{itemize}
+        \item Slope (°)
+        \item Exposure
+        \item Curvature
+    \end{itemize}
+    \item Land use
+
+    \begin{itemize}
+        \item Distance to railway tracks
+        \item Distance to points of tourist interest
+        \item Distance to subway entrances
+        \item Distances to fountains
+        \item Water area
+    \end{itemize}
+\end{itemize}
+
+For the hyperlocal air temperature mapping study done in Oslo by Venter et al.~\cite{venter2020hyperlocal}, the following data was used:
+
+% TODO: make into table
+Hyperlocal Mapping in Oslo:
+Red Landsat 7, 8 and Sentinel 2 Open source L: 30 m, S: 10 m Green Blue Near infrared Short-wave infrared 1 L: 30 m, S: 20 m Short-wave infrared 2 NDVI L: 30 m, S: 10 m IBI L: 30 m, S: 20 m Land surface temperature Landsat 7, 8 30 m Elevation above sea STRM 30 m Terrain aspect Terrain slope Terrain ruggedness CHM LiDAR Closed source 1m CHM slope CHM aspect CHM shadow/SVI Building height LiDAR + building footprint Building height sd 1–4m Building height sd 4–20 m Building height sd 20–100 m Fractional tree cover LiDAR + orthophoto Tree height Distance to coast Global water occurrence Open source 30 m Distance to fresh water\\
+
+% TODO: more studies
+
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[ht]
+\footnotesize
+\centering
+\begin{tabular}{|lll|}
+\hline
+Measurement (Units)                                                 & Spatial Resolution & Temporal Resolution                                                                                                                    \\ \hline
+\rowcolor[HTML]{EFEFEF} 
+\textbf{Weather Station/Sensor Measurements}                        &                    &                                                                                                                                        \\
+\begin{tabular}[c]{@{}l@{}}Air temperature (°C)\\ Mean\end{tabular} & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+Relative Humidity (\%)                                              & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+Atmospheric Pressure (mBar)                                         & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+Wind Strength (kmh)                                                 & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+Wind Direction (°)                                                  & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+Precipitation (mm)                                                  & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular}                             \\
+\rowcolor[HTML]{EFEFEF} 
+\textbf{Remote Sensing Data}                                        &                    &                                                                                                                                        \\
+NDVI (MODIS)                                                        & 500m               & 16 days                                                                                                                                \\
+EVI (MODIS)                                                         & 500m               & 16 days                                                                                                                                \\
+DEM (Copernicus)                                                    & 30m                & 2015 - 2017                                                                                                                            \\ \hline
+\end{tabular}
+\caption{Features for Air Temperature Interpolation Used in this Work}
+\label{tab:features this work}
+\end{table}
+
+\subsubsection{Features used in this Work}
+
+Air temperature, relative humidity, atmospheric pressure, precipitation, and wind was sourced from Netatmo and Sensor.Community PWS networks as well as the DWD weather stations as reference data.
+All remote sensing data acquired in this work was processed using the Google Earth Engine~\cite{gorelick2017google} as it offers a unified way of accessing data and offers anhanced processing capabilities that are especially important when dealing with these large datasets that can grow as large as several hundred terabytes. The following datasets have been used and downloaded from the Google Earth Engine platform:
+
+\begin{itemize}
+    \item MODIS/061/MOD13A1: MODIS Vegetation Indexes NDVI and EVI\\
+    (500m, 16 days)~\cite{didan2021modis}
+    \item COPERNICUS/DEM/GLO30: Copernicus Digital Elevations Model (30m)~\cite{copernicus30dem}
+\end{itemize}
+
+Potential datasets that could be used in the future are:
+
+\begin{itemize}
+    \item MODIS\_061\_MOD15A2H: MODIS Leaf Area Index\/FPAR \\
+    (500m, 8 days)~\cite{myneni2021modis}
+    \item COPERNICUS\_S2\_SR: Sentinel-2 Multi Spectral Instrument, Level-2A\\
+    (10m, 5 days)~\cite{sentinel2msi} (for manual index calculation)
+\end{itemize}
+
+Additionally, location data was incoporated into the models either by longitude and latitude values in coordinate rerence system EPSG:4326 or by calculating distances between locations in meters.
+The features used in this work are shown in Table~\ref{tab:features this work} and were chosen based on availability and relevance for air temperature modelling.
+The amount of features in the initial scope of this work is quite limited and could be increased to gain better prediction results.
+
+% TODO: mention python libraries used
