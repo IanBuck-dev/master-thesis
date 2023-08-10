@@ -3,7 +3,7 @@
 
 % TODO: talk about the methodology of the evaluation
 
-In this chapter, the goal is to evaluate different use-cases for ML-based interpolation in the context of air temperature interpolation. In Chapter~\ref{chap:Machine Learning based Interpolation} the different models for ML-based interpolation were already introduced. Afterwards the available data and features were introduced in Chapter~\ref{chap:preparations data sets}. In this chapter, the different models are compared with different data sets and features to test the feasability of two main use cases:
+In this chapter, the goal is to evaluate different use-cases for ML-based interpolation in the context of air temperature interpolation. In Chapter~\ref{chap:Machine Learning based Interpolation} the different models for ML-based interpolation were already introduced. Afterwards, the available data and features were introduced in Chapter~\ref{chap:preparations data sets}. In this chapter, the different models are compared with different data sets and features to test the feasability of two main use cases:
 
 \begin{enumerate}
   \item Areal interpolation of air temperature (for a specific time step)
@@ -22,9 +22,21 @@ In order to validate the different models, we use the following methodology:
   \item The models are trained and evaluated using loss functions. The loss functions used in this work are: Mean Absolute Error (MAE), Mean Squared Error (MSE), Root Mean Squared Error (RMSE), and R2 Score and are shown for the evaluation.
 \end{itemize}
 
+Different loss functions have different advantages and disadvantages. For example the RSME is more robust against outliers while the MSE punishes bigger errors more. Depending on the use-case different loss functions can be better suited and should be evaluated.
+
 \section{Areal Interpolation of Air Temperature}
 
+- Reference of a traditional geostatistical method -> Kriging
+  - smoothes out the area between points and fills in missing points
+  - no extrapolation between the max-min of the 2 points because in between no information is known
+  - some limitations such as that over time the mean does not change (not applicable for air temperature due to climate change?)
+
+- in comparison, training a regressor with more features could potentionally give the model additonal information. Especially in the context of urban environments, information such as surface rougness levels, e.g. building and vegeation cover, sourced from remote sensing with good spatial coverage, could improve the prediction quality.
+
 \subsection{Datasets for Evaluation}
+
+As a first step for training and testing areal air temperature interpolation methods, we need to define the test area and the data we use for training. In this context, it could be interesting to compare different sensor network providers.
+For this use-case we have several test areas that we could validate. To get an overview of the sensors left after QC for Sensor.Community, Table 
 
 -> could also compare with Hamburg (closer to water, more wind)
 

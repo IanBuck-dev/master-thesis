@@ -191,14 +191,16 @@ In this study, we use a 10 min interval to have a high temporal resolution and u
 
 \subsection{Quality Control for Sensor.Community}
 
-Interesting findings:
-- way less data does not pass m4 in june compared to january 2023
-- more data passes m5 if combined file is used (due to more stations being available)
+For Sensor.Community, we can see several interesting things for the air temperature. The first is, that in january 2023 less data is lost due to QC compared to June 2023. This could be to the fact, that in colder environments with less solar radiation, sensor placement, f.e. close to buildings, has less of an influence. In comparison, june 2023 had many hotter days, therefore it could be that more extreme readings are flagged as outliers. We can also see that Sensor.Community loses a lot of stations in step m4 in June 2023 compared to January 2023, which is the temporal correlation with the median of all stations. This could also be due to a higher temperature difference accross Germany, therefore comparing smaller areas could be beneficial for this. We can also see, that the m5 check, which is the buddy check with surrounding stations, also removes a lot of stations which could be due to the low station density.\\
+The CrowdQC+ library can theoretically be used to validate other near-normally distributed variables, however this could change the way the parameters should be set. Due to the limited scope, for other readings, e.g. relative humidity and atmospheric pressure, we simply remove default values. As an improvement, for other variables a more sophisticated QC process should be used. In additon, due to the low sensor density and the fact, that all types of sensors used are good low cost sensors, we simply combine all sensor readings after QC step m5 into one dataset and ignore the sensor type.\\
+After the QC process, the Sensor.Community sensor locations left are shown in~\ref{fig:qc sensor community germany june 23}. In this figure we can see, that there are many sensors left in Stuttgart, Hamburg, Munich, and some in Cologne. Due to DWD stations only being present in Hamburg and Stuttgart, those two areas are candidates for further usage.
 
--> we will use combined data (as both BME280 and DHT22 are good low cost sensors) that passed m5
--> we will not validate humidity, pressure for now
-
-Here comes more data\\
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/sensor_community_locations_germany_after_qc_june_23.png}
+    \caption{QC Results for Sensor.Community for Germany, June 2023}
+    \label{fig:qc sensor community germany june 23}
+\end{figure}
 
 % TODO: Update table with final data
 \begin{sidewaystable}
