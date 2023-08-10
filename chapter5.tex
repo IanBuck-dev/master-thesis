@@ -14,7 +14,8 @@ In this work, data from PWS networks is used to create datasets for the training
 
 \section{Private Weather Station Network Providers}
 
-PWS providers offer a platform for users to upload their sensor data and either sell weather stations and sensors themselves such as Netatmo, or provide guides to allow users to connect their own sensors to the platform such as Sensor.Community. Netatmo data in particular has been used in several studies~\cite{meier2017crowdsourcing, hahn2022observations, venter2020hyperlocal, zumwald2021mapping} and has seen complementary studies for example discussing QC processes~\cite{fenner2021crowdqc+}, later seen in Section~\ref{sec:quality control}. There are also other PWS network providers such as Sensor.Community or Weather Underground (WOW) that have been used in several studies~\cite{ho2014mapping}. In order to find out which provider best fits our needs in this work, the following section compares the different providers and their data.
+PWS providers offer a platform for users to upload their sensor data and either sell weather stations and sensors themselves such as Netatmo, or provide guides to allow users to connect their own sensors to the platform such as Sensor.Community. Netatmo data in particular has been used in several studies~\cite{meier2017crowdsourcing, hahn2022observations, venter2020hyperlocal, zumwald2021mapping} and has seen complementary studies for example discussing QC\\
+processes~\cite{fenner2021crowdqc+}, later seen in Section~\ref{sec:quality control}. There are also other PWS network providers such as Sensor.Community or Weather Underground (WOW) that have been used in several studies~\cite{ho2014mapping}. In order to find out which provider best fits our needs in this work, the following section compares the different providers and their data.
 
 \subsection{Sensor.Community}
 
@@ -139,14 +140,24 @@ Next to offical weather services, many public and private institutions operate w
 
 \subsubsection{University of Hamburg – Meterological Institute}
 
+% TODO
+
 - address local climate concerns and support decision making
 - Projekt HUSCO (Hamburg Urban Soil Climate Observatory)
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/afu_stuttgart_sensor_locations.png}
+    \caption{Weather Station Locations in Stuttgart, \url{https://www.stadtklima-stuttgart.de/}, \textit{last accessed: 10.08.2023}}
+    \label{fig:afu weather station locations}
+\end{figure}
+
 \subsubsection{City of Stuttgart – Office for Environmental Protection}
 
-The Office for Environmental Protection of the city of Stuttgart has the goal of monitoring the climate in Stuttgart and the surrounding area and improve the living conditions of the citizens. The main focus of the office is on air quality, noise, and (urban) climate. It operates several weather stations in the city of Stuttgart, which are shown in Figure~\ref{fig:stuttgart weather station locations}.
+The Office for Environmental Protection of the city of Stuttgart has the goal of monitoring the climate in Stuttgart and the surrounding area and improve the living conditions of the citizens. The main focus of the office is on air quality, noise, and (urban) climate. It operates several weather stations in the city of Stuttgart, which are shown in Figure~\ref{fig:afu weather station locations}. The data from these stations is published directly on the website, a detailed quality assessment is given, and reference grade sensors are used. Unfortunately, the stations are mounted on top of building, e.g. 20-23m above ground, which is not ideal for measuring urban microclimates as the air temperature is several degrees cooler than directly on the ground. This example underlines the importance of proper sensor placement and meta-data documentation. The data from the weather stations could be corrected using the DWD reference station nearby, however uncorrected, the air temperature cannot be used to validate the crowdsourced data. Due to the high placement, other measurements such as wind direction and speed could be used to get a good estimation of the overall climate in the city, however not on the microscale.
+% This difference is especially visible when comparing with the DWD station at 2m and 5 cm, see figure below.
 
-% TODO: figure
+% TODO: figure of DWD with DWD and stuttgart stations. Possiblity of correcting the stations with the DWD data.
 
 \section{Quality Control}
 \label{sec:quality control}
@@ -192,7 +203,7 @@ In this study, we use a 10 min interval to have a high temporal resolution and u
 \subsection{Quality Control for Sensor.Community}
 
 For Sensor.Community, we can see several interesting things for the air temperature. The first is, that in january 2023 less data is lost due to QC compared to June 2023. This could be to the fact, that in colder environments with less solar radiation, sensor placement, f.e. close to buildings, has less of an influence. In comparison, june 2023 had many hotter days, therefore it could be that more extreme readings are flagged as outliers. We can also see that Sensor.Community loses a lot of stations in step m4 in June 2023 compared to January 2023, which is the temporal correlation with the median of all stations. This could also be due to a higher temperature difference accross Germany, therefore comparing smaller areas could be beneficial for this. We can also see, that the m5 check, which is the buddy check with surrounding stations, also removes a lot of stations which could be due to the low station density.\\
-The CrowdQC+ library can theoretically be used to validate other near-normally distributed variables, however this could change the way the parameters should be set. Due to the limited scope, for other readings, e.g. relative humidity and atmospheric pressure, we simply remove default values. As an improvement, for other variables a more sophisticated QC process should be used. In additon, due to the low sensor density and the fact, that all types of sensors used are good low cost sensors, we simply combine all sensor readings after QC step m5 into one dataset and ignore the sensor type.\\
+The CrowdQC+ library can theoretically be used to validate other near-normally distributed variables, however this could change the way the QC step parameters should be set. For the air temperature, the default parameters as proposed by the library were used. Due to the limited scope, for other readings, e.g. relative humidity and atmospheric pressure, we simply remove default values. As an improvement, for other variables a more sophisticated QC process should be used. In additon, due to the low sensor density and the fact, that all types of sensors used are good low cost sensors, we simply combine all sensor readings after QC step m5 into one dataset and ignore the sensor type.\\
 After the QC process, the Sensor.Community sensor locations left are shown in~\ref{fig:qc sensor community germany june 23}. In this figure we can see, that there are many sensors left in Stuttgart, Hamburg, Munich, and some in Cologne. Due to DWD stations only being present in Hamburg and Stuttgart, those two areas are candidates for further usage.
 
 \begin{figure}[ht]
@@ -229,11 +240,19 @@ After the QC process, the Sensor.Community sensor locations left are shown in~\r
 
 \subsection{Quality Control for Netatmo}
 
+The QC results for Netatmo stations in Hamburg during June 2023 can be found in \ref{fig:qc netatmo june 23} and \ref{fig:qc netatmo hamburg june 23}.
+After QC 60.24\% of Netatmo data is still available in Hamburg (so a loss of 39.76\%). The amount of data kept is in line with comparable cities as tested by CrowdQC+'s study which kept 47.1\% and 69.2\% for the cities Amsterdam and Toulouse respectively after steps m1-m5~\cite{fenner2021crowdqc+} as mentioned above. Another comparison can be made to the study by Meier et al. which kept 47\% of Netatmo data in Berlin after QC with CrowdQC~\cite{meier2017crowdsourcing}.
+It is interesting to note that stations directly next to water seem to be removed proportinally more often. This is could be due to higher variability of wind close to water~\cite{ho2014mapping} which can result in higher prediction errors.
+
 \begin{figure}[htp]
     \centering
     \includegraphics[width=1\textwidth]{images/netatmo_qc_june_23.png}
-    \caption{QC Results for Netatmo Data for Hamburg, June 2023}
+    \caption{QC Result Statistics for Netatmo Data for Hamburg, June 2023}
     \label{fig:qc netatmo june 23}
+
+    \includegraphics[width=1\textwidth]{images/netatmo_hamburg_qc_june_23.png}
+    \caption{Netatmo Stations for Hamburg, June 2023}
+    \label{fig:qc netatmo hamburg june 23}
 \end{figure}
 
 \section{Feature Engineering}
