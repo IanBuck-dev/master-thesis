@@ -1,0 +1,29 @@
+\chapter{General Appendix}
+
+% TODO: show parameters for sklearn models
+
+\section{Sklearn Machine Learning Model Parameters for Single Station Interpolation}
+\label{appendix: sklearn ml parameters single station}
+
+\begin{lstlisting}[language=Python, caption=Random Forest Regressor Parameters]
+class sklearn.ensemble.RandomForestRegressor(n_estimators=200,
+*, criterion='squared_error', max_depth=None, min_samples_split=2,
+min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features=1.0,
+max_leaf_nodes=None, min_impurity_decrease=0.0, bootstrap=True,
+oob_score=False, n_jobs=None, random_state=None, verbose=0,
+warm_start=False, ccp_alpha=0.0, max_samples=None)
+\end{lstlisting}
+
+The number of trees was increaed from 100 to 200 to increase the performance.
+
+\begin{lstlisting}[language=Python, caption=Histogram-based Gradient Boosting Parameters]
+class sklearn.ensemble.HistGradientBoostingRegressor
+(loss='squared_error', *, quantile=None, learning_rate=0.1,
+max_iter=200, max_leaf_nodes=31, max_depth=None, min_samples_leaf=20,
+l2_regularization=0.0, max_bins=255, categorical_features=None,
+monotonic_cst=None, interaction_cst=None, warm_start=False,
+early_stopping='auto', scoring='loss', validation_fraction=0.1,
+n_iter_no_change=10, tol=1e-07, verbose=0, random_state=42)
+\end{lstlisting}
+
+The number of max iterations was increased from the default value of 100 to 200 to improve the performance of the model and the random state was set to 42 so all interations yield the same result.
