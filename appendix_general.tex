@@ -1,4 +1,4 @@
-\chapter{General Appendix}
+\chapter{Appendix}
 
 % TODO: show parameters for sklearn models
 
@@ -27,3 +27,32 @@ n_iter_no_change=10, tol=1e-07, verbose=0, random_state=42)
 \end{lstlisting}
 
 The number of max iterations was increased from the default value of 100 to 200 to improve the performance of the model and the random state was set to 42 so all interations yield the same result.
+
+\subsection{Histogram-based Gradient Boosting Single Location Interpolation}
+
+\subsubsection{List of stations for minimum distance between stations}
+\label{appendix stations for minimum distance between stations}
+
+The list of stations for the minimum distance between stations is the following by their Netatmo station id:
+
+\begin{itemize}
+    \item 70:ee:50:83:b1:e2 
+    \item 70:ee:50:16:16:ce
+    \item 70:ee:50:5e:d4:16
+    \item 70:ee:50:00:d3:96
+    \item 70:ee:50:6b:5f:50
+    \item 70:ee:50:00:d1:1c
+    \item 70:ee:50:5f:51:a0
+    \item 70:ee:50:6b:97:86
+    \item 70:ee:50:28:f2:ca
+    \item 70:ee:50:58:e8:70
+\end{itemize}
+
+The locations of the stations are presented in Figure~\ref{fig:eval_hamburg_locations_point_histb_10_map}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/eval_hamburg_locations_point_histb_10_map.png}
+    \caption{Netatmo Stations for Minimum Distance Between Stations, Hamburg}
+    \label{fig:eval_hamburg_locations_point_histb_10_map}
+\end{figure}
