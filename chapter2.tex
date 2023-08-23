@@ -6,12 +6,12 @@ Finally, we need to get an understanding of existing interpolation techniques, t
 
 \section{Urban Heat Islands (UHI)}
 
-UHIs have been the center of a lot of attention for quite some time in the scientific community. As early as 1833, with the research of Luke Howard in London which observed higher temperatures inside London than in surrounding areas~\cite{howard1833climate}, UHIs have seen a steadily increase in scientific contributions. The term \textit{Urban Heat Island} was first introduced in the 1940s~\cite{balchin1947micro}. The recording and investigation of UHIs has seen mayor steps since the begin of modern climatology, also known as the Sundborg's era beginning with Sundborg's 1951 classic heat island study of Uppsala~\cite{sundborg1951climatological}. UHIs occur in many cities around the globe~\cite{peng2012surface} in different climatic zones, during different times of day and in different intensities.\\
-UHIs are so important, because heat related deaths are rising across the globe~\cite{kovats2008heat} and extreme heat waves are projected to occur more often and extreme with the ongoing climate change~\cite{lorenz2019detection}. Heat also has significant impact on human performance~\cite{kjellstrom2016heat}, mental health~\cite{obradovich2018empirical}, or might disrupt sleep~\cite{obradovich2017nighttime} and causes other issues such as overheating that causes urban infrastrcuture to fail, decreased air quality and low outdoor thermal comfort levels~\cite{stone2013climate}.
+UHIs have been the center of a lot of attention for quite some time in the scientific community. As early as 1833, with the research of Luke Howard in London who observed higher temperatures inside London than in surrounding areas~\cite{howard1833climate}, UHIs have seen a steadily increase in scientific contributions. The term \textit{Urban Heat Island} was first introduced in the 1940s~\cite{balchin1947micro}. The recording and investigation of UHIs has seen mayor steps since the begin of modern climatology, also known as the Sundborg's era beginning with Sundborg's 1951 classic heat island study of Uppsala~\cite{sundborg1951climatological}. UHIs occur in many cities around the globe~\cite{peng2012surface} in different climatic zones, during different times of day and in different intensities.\\
+UHIs are so important, because heat related deaths are rising across the globe~\cite{kovats2008heat} and extreme heat waves are projected to occur more often and extreme with the ongoing climate change~\cite{lorenz2019detection}. Heat also has significant impact on human performance~\cite{kjellstrom2016heat}, mental health~\cite{obradovich2018empirical}, or can disrupt sleep~\cite{obradovich2017nighttime} and causes other issues such as overheating that causes urban infrastrcuture to fail, decreased air quality and low outdoor thermal comfort levels~\cite{stone2013climate}.
 
 \subsection{UHI Classification}
 
-UHIs can be classified in many different ways. Typically, there is a horizontal classification, defining the superficial extension of the UHI from micro-, to local- to meso-scale, and a vertical classification, defining in which vertical layer of the urban area the heat island is observed. To better understand these scales and the anatomy of the planitory/urban boundary layer, figures \ref{fig:mesoscale boundary layer}, \ref{fig:localscale boundary layer}, and \ref{fig:microscale boundary layer} show a detailed view of the meso-, local- and micro-scale of the urban climate respectively, as illustrated by Oke 2006~\cite{oke2006guideline}.
+UHIs can be classified in many different ways. Typically, there is a horizontal classification, defining the superficial extension of the UHI from micro-, to local- to meso-scale, and a vertical classification, defining in which vertical layer of the urban area the heat island is observed. To better understand these scales and the anatomy of the planitory/urban boundary layer, Figures~\ref{fig:mesoscale boundary layer},~\ref{fig:localscale boundary layer}, and~\ref{fig:microscale boundary layer} show a detailed view of the meso-, local- and micro-scale of the urban climate respectively, as illustrated by Oke 2006~\cite{oke2006guideline}.
 
 \begin{figure}[h]
     \centering
@@ -39,16 +39,13 @@ The localscale is situated closer to the surface and contains landscape features
 \end{figure}
 
 The microscale usually ranges from a neighborhood scale to individual street canyons or even microclimates created by individual buildings. It is mayorly influenced by the overall energy balance, which is influenced by cloud coverage, solar radiation and more. Single weather stations are not enough to capture the complex microscale~\cite{oke2004siting}, therefore a dense network of sensors closer to the ground is needed to capture the microscale. Additionally, the microclimate is influenced by surface temperature (LST), however the correlation between air and surface temperature varies greatly based on other surrounding influences such as wind velocity or humidity~\cite{stoll1992surface}, especially in cases of extreme temperatures~\cite{good2016situ}. The closer the air temperature is measured to the surface, the more local the measurement, therefore air temperature of the canopy is usually measured at 2m height, so the different energy fluxes have enough time to mix together and form a more representative average for a bigger area.\\
-\\
-Vertically UHIs can be devided based on these boundary layers into three mayor types~\cite{oke1976distinction, oke2017urban}, namely Boundary Layer Heat Island (BUHI), Canopy Urban Heat Island (CUHI) and Surface Urban Heat Islands (SUHI), corresponding to the boundary layer they can be measured in.\\
-% Night vs Day time UHI
-Another differenciating factor is the time of day at which UHIs get detected. For example Steward~\cite{stewart2011systematic} in his review focussed on night time UHIs, whereas Peng et al.~\cite{peng2012surface} focussed on both day and night time UHIs.
+Vertically, UHIs can be devided based on these boundary layers into three mayor types~\cite{oke1976distinction, oke2017urban}, namely Boundary Layer Heat Island (BUHI), Canopy Urban Heat Island (CUHI) and Surface Urban Heat Islands (SUHI), corresponding to the boundary layer they can be measured in. Another differenciating factor is the time of day at which UHIs get detected. For example Steward~\cite{stewart2011systematic} in his review focussed on night time UHIs, whereas Peng et al.~\cite{peng2012surface} focussed on both day and night time UHIs.
 
 \subsection{Surface Urban Heat Island (SUHI)}
 
-The land surface temperature (LST) is measured directly at the surface of an object and is the main indicator of the surface urban heat island (SUHI). Surface temperature, in contrast to air temperature, is measured via remote sensing technologies via satellites. Well-known satellites include MODIS~\cite{didan2021modis} (NASA), Sentinel 3 (ESA), Meteosat (EUMETSAT), Landsat, and more. The different satellite types carry different types of instruments and sensors, that are able to take various measurements. The used sensor has a mayor influence on the quality of data, e.g.\ resolution via pixel size, robustness against atmospheric influences, ability to handle clouds and more. In section~\ref{sec:feature_engineering} we discuss other features next to LST that are available via satellite data.\\
-Through the use of satellites, the spatial coverage is great, but raster sizes usually range from one kilometer to a hundred, therefore the spatial resolution is not as high.
-Additionally, these satellites usually orbit earth to cover wide areas and are not geostionary, therefore only taking measurements a maximum of 1 to 2 times a day, up to every 16 days or even only once a month, depending on the orbit. As a result, the temporal resolution is quite low and especially in the case of UHI detection, this could mean that the satellite misses the peak of the UHI for a given day or even misses the UHI completely. Another downside is the general inability to take LST measurements through clouds, therefore even if the satellite passes over during a UHI, if there are clouds the UHI cannot be measured. To alleviate the problem there are new methods such as estimating LST based on emited radiation from clouds~\cite{zhang2015estimation}, however they also have their limitations. Lastly, LST and air temperature are not the same and can vary greatly, especially in extreme heat events~\cite{good2016situ}.\\
+The land surface temperature (LST) is measured directly at the surface of an object and is the main indicator of the surface urban heat island (SUHI), which can be found in many cities around the globe~\cite{peng2012surface}. Surface temperature, in contrast to air temperature, is measured via remote sensing technologies via satellites. Well-known satellites include MODIS~\cite{didan2021modis} (NASA), Sentinel 3 (ESA), Meteosat (EUMETSAT), Landsat, and more. The different satellite types carry different types of instruments and sensors, that are able to take various measurements. The used sensor has a mayor influence on the quality of data, e.g.\ resolution via pixel size, robustness against atmospheric influences, ability to handle clouds and more. In Section~\ref{sec:feature_engineering} we discuss other features next to LST that are available via satellite data.\\
+Through the use of satellites, the spatial coverage is great, but raster sizes for older satellites such as MODIS usually range from one to several kilometers, therefore the spatial resolution is not as high. For newer satellites such as Sentinel 2 and Landsat, pixel sizes are improved significantly from 10m to 50m, however complementay data such as derived vegetation indexes are usually not available as precomputed values, adding additional work to the data retrievel process, as later discussed in Section~\ref{subsec: remote sensing}.
+Additionally, weather satellites usually orbit earth to cover wide areas and are not geostionary, therefore only taking measurements a maximum of 1 to 2 times a day, up to every 16 days or even only once a month, depending on the orbit. As a result, the temporal resolution is quite low and especially in the case of UHI detection, this could mean that the satellite misses the peak of the UHI for a given day or even misses the UHI completely. Another downside is the general inability to take LST measurements through clouds, therefore even if the satellite passes over during a UHI, if there are clouds, the UHI cannot be measured. To alleviate the problem there are new methods such as estimating LST based on emited radiation from clouds~\cite{zhang2015estimation}, however they also have their limitations. Lastly, LST and air temperature are not the same and can vary greatly, especially in extreme heat events~\cite{good2016situ}.\\
 To conclude, SUHI analysis can be a good indicator that there is a UHI phenomenon present in a city and can generally direct further research, however it lacks the temporal resolution to be used for real-time UHI detection and is not able to capture microscale effects of the UHI~\cite{voogt2003thermal, voelkel2017towards}.
 
 \subsection{Canopy Urban Heat Island (CUHI)}
@@ -56,9 +53,8 @@ To conclude, SUHI analysis can be a good indicator that there is a UHI phenomeno
 The canopy UHI is measured in the canopy boundary layer several meters above ground slightly below or on the average roof layer of the surrounding buildings, as seen in fig.~\ref{fig:microscale boundary layer}. The primary measurement in the canopy is air temperature, which is used to measure the urban heat island intensity (UHII)~\cite{oke1973city}, the most commonly used way of describing the heat island maginitude~\cite{kim2021urban}.\\
 Since the beginning of modern climatology, mayor progress has been made in this research field, but methodologies and scientific rigor in CUHI research still seems to be lacking, as discussed by Stewart in 2011~\cite{stewart2011systematic}. Stewart found, that over 54\% of CUHI research was lacking proper methodologies or had other shortcommings such as a lack of site desciptions, where sensors were placed, or the disregard of non-urban factors such as local weather phenomena. In response, progress has been made in recent years by improving methodologies and ensuring correct measurements of climate-related data and study design and execution through various guidelines~\cite{oke2006guideline}, especially in urban settings, that require special care due to the huge amount of possible influences on local recording sites.\\
 Additionally, the UHII is highly related to other climatic factors such as wind, cloud cover, and precipitation and is tightly linked to the selection of the recording site~\cite{fenner2019contrasting}, therefore such factors need to be taken into account when measuring the UHII.\\
-Compared to LST, TA is measured in situ via weather station networks or other types of sensor networks. 
-
-
+% TODO: how and where is it measured
+Compared to LST, TA is measured in situ via weather station networks or other types of sensor networks.
 
 \subsubsection{Shared UHI Challenges} % TODO: Rewrite to UHII and UCZ
 
@@ -178,6 +174,7 @@ More honorable mentions from outside the EU:\\
 \section{Sensing Applications}
 
 \subsection{Remote Sensing}
+\label{subsec: remote sensing}
 
 In comparison to stationary sensors that are installed directly in the environment they are observing, remote sensing describes the process of observing a target environment from afar~\cite{campbell2011introduction}. In climatology, remote sensing is used to collect meteological data via satellites, planes or ballons by either capturing image data, that can be used to identify things like cloud and land coverage, by measuring passive radiation, or by actively sending out microwaves or using LIDAR to detect features such as surface temperature, e.g. LST data. Remote sensing comes with its own set of advantages and challenges.\\
 The major upside of sensors moving way above ground is the high spatial coverage, that allows for meso- and planetary-scale anaylsis of weather phenomena. Another upside is the great data availibility, as many satellite providers, such as ESA..., publish their satellite data. This creates many research opportunities, and many services directly rely on these measurements (todo list).\\ % gridded data
@@ -232,6 +229,45 @@ todo: more
 - based on GIS 
 - pipeline: fit measured data points to grid, interpolate missing squares
 downside: cannot find local maximas/minimas
+
+% \section{Machine Learning in Geostatistics}
+
+% Idea/Hyphothesis: ML outperforms traditional geostatistical models (in certain scenarios) as it is able to capture more complex interdependencies between features and isn't necessarily bound to the (mathematical) assumptions of geostatistical models.
+
+% On important point to mention, is that different meteological features have different interpolation techniques, as they beve different (physical) properties. For example, temperature is a scalar value, while wind speed and direction are vector values. Relative humidity on the other hand is a relativ value that is bound between 0 and 1. For percipitation it gets even more complex, as rainfall is highly connected to cloud coverage and movements. In the following, we will take a look at commonly used existing interpolation techniques for different meteological features and discuss data preprocessing steps.
+
+% - Dealing with sparse data
+% - Dealing with extreme weather events (e.g. heat waves, blizzards, etc.)
+% - how can a ML model be trained if no such data exists for a given area? -> transfer learning
+
+% \subsubsection{Temperature Interpolation}
+% - difference between air and surface temperature
+
+% surface temperature -> solar radiation, surface roughness, emissivity, soil moisture, soil temperature, vegetation cover, snow cover, and surface slope
+
+% air temperature -> surface temperature
+
+% \subsubsection{Wind Speed and Direction Interpolation}
+% prob not easily archivable with ML -> depends on high/low pressure areas
+
+% \subsubsection{Relative Humidity Interpolation}
+% Data preprocessing: scale to [0, 1]
+% does not seem to work well with kriging, maybe just nearest neighbor approach/linear, or the input values are just not accurate
+
+% \subsubsection{Percipitation Interpolation}
+
+% DeepLearning Lecture
+% - sequence modeling design criteria
+%     - handle variable-length sequences
+%     - track long term dependencies
+%     - maintain information about order
+%     - share parameters across the sequence
+
+% % TODO: quick implementation summary
+% The model is implemented following advice from~\cite{rey2023geographic}...
+
+% Additonal ideas:
+% - types of geological features (vectors, rasters) -> distance, containment, intersection, etc. 
 
 \subsection{Applications for Machine-Learning}
 
