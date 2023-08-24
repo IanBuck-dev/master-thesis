@@ -13,6 +13,7 @@ The main downside of this approach is the lack of quality control and meta data,
 In this work, data from PWS networks is used to create datasets for the training and evaluation of ML models for air temperature interpolation. In the following sections, we take a look at available PWS providers and their data, look at potential features for air temperature interpolation, discuss additonal pre-processing steps such as quality control or sensor height correction, and finally discuss the construction of the datasets used in this work.
 
 \section{Private Weather Station Network Providers}
+\label{sec: private weather station network providers}
 
 PWS providers offer a platform for users to upload their sensor data and either sell weather stations and sensors themselves such as Netatmo, or provide guides to allow users to connect their own sensors to the platform such as Sensor.Community. Netatmo data in particular has been used in several studies~\cite{meier2017crowdsourcing, hahn2022observations, venter2020hyperlocal, zumwald2021mapping} and has seen complementary studies for example discussing QC\\
 processes~\cite{fenner2021crowdqc+}, later seen in Section~\ref{sec:quality control}. There are also other PWS network providers such as Sensor.Community or Weather Underground (WOW) that have been used in several studies~\cite{ho2014mapping}. In order to find out which provider best fits our needs in this work, the following section compares the different providers and their data.
@@ -159,6 +160,21 @@ The Office for Environmental Protection of the city of Stuttgart has the goal of
 
 % TODO: figure of DWD with DWD and stuttgart stations. Possiblity of correcting the stations with the DWD data.
 
+\section{Remote Sensing Data Providers}
+
+\subsubsection{Remote Sensing}
+\label{subsec: remote sensing}
+
+In comparison to stationary sensors that are installed directly in the environment they are observing, remote sensing describes the process of observing a target environment from afar~\cite{campbell2011introduction}. In climatology, remote sensing is used to collect meteological data via satellites, planes or ballons by either capturing image data, that can be used to identify things like cloud and land coverage, by measuring passive radiation, or by actively sending out microwaves or using LIDAR to detect features such as surface temperature, e.g. LST data. Remote sensing comes with its own set of advantages and challenges.\\
+The major upside of sensors moving way above ground is the high spatial coverage, that allows for meso- and planetary-scale anaylsis of weather phenomena. Another upside is the great data availibility, as many satellite providers, such as ESA..., publish their satellite data. This creates many research opportunities, and many services directly rely on these measurements (todo list).\\ % gridded data
+% remote sensing challenges
+Remote sensing also comes with some downsides. The primary downside is the low spatio-temporal resolutions. Weather satellites usually are not orbit-stationary and move around earth on a predetermined orbit. As a consequence, satellites only pass over each individual area a couple times a day, making real-time applications for currently unobserved areas impossible. Additinally, the spatial resolution can be too low for micro-/local-scale analysis, with typical LST resolution spanning from 1 km$^{2}$ to tens or even hundreds of km$^{2}$ per data point/grid field. In the atmosphere, there is also a lot of environmental noise, like radiation, that can have a negative influence on the measurement accuracy. Another disturbing factor can be clouds or other types of particles like rain, that absorb radiation/microwaves sent from the sensors, traditionally making measuring under cloudy/rainy conditions either impossible (example) or less accurate (example), by instead relying on outgoing radiation from the surface. These restrictions highly depend on the sensor used, as different sensors use different 
+sensors use different technologies, e.g. microwaves with different wave lengths or higher resolution sensors.
+
+\subsection{Google Earth Engine}
+
+Todo: Explain usage
+
 \section{Quality Control}
 \label{sec:quality control}
 
@@ -260,6 +276,69 @@ It is interesting to note that stations directly next to water seem to be remove
 
 The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. Based on the features, different models can be used for completely different tasks such as interpolation compared to extrapolation. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models.
 Especially in the context of air temperature interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the air temperature at canopy height, e.g. 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, satellite data such as land cover and vegetation health or LST, and additonal meta data such as soil conditions or zoning plans. The goal of this section is to give an overview of the different features that can be used for air temperature interpolation and discuss several highly important features that are especially relevant in the context of urban microclimate.
+
+% TODO: rewrite
+
+Next to the model, the most important thing for a machine learning algorithm is the data. Even when the model is perfectly suited for the task at hand, if the data is not suitable, e.g. not enough data, wrong quality, wrongly prepared or formatted etc., the model will not be able to perform well. In the following, we take a look at the data coming from the data-layer and discuss important assumptions such as spatial and temporal autocorrelation. These correlations are important to consider, as they could invalidate models as f.e. Linear Regression~\ref{subsec: linear regression} assumes uncorrelated input variables.\\
+First of all, the data-layer exposes a variety of single data-points for various features for different locations for current and past points in time.
+.Features other than air temperature could further improve the predecition quality, like how~\cite{alonso2020new} suggests that in their study the Normalized Difference Vegetation Index (NDVI) and Modified Normalized Difference Water Index (MNDWI) have a strong impact on their estimation model. Therefore, we discuss how additional features can be included in the model.\\
+This model should then be deloyed inside the \textit{service-layer} and act as a building block for further temperature related research and analysis, as air temperature is an important variable for research in agronomy, meteorology, hydrology, ecology and many other fields of application and could be used for UHI detection in the context of smart cities. The general idea and architecture behind the model should not only be applicable for air temperature, but also other types of output features, even tho potentially significant domain knowledge, like in geostatistical analysis and statistics, is required to select and prepare the input features.\\
+% TODO: summary of the assumptions for the geolocation data
+Generally, there are different types of input features. Firstly, there are discrete measurements that capture the underlying continuous geological process as a specific value at a certain point in time. Examples for this are the measurements from sensors which might be deployed in an urban environment to capture air temperature, humidity and more. Important to note here is the interval, the values are captured. For example, a sensor might capture the air temperature as the average over five minutes, whereas a rain sensor might capture the absolute amount of rain in a specific time interval. Secondly, there are calculated features, which might be derived from the discrete measurements or the location of a measurement. For example, the distance to the closest body of water with a minimum size of $x^2$ meters might be a important information for the air temperature. Lastly, ...\\
+% data from gridded data sources (e.g. affiliation to postal code, district...)
+In the following chapter, we discuss how different types of correlation between measurements can be taken into account to improve the model and gain additional insights into local (meteological) dynamics.
+
+\subsubsection{Spatial Autocorrelation}
+% How different measurements are spatially related inside a time series
+
+As discussed in chapter \ref{chap:Related Work}, there is a dependency between air temperature and other meteological features and the location of the sensors. The closer a sensor is to another sensor, the more correlated the sensor readings should be.
+In geo-statistics, this is called spatial autocorrelation and can be defined traditionally with the Moran's I index~\cite{moran1948interpretation} or the Geary's coefficient~\cite{geary1954contiguity}. 
+% TODO: explain autocorrelation and the implications for ML models
+% model assumptions: no ML algorithm that expects independence between observations
+% feature selection: including all correlated features can lead to overfitting
+% spatial feature engineering: add additional features that encode the spatial relationship between sensors
+% spatial smoothing:
+% spatial aware algorithms: geographically weighted regression (GWR) 
+
+This relationship is however greatly influenced by the type of feature and the location of a sensor. As explained in \cite{oke2006guideline}, the sensor placement in the urban environment is a complex task, as the urban environment is highly dynamic and sensors can be influenced by highly local phenomena, such as air temperarture by heat vents or solar radiation by buildings and surface materials. For this model, we assume that the sensors are placed in a way that the sensor readings are representative for the area they are placed in, even tho in practice this assumption might not hold up, especially for sensors placed by non-experts.\\
+Each sensor reading from the data-layer has a location associated with it in the form of longitute, latitude and altitude (if available). This information can be used to calculate the distance between sensors and subsequently the correlation between sensor readings. However, how exactly the distance between two locations is calculated is not trivial. As the earth is a sphere, the distance between two points on the surface is not a straight line. Depending on the application, different distance metrics can be used. For a small area, such as the city of Hamburg, the euclidean distance could be sufficient, as the curvature of the earth for a small distance is negligible. However, for larger areas the geodesic (harvesine) distance might be more appropriate. In this work, we are focussing on a single city including it's surrounding area, therefore the euclidean distance should have a sufficient accuracy while also simplifing the calculation. As the city of Hamburg does not have big differences in elevation, the altitude is not considered in the distance calculation.\\
+% grid area -> each data point is in a grid cell. Multiple data points can be in the same grid cell. If this is the case, the readings are averaged. Outliers based on the overall mean temperature are removed. -> this is done in the data layer
+The location data can be incorporated into the input data in several ways. The most straight forward way would be to just include the longitude and latitude as input features. Depending on the type of model used, these values might need to be normalised. For example, tree-based models do not require normalisation (cite), as they are not sensitive to the scale of the input features. However, neural networks are very sensitive to the scale of the input features and therefore require normalisation (cite). This approach has the downside, that the distance between sensors is not directly encoded in the input data. If this information is important for the model, it could be included by precalculating the distances between all sensors, however this would increase the complexity of the model especially for large amounts of sensors, as this would result in a quadratic number of input features.\\
+The next approach would be to convert the 
+
+- area n x m grid of data points, each grid cell with n x n size (depending on the resulution), 4D space with location as x and y coordinates (euclidean distance -> but only for smaller areas such as city of Hamburg and suroundings), time as z coordinate and feature values as w coordinate.\\
+
+\subsubsection{Temporal Autocorrelation}
+% How different measurements are temporally related inside a time series
+
+- trends
+-> expect normally distributed temperature curve
+-> temporal lag (e.g. temperature of yesterday has influence on temperature of today)
+
+Either explicitly model 
+
+\subsubsection{Temporal Cross Correlation}
+% How different time series are related to each other (seasonaility)
+
+% TODO
+\subsubsection{Dealing with Correlation}
+\label{subsec:Dealing with Correlation}
+
+Todo: Techniques to turn correlated variables into uncorrelated ones
+- principal component analysis (PCA)
+- ...\\
+
+variance inflation factor (VIF)\\
+-> over 10 = invalid model\cite{montgomery2021introduction}
+-> others more moderate with max 3 \cite{zuur2010protocol}
+
+\subsubsection{Dealing with Uncertainty}
+- The model has a lot of uncertainty
+- model uncertainty in input data? (depending on sensor type, sensor age, placement...)
+
+- dealing with bias
+- dealing with variance
+-> problem of over-fitting
 
 \subsection{Feature Overview}
 

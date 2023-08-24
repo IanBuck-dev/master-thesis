@@ -2,6 +2,16 @@
 \label{chap:Conclusion}
 % 3 Pages
 
+single station interpolation works very good with RMSE between 0.4 and 0.5
+- because other factors, such as height of the station due not play an important part, as long as the distribution of the temperature is the same
+
+areal interpolation way harder. probably because information is missing (target variable for location/grid cell and height), making it hard to f.e. select stations only at 2m height that are representative for a larger area. Combination with LST however possible (should be investigated)
+
+how these could be integrated -> interpolation service / temperature map that integrates multiple providers and allows interactive analysis. current tool set with python very flexible, but slow. dataset availability could be way better, especially with pre-processed data, so that one can focus on the actual comparison.
+
+comparison of model should have been done with more models, and f.e. should include state of the art implementation from f.e. ArcGIS. 
+
+final recommendation. create virtual sensors based on moving sensors -> use those virtual sensors to augment actual sensor data and then use eact interpolation methods such as Kriging to create a smooth surface.  
 \section{Summary}
 
 - discuss low amount of parameters and curse of dimensionality\\

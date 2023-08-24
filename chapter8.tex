@@ -138,30 +138,7 @@ Further improvements
 baseline: mean, IWD, ordinary kriging (with different kernels)
 
 \subsection{Geostatical Interpolation Baseline}
-In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) or k-nearest neighbours (KNN) that are easy and performant, but struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Krigin, which is based on a gaussian process and uses a covariance function to model the spatial correlation between data points. The covariance function is a measure of the similarity between two data points, which is used to calculate the weight of the data point in the interpolation process. There are different types of Krigin methods available, each suited for different use cases, including:
-
-\begin{enumerate}
-    \item Simple Krigin: the simplest form of Krigin, that assumes that the mean of the measured values is known and constant
-    \item Ordinary Krigin: same as Simple Krigin, but the mean is an unknown constant
-    \item Universal Krigin: instead of assuming a constant mean, the mean is modeled as a deterministic function
-    \item Indicator Krigin: same as Ordinary Krigin, but for categorical data
-    \item Propability Krigin: same as Indicator Krigin, but assumes two types of random errors that can are each auto-correlated and cross-correlated to each other
-    \item Disjunctive Krigin: same as Ordinary Krigin, but tries to improve the prediction quality by using an unknown constant and approximating an arbitrary function. It requires the bivariate normality assumption and is difficult to verify and solutions might be mathematically and computationally complicated
-    \item Cokrigin: offers methods for the previous Krigin methods, but uses information on several variable types. This could improve the prediction quality, but might increase the variance of the prediction, as more much more estimation is required
-\end{enumerate}
-
-In the context of geostatistical analysis, there are different types of Krigin methods available that combine the aforementioned methods with other techniques, such as regression analysis. The following list is the geostaticial methods offered by ArcGIS Pro as part of the Geostatical Analyst toolbox~\footnote{\url{https://pro.arcgis.com/en/pro-app/latest/tool-reference/geostatistical-analyst/an-overview-of-the-geostatistical-analyst-toolbox.htm}}:
-
-% TODO: add more details for each method
-\begin{enumerate}
-    \item Empirical Bayesian Krigin (EBK)
-    \item Empircal Bayesian Krigin 3D (EBK3D)
-    \item EBK Regression Prediction (EBKRP): Empirical Bayesian Kriging with regression prediction
-    \item Global Polynominal Interpolation
-    \item Kernel Interpolation with Barriers
-    \item Moving Window Krigin
-    \item Radial Basis Function
-\end{enumerate}
+In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) or k-nearest neighbours (KNN) that are easy and performant, but struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Krigin, which is based on a gaussian process and 
 
 In the scope of this work, we unfortunately cannot compare all of these methods with each other and therefore need to focus on a subset of methods. EBK and EBKRP are one of the most commonly used methods for temperature interpolation (cite). According to \cite{njoku2023effects}, EBKRP continously outperforms EBK in different weather station density scenarios, therefore we will use EBKRP as a baseline for our comparison.\\
 In the following, the machine learning fundamentals for this work are explained and the different ML regression model types are introduced.
