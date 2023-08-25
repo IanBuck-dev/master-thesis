@@ -7,7 +7,7 @@ Due to the great flexibility of ML models, each model can be fit to completely d
 
 \subsubsection{AI vs. Machine Learning vs. Deep Learning}
 
-Before diving deeper into the applications of ML, we need to clarify what is meant by artificial intelligence (AI), machine learning (ML) and deep learning (DL). AI is a broad term that is used to describe the ability to perform tasks, that are usually associated with human intelligence. ML is a subfield of AI, that focuses on the ability of a system to learn from data without being explicitly programmed to do so. Finally, DL is a subfield of ML, that uses artificial neural networks, which imitate the structure of the human brain, to learn from data and perform various tasks.
+Before diving deeper into the applications of ML, we need to clarify what is meant by artificial intelligence (AI), machine learning (ML) and deep learning (DL). AI is a broad term that is used to describe the ability to perform tasks, that are usually associated with human intelligence. ML is a subfield of AI, that focuses on the ability of a system to learn from data without being explicitly programmed to do so. Finally, DL is a subfield of ML, that uses artificial neural networks (ANN), or also called Simulated Neural Network (SNN), which imitate the structure of the human brain, to learn from data and perform various tasks.
 
 \section{Machine-Learning Application Areas in Air Temperarture Interpolation}
 
@@ -114,9 +114,17 @@ In the case of predicting a continuous target variable, regression trees can be 
     \hat{y} = \sum_{m=1}^M c_m \mathbb{1}(x \in R_m)
 \end{equation}
 
-Regression trees are comparitively easy to understand and interpret and offer certain benefits such as feature insensitivity, meaning that features do not need to be scaled before usage and can be used as is. In \cite{zumwald2021mapping} Zumwald et al.\ choose to use Quantile Regression Forests (QRF)~\cite{meinshausen2006quantile} for mapping hyperlocal air temperature in Zurich, Switzerland, due to the flexibility and predictive power of ensemble-based approaches and the ability to still gain additional insights into the algorithms' inner workings via variable importance and prediction uncertainty estimation. They note however, that Neural Network and Deep Learning approaches allow for even larger flexibility and predictive power, but lack behind in other areas such as the aforementioned interpretability.
+Regression trees are comparitively easy to understand and interpret and offer certain benefits such as feature insensitivity, meaning that features do not need to be scaled before usage and can be used as is. In~\cite{zumwald2021mapping} Zumwald et al.\ choose to use Quantile Regression Forests (QRF)~\cite{meinshausen2006quantile} for mapping hyperlocal air temperature in Zurich, Switzerland, due to the flexibility and predictive power of ensemble-based approaches and the ability to still gain additional insights into the algorithms' inner workings via variable importance and prediction uncertainty estimation. They note however, that Neural Network and Deep Learning approaches allow for even larger flexibility and predictive power, but lack behind in other areas such as the aforementioned interpretability. In the following we get an overview of RMSE and R2 values achived by related studies.\\
+Ho et al.~\cite{ho2014mapping} mapped maximum daily air temperatures for Vancouver, Canada on hot summer days and combined remote sensing TM/ETM data from Landsat with field observations from Environment Canada and Weather Undergorund (WoW). They compared Ordinary least squares regression, SVM regression, and Random Forest Regression and achived the following RMSE:
 
-Related: Canada with Weather Undergorund (WoW)~\cite{ho2014mapping} -> RMSE = 2.31 °C
+\begin{itemize}
+    \item Random Forest:\ RMSE 2.31°C
+    \item SVM:\ RMSE 2.46°C
+    \item Ordinary least squares regression:\ RMSE 2.46°C
+\end{itemize}
+
+They also added, that stations closer to the ocean had higher estimation errors, possibly due to more variable wind patterns~\cite{runnalls2000dynamics}.\\
+Hengl et al.~\cite{hengl2018random}
 RFsp~\cite{hengl2018random} Random Forest for spatial prediction
 Random Forest for spatial Interpolation (RFSI)~\cite{sekulic2020random}
 
@@ -125,18 +133,11 @@ There are a couple of studies that use regression trees for temperature interpol
 In \cite{zumwald2021mapping} the authors used the quantile regression forest algorithm
 use regression trees to predict the daily maximum and minimum air temperature for the city of Zurich, Switzerland. They achieve an average RMSE of 1.5 °C (R2 = 0.7) and 1.4 °C (R2 = 0.7) for the daily maximum and minimum air temperature respectively by combining 20 features from satellite data and PWS from the Netatmo network.\\
 
-In \cite{ho2014mapping}... % TODO: add more text
-- good for reference stations
-- worse for WOW stations + stations close to the ocean\\
-
 There is a systematic bias to underestimate high temperatures and overestimate low temperatures~\cite{zumwald2021mapping, zhang2012bias}
 
 \subsection{Histogram-Based Gradient Boosting}
 
-
-
-\cite{apaydin2022evaluation}
-- sklearn docs
+Similar to Random Forests, Histogram-Based Gradient Boosting (HGB) is an ensemble-based estimator that combines multiple estimators, in this case gradient boosting decision trees, and averages the results to get a more robust estimation. Compared to Random Forests, HGB as implemented by sklearn~\footnote{\url{https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html}, \textit{last accessed: 25.08.2023}} based on LightGBM~\cite{ke2017lightgbm}, should have better performance, especially for bigger datasets and higher dimensional features, has build-in support for missing values which simplifies data pre-processing steps, and finally seems to slightly outperform RF according to the sklearn documentation~\footnote{\url{https://scikit-learn.org/stable/auto\_examples/ensemble/plot\_forest\_hist\_grad\_boosting\_comparison.html}} and other studies~\cite{apaydin2022evaluation}.
 
 \subsubsection{Bagging Methods}
 
@@ -149,6 +150,8 @@ In order to decrease the variance of a single tree predictor, bagging is used to
     \item \textbf{Random Patches}: Splitting both samples and features into different subsets~\cite{louppe2012ensembles}
 \end{itemize}
 
+Due to the popularity of RF as an extension of bagging methods, we do not consider these bagging methods further in this work.
+
 \subsection{Support Vector Machine Regression}
 
 Support Vector Machines (SVM) are typically used in classification problems, however they can be also used for regression problems, called Support Vector Regression (SVR). SVMs transform the input data into a higher dimensional space and try to find a hyperplane that separates the data into two classes. This approach is similar to linear regression, however SVMs are more robust to outliers and can be used for non-linear problems. Depending on the Kernel function used, e.g. Linear, Polynomial, Radial Basis Function (RBF) or Sigmoid, the model can suffer from the same problems as linear regression when dealing with correlated spatial data.
@@ -156,35 +159,6 @@ As a result, appropriate counter measures need to be taken, such as using the Ma
 
 \subsection{Neural Networks}
 
-- trade off between interpretability and model capabilities
-- more data needed to train the network, because there are more weights to train
-
-Neural networks 
-
-\subsubsection{Deep Neural Networks}
- 
-- approximation theorem
-- special form of neural networks with hidden layers
-
-- overparametrization
-
-% TODO
-
-
-
-\subsubsection{Neural Network Models}
-input layer -> hidden layers -> output
-
-The advantages of Multi-layer Perceptron are:
-- Capability to learn non-linear models.
-- Capability to learn models in real-time (on-line learning) using partial\_fit.
-
-The disadvantages of Multi-layer Perceptron (MLP) include:
-- MLP with hidden layers have a non-convex loss function where there exists more than one local minimum. Therefore different random weight initializations can lead to different validation accuracy.
-- MLP requires tuning a number of hyperparameters such as the number of hidden neurons, layers, and iterations.
-- MLP is sensitive to feature scaling.
-
-- Loss functions/optimzers: Stochastic Gradient Descend, Adam, L-BFGS
-
-
-- random forest regression
+ANNs are a more advanced ML method that takes inspiration from the human brain and electrical impulses being transmitted by neurons. An ANN is build up of neurons which are grouped in layers that are connected and have activation functions and weights, that get trained during the learning process. The most simple ANN is the perceptron~\cite{rosenblatt1957perceptron} which models one single neuron, consisting of one or many inputs, a single processor, and a single output. An ANN usually consists out of one input and output layer, and one to many hidden layers. If there are more than one hidden layer, the ANN is usually called Deep Neural Network (DNN) and we speak from Deep Learning~\cite{lecun2015deep}. ANNs have many hyperparameters and weights to train, therefore they need more data to train. Additionally, ANNs act more like a black box, so model analysis such as feature importance is not possible. Generally speaking, using ANNs is a trade-off between model capability, available data to train and test, and the explainability of the model.\\
+As previously mentioned, the universal approximation theorem by Hornik et al.\ states how capable ANNs can be~\cite{hornik1989multilayer}. Depending on how the model is setup, e.g.\ as a feed-forward network or a directed acyclic graph (DAG) where layers feed back into each other, the type of loss-function, and the type of learning method, such as Stochastic Gradient Descend, ANNs can be adapted to many problems such as regression and interpolation.\\
+Due to the complexity of ANNs and the lacking explainability of the model, we do not focus on the ML method in this work, however want to keep in mind that ANNs could be a powerful tool for tasks such as LST and air temperature estimation and prediction~\cite{yuan2020deep}.
