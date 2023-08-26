@@ -19,7 +19,6 @@ As meteorological research and analysis activities are usually in need of gridde
 \end{itemize}
 
 Research suggests that for fine-granular spatio-temporal urban air temperature maps, a sensor density of at least 1 sensor per km$^{2}$ is needed~\cite{venter2020hyperlocal}, however the denser the sensor network the better the prediction quality, as even inside a single street canyon air temperatures can easily vary by 2 to 3°C~\cite{sugawara2008temperature}.
-% TODO: write about other influence sizes, e.g. 10m -> 1km for different features, + the variability of sensors, e.g. inside a street canyon 2-3°c differences.
 In order to achive this sensor density as well as to gain insights into previously unobserved areas and to minimise prediction uncertainty for those areas, hybrid approaches combining stationary and moving sensors have shown to work better than purely stationary networks by covering more ground as well as reducing variability of purely mobile network setups in the context of urban temperature sensing~\cite{yang2019designing}. The combination of reference grade stationary sensors and moving sensors also shows promise in other related application, e.g.\ in the context of pollution island detection~\cite{iyer2022modeling}.\\
 In the context of this work, we discuss both ML applications and try to show the feasability and potentials of ML-based interpolation in the context of urban air temperature sensing.
 In the following, we introduce several ML algorithms that can be used for regression tasks and discuss how they need to be adapted in order to solve interpolation tasks as well as the advantages and disadvantages of each model. The models will be implemented as prototypes and evaluated in Chapter~\ref{chap:Evaluation}.
@@ -69,9 +68,7 @@ In regression analysis, the goal is to predict a (continous) target variable $y$
     \end{itemize}
 \end{itemize}
 
-% TODO: explain why not other methods have been used.
-
-Next to these algorithms, there also exist less popular regression algorithms, such as outlined in~\cite{li2014spatial}, however due to the limited scope of this work, we only take a look at ML models listed above, who are implemented in the popular \textit{sklearn} ML library~\cite{scikit-learn}.
+Next to these algorithms, there also exist less popular interpolation methods, such as outlined in~\cite{li2014spatial}, however due to the limited scope of this work, we only take a look at ML models listed above, who are implemented in the popular \textit{sklearn} ML library~\cite{scikit-learn}.
 Each model has certain benefits but also comes with drawbacks or special assumptions for the input data to the model. First, we will discuss each model and then compare these assumptions with the data coming from the data-layer, to identify suitable models for the task of air temperature interpolation.
 Based on the domain, there already exist proposed best-practices for which algorithms to use for what applications. In the context of smart cities such recommendations exist for topics such as intelligent transportation systems, smart grids, smart city health care and more can be found in~\cite{ullah2020applications}, which does not cover interpolation. In the context of air temperature interpolation, regression forests and histogram-based gradient boosting seem to be popular choices and perform better compared to other methods~\cite{apaydin2022evaluation, ho2014mapping}.
 
@@ -83,37 +80,29 @@ Based on the domain, there already exist proposed best-practices for which algor
 
 Linear regression~\cite{montgomery2021introduction} is a comparatively simple, yet very powerful and widely used model for regression problems. The goal of this model is to predict a continous dependent variable based on a number of independent variables. These independent variables can be either continous or discrete. The model can be expressed as follows:
 
-% TODO: explain equation
 \begin{equation}
     y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_n x_n + \epsilon
 \end{equation}
 
-where $y$ is the dependent variable, $x_1$ to $x_n$ are the independent variables, $\beta_0$ to $\beta_n$ are the parameters of the model and $\epsilon$ is the error term. The relationship between the parameters is assumed to be liniear, while each variable must be independent of each other. Due to this independent assumption, there are special steps needed to make linear regression work for (geo-) spatial data, as these types of variables are usually correlated with each other. This is further discussed in~\ref{subsec:Dealing with Correlation}.\\
+where $y$ is the dependent variable, $x_1$ to $x_n$ are the independent variables, $\beta_0$ to $\beta_n$ are the parameters of the model and $\epsilon$ is the error term. The relationship between the parameters is assumed to be linear, while each variable must be independent of each other. Due to this independent assumption, there are special steps needed to make linear regression work for (geo-) spatial data, as these types of variables are usually correlated with each other. This is further discussed in~\ref{subsec:Dealing with Correlation}.\\
 Linear regression has the advantage, that it is a very simple model, therefore the majority of work needs to be done in the feature engineering process. The downside is that there is no inherent support for spatial or temporal correlation and the model cannot be used to fit non-linear functions. In order to fit no-linear functions, polynomial regression can be used, which can however lead to overfitting especially when the degree of the polynomial is high.\\
 Linear models seem to perform worse in urban temperature related settings, as they are unable to capture non-linear effects~\cite{voelkel2017towards}, therefore this model with only be evaluated briefly.
 
 \subsection{KNN Regression}
 
-K-Nearest Neighbours (KNN) is a simple algorithm that can be used for both classification~\cite{cover1967nearest} and regression problems~\cite{altman1992introduction}. The main idea behind KNN is the assumption, that data points near each other are more similar than data points that are further away. As a result, the $k$ nearest neighbours, either by number or by radius, of a data point are used to predict the target variable. The number of nearest neighbours is a hyperparameter that needs to be tuned in order to find the best trade of between bias and variance. The model can be expressed as follows:
+K-Nearest Neighbours (KNN) is a simple algorithm that can be used for both classification~\cite{cover1967nearest} and regression problems~\cite{altman1992introduction}. The main idea behind KNN is the assumption, that data points near each other are more similar than data points that are further away. As a result, the $k$ nearest neighbours, either by number or by radius, of a data point are used to predict the target variable. The number of nearest neighbours is a hyperparameter that needs to be tuned in order to find the best trade of between bias and variance. The model with equal weights per neighbour can be expressed as follows:
 
-% Todo: check if correct
 \begin{equation}
     \hat{y} = \frac{1}{k} \sum_{i=1}^{k} y_i
 \end{equation}
 
-where $\hat{y}$ is the predicted target variable, $k$ is the number of nearest neighbours and $y_i$ is the target variable of the $i$-th nearest neighbour.\\
+where $\hat{y}$ is the predicted target variable, $k$ is the number of nearest neighbours and $y_i$ is the target variable of the $i$-th nearest neighbour. Additionally, weight could be assigned to individual neighbours to for example weight closer neighbours higher.\\
 KNN is part of the family of non-parametric models, meaining they do not make any strong assumptions about the underlying regression curve. KNN is a simple yet powerful model and based on the weight function, all predictions can either be weighted equally, by distance, or by a custom function, that allows potentially more complex weight calculations.
 
 \subsection{Regression Trees and Random Forests}
 
-Tree predictors are used for a wide variety of classification and regression problems. Due to the fact that tree predictors are unstable, e.g.\ vary significantly given similar inputs, and tend to overfit, random forests were introduced as a counter measure. Random forests combine multiple tree predictors and train them on different features and subsets of data and either average their predictions in order to reduce the variance or use boosting methods to reduce the bias of a combined estimator~\cite{breiman2001random}.\\
-In the case of predicting a continuous target variable, regression trees can be used. The principle behind regression trees is to split the data into continously smaller sub-sets, and organise the splitting points in a way that minimises the error. Compared to decision trees which try to minimise the entropy, regression trees try to minimise an error that is compatible with a continous target variable such as mean squared error (MSE). The model can be expressed as follows:
-
-% TODO: explain equation or remove.
-\begin{equation}
-    \hat{y} = \sum_{m=1}^M c_m \mathbb{1}(x \in R_m)
-\end{equation}
-
+Tree predictors are used for a wide variety of classification and regression problems. Due to the fact that tree predictors are unstable, e.g.\ vary significantly given similar inputs, and tend to overfit, random forests were introduced as a counter measure. Random forests (RF) combine multiple tree predictors and train them on different features and subsets of data and either average their predictions in order to reduce the variance or use boosting methods to reduce the bias of a combined estimator~\cite{breiman2001random}.\\
+In the case of predicting a continuous target variable, regression trees can be used. The principle behind regression trees is to split the data into continously smaller sub-sets, and organise the splitting points in a way that minimises the error. Compared to decision trees which try to minimise the entropy, regression trees try to minimise an error that is compatible with a continous target variable such as mean squared error (MSE).\\
 Regression trees are comparitively easy to understand and interpret and offer certain benefits such as feature insensitivity, meaning that features do not need to be scaled before usage and can be used as is. In~\cite{zumwald2021mapping} Zumwald et al.\ choose to use Quantile Regression Forests (QRF)~\cite{meinshausen2006quantile} for mapping hyperlocal air temperature in Zurich, Switzerland, due to the flexibility and predictive power of ensemble-based approaches and the ability to still gain additional insights into the algorithms' inner workings via variable importance and prediction uncertainty estimation. They note however, that Neural Network and Deep Learning approaches allow for even larger flexibility and predictive power, but lack behind in other areas such as the aforementioned interpretability. In the following we get an overview of RMSE and R2 values achived by related studies.\\
 Ho et al.~\cite{ho2014mapping} mapped maximum daily air temperatures for Vancouver, Canada on hot summer days and combined remote sensing TM/ETM data from Landsat with field observations from Environment Canada and Weather Undergorund (WoW). They compared Ordinary least squares regression, SVM regression, and Random Forest Regression and achived the following RMSE:
 
@@ -124,16 +113,41 @@ Ho et al.~\cite{ho2014mapping} mapped maximum daily air temperatures for Vancouv
 \end{itemize}
 
 They also added, that stations closer to the ocean had higher estimation errors, possibly due to more variable wind patterns~\cite{runnalls2000dynamics}.\\
-Hengl et al.~\cite{hengl2018random}
-RFsp~\cite{hengl2018random} Random Forest for spatial prediction
-Random Forest for spatial Interpolation (RFSI)~\cite{sekulic2020random}
+Hengl et al.~\cite{hengl2018random} adapted the RF algorithm to take advantage of spatial and temporal variables, called Random Forest for Spatial Predictions Framework (RFsp). They compared the following ways of modelling spatial relations:
 
-There are a couple of studies that use regression trees for temperature interpolation. In \cite{venter2020hyperlocal} the authors achive an average RMSE of 0.52 °C (R2 = 0.5), 1.85 °C (R2 = 0.05) and 1.46 °C (R2 = 0.33) for annual mean, daily maximum and minimum air temperature respectively for the city of Oslo, Norway by combining 20 features from satellite data and PWS from the Netatmo network.
+\begin{itemize}
+    \item Geographical coordinates (north, east)
+    \item Euclidean distances to reference points (center, edges) of the study area 
+    \item Euclidean distances to sampling locations, e.g.\ distance matrices also used in geostatistics
+    \item Downslope distances for hydrological analysis
+    \item Resistance distances or weighted buffer distances
+\end{itemize}
 
-In \cite{zumwald2021mapping} the authors used the quantile regression forest algorithm
-use regression trees to predict the daily maximum and minimum air temperature for the city of Zurich, Switzerland. They achieve an average RMSE of 1.5 °C (R2 = 0.7) and 1.4 °C (R2 = 0.7) for the daily maximum and minimum air temperature respectively by combining 20 features from satellite data and PWS from the Netatmo network.\\
+They found, that only using coordinates resulted in lower R2 and higher MSE errors compared to distances between sampling locations, and concluded that RFsp performed similar to OK, however without the downsides of needing to create and fit a variogram, no manual trend building, no need to define a search radius for Kriging, no transformation of the target variable, spatial autocorrelation and correlation with spatial environmental factors are modelled together, and variable importance shows which observations and covariants have the most influence on the predictions. They described the advantages of RF as follows:
 
-There is a systematic bias to underestimate high temperatures and overestimate low temperatures~\cite{zumwald2021mapping, zhang2012bias}
+\begin{itemize}
+    \item Information overlap (multicollinearity) and over-parametrization are not a problem. RF can even be trained with more covariants than observations.
+    \item RF has build-in bagging methods to select subsets of features and training samples to reduce bias. In geostatistics over-parametrization and overlap of covariants are an issue and can lead to bias predictions.
+    \item noise-resistance~\cite{strobl2007bias}
+    \item Distance measures can be extended to more complex calculations
+\end{itemize}
+
+The downsides of RF according to them include:
+
+\begin{itemize}
+    \item Extrapolation can lead to even poorer results compared to linear models.
+    \item If the training data is biased, the RF will have biased predictions. Therefore, stricter cross-validation techniques might be necessary.
+    \item Model size is much larger compared to linear models.
+    \item Model is optimized for representing the training data, not the spatial and spatiotemporal dependence structure.
+    \item Computationally expensive to train predictor and make predictions
+    \item Distance matrice scales quadratically, therefore higher number of points and greater radiuses/number of neighbours results in way higher computational cost. 
+\end{itemize}
+
+Lastly, they also concluded, that the reduction of trees in the forest from 500 to 100 often didn't result in a big loss in accuracy, suggesting that simpler RF models can retain high levels of accuracy.\\
+\textit{Sekuli{\'c} et al.} further improved RFsp and introduced Random Forest for Spatial Interpolation (RFSI)~\cite{sekulic2020random} by including nearest observations and distances as covariantes. They compared their model performance against OK, RFsp, IDW, NN, and trend surface mapping~\cite{chorley1965trend} to compare the performance across one syntetic dataset, one precipitation dataset, and one mean daily temperature dataset for Crotia 2008 with a resolution of 1km$^2$. In the real case-studies. RFSI outperformed the other methods with a RMSE in the mean daily temperature mapping case-study of 1.4 compared to RF and RFsp with RMSE 1.6, IDW with 1.8 and Space-Time Regression Kriging with 2.4. The covariants to model daily mean temperature were: latitude, longitude, distance-to-coastline, elevation, seasonal fluctuation, insolation (total incoming solar radiation), and Moderate Resolution Imaging Spectroradiometer land surface temperature (MODIS LST). They found that `Seasonal fluctuation, MODIS LST images, insolation, and distance-to-coastline were the most important covariates for RF and RFsp', while in RFSP the observations from ground stations as covariants were the most important.\\
+In~\cite{venter2020hyperlocal} \textit{Venter et al.} mapped air temperature over Oslo, Norway in 2018 on a scale of 10-30m using Sentinel, Landsat, LiDAR data which they combine with Netatmo PWS data from 1310 stations. They achive an average RMSE of 0.52 °C (R2 = 0.5), 1.85 °C (R2 = 0.05) and 1.46 °C (R2 = 0.33) for annual mean, daily maximum, and minimum air temperature. The `models performed best outside of summer months when the spatial variation in temperatures were low and wind velocities were high'.\\
+Similarly, \textit{Zumwald et al.} mapped hourly air temperature on a 10m$^2$ grid during a heat wave from 25-29th June 2021 in Zurich (Switzerland) and compared reference sensors, AWEL sensors and PWS data from Netatmo stations and achived RMSEs of 1.43°C, 1.35°C, and 1.71°C for the respective types. They used QRF as their ML model of choice. Important features in their work were air temperature at 2m (33\%), air temperature at 5cm (21\%), relative humidity at 2m (13\%), global radiation (8\%), and more.\\
+Both~\cite{zumwald2021mapping, zhang2012bias} found that there seems to be a systematic bias when estimating air temperature using RF to underestimate high temperatures and overestimate low temperatures.
 
 \subsection{Histogram-Based Gradient Boosting}
 
