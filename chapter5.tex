@@ -8,7 +8,7 @@ In the field of natural language processing (NPL) and computer vision (CV), ther
 % How does the perfect dataset for air temperature look like?
 For the specific use case of temperature interpolation in urban areas, an optimal dataset would contain high spatial and temporal resolution sensor data, e.g.\ a high sensor density and a low time interval of f.e.\ five to ten minutes. Additionally, the sensor placement and sensor quality have a high influence on the accuracy of the sensor readings~\cite{oke2006guideline}, therefore the correct placement and calibration of the sensors needs to be guaranteed. Such requirements are not met by traditional weather station networks as the spatial coverage is too low, as a single weather station is not enough to capture the urban microclimate~\cite{oke2017urban}. The weather station locations of the DWD are shown in figure~\ref{fig:dwd sensor locations germany}, which shows that usually at most one weather station is available per city. The weather stations however offer a high temporal resolution in addition to very high quality sensors, which is why they can be used as refrence stations for quality control of other sensors, as discussed in section~\ref{sec:quality control}.\\
 A solution to the problem of low spatial coverage is the usage of sensor networks. There are several projects that run dense urban-climate monitoring networks~\cite{muller2013sensors} such as the Helsinki Testbed~\cite{koskinen2011helsinki} or the Birmingham Urban Climate Laboratory~\cite{warren2016birmingham}, however access to those datasets is limited, for example due to outdated links or the need to request access. Due to the high cost of running such dense sensor networks with high sensor and maintenance costs, professionally run sensor networks are rare and are often only run for a limited time period until project funds run out.\\
-As an alternative, sensor networks can also be crowdsourced and run by citizens, distributing the cost of individual sensors as well as maintenance costs among many. Especially with advances in sensor technologies, lost cost and compact sensors are more affordable than ever while still providing good data quality~\cite{grimmond2006progress, rundel2009environmental}. In the context of meterological data, such such sensor networks are often referred to as citizen weather station (CWS)~\cite{meier2017crowdsourcing} or personal weather station (PWS)~\cite{hahn2022observations} networks. In this work, we use the term PWS.\\
+As an alternative, sensor networks can also be crowdsourced and run by citizens, distributing the cost of individual sensors as well as maintenance costs among many. Especially with advances in sensor technologies, lost cost and compact sensors are more affordable than ever while still providing good data quality~\cite{grimmond2006progress, rundel2009environmental}. In the context of meteorologicaldata, such such sensor networks are often referred to as citizen weather station (CWS)~\cite{meier2017crowdsourcing} or personal weather station (PWS)~\cite{hahn2022observations} networks. In this work, we use the term PWS.\\
 The main downside of this approach is the lack of quality control and meta data, as the sensors are usually placed by non-professionals in suboptimal locations, e.g.\ in direct sunlight or too close to walls, leading to incorrect readings or bias in the data. A lack in meta data can also lead to issues, if for example exact positions of the sensors are not known and information about the height of the sensor above ground is missing. However, other concerns such as data privacy also need to be accounted for, as such weather stations are often placed on private property.\\
 In this work, data from PWS networks is used to create datasets for the training and evaluation of ML models for air temperature interpolation. In the following sections, we take a look at available PWS providers and their data, look at potential features for air temperature interpolation, discuss additonal pre-processing steps such as quality control or sensor height correction, and finally discuss the construction of the datasets used in this work.
 
@@ -97,17 +97,17 @@ Weather Underground is a commercial weather service which also provides a crowds
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1\textwidth]{images/wow_sensor_locations.png}
-    \caption{Temperature sensor locations from WOW, acessed on 05.07.2023}
+    \caption{Temperature sensor locations from WOW, accessed on 05.07.2023}
     \label{fig:wow sensor locations}
 \end{figure}
 
 \section{Reference Data Providers}
 
-In order to add additional validation to crowdsourced weather data, reference data from (official) weather stations can be used. These weather stations should be setup according to current World Meterological Organization (WMO) guidelines~\cite{wmo2018guide} in order to ensure high data quality. These standards are either achived by offical weather services, or by institutions such as universities whose sensors are maintained by experts.
+In order to add additional validation to crowdsourced weather data, reference data from (official) weather stations can be used. These weather stations should be setup according to current World meteorologicalOrganization (WMO) guidelines~\cite{wmo2018guide} in order to ensure high data quality. These standards are either achived by offical weather services, or by institutions such as universities whose sensors are maintained by experts.
 
 \subsection{DWD}
 
-The official german weather service (DWD) has many objectives, that are defined by the DWD-law in Germany. Its tasks include meterological and climatological monitoring of the atmosphere, meterologically securing the airspace for civil aviation, monitoring the maritim climate, and more. The DWD operates a large monitoring network and publishes most of it's data via its OpenData portal~\footnote{\url{https://opendata.dwd.de/}, last accessed 13.07.2023}.\\
+The official german weather service (DWD) has many objectives, that are defined by the DWD-law in Germany. Its tasks include meteorologicaland climatological monitoring of the atmosphere, meterologically securing the airspace for civil aviation, monitoring the maritim climate, and more. The DWD operates a large monitoring network and publishes most of it's data via its OpenData portal~\footnote{\url{https://opendata.dwd.de/}, last accessed 13.07.2023}.\\
 The main advantages of the DWD data are high data quality through reference instruments and proper setup according to WMO guidelines~\cite{wmo2018guide}. The main disadvantage is the low spatial coverage of the data, as stations are sparsely distributed to measure the overall mesoscale climate, as seen in Figure~\ref{fig:dwd sensor locations germany}. Additionally, a lot of the public weather stations are located close to airports, which are usually located outside of cities, and therefore not suitable for measuring urban microclimates.
 
 \begin{figure}[ht]
@@ -137,9 +137,9 @@ Due to the limited scope of this work, this data is currently not used.
 
 \subsection{Locally Operated Weather Stations}
 
-Next to offical weather services, many public and private institutions operate weather stations. The following section lists two examples of such institutions, the Meterological Institute of the University of Hamburg and the Office for Environmental Protection of the City of Stuttgart.
+Next to offical weather services, many public and private institutions operate weather stations. The following section lists two examples of such institutions, the meteorologicalInstitute of the University of Hamburg and the Office for Environmental Protection of the City of Stuttgart.
 
-\subsubsection{University of Hamburg – Meterological Institute}
+\subsubsection{University of Hamburg – meteorologicalInstitute}
 
 % TODO
 
@@ -173,7 +173,7 @@ sensors use different technologies, e.g. microwaves with different wave lengths 
 
 \subsection{Google Earth Engine}
 
-Todo: Explain usage
+Google Earth Engine (Google EE) is a science data and analysis platform that allows users to work with and transform massive datasets with remote sensing data that are available open-source~\cite{gorelick2017google}. Remote sensing data in this work is processed and obtained via this platform and used datasets are cited. Datasets available on Google EE are not published by Google itself but from institutions such as NASA, ESA, or the European Union.
 
 \section{Quality Control}
 \label{sec:quality control}
@@ -274,156 +274,138 @@ It is interesting to note that stations directly next to water seem to be remove
 \section{Feature Engineering}
 \label{sec:feature_engineering}
 
-The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. Based on the features, different models can be used for completely different tasks such as interpolation compared to extrapolation. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models.
-Especially in the context of air temperature interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the air temperature at canopy height, e.g. 2m height. The input features are a combination of sensor readings from weather stations, sensor networks such as Sensor Community and Netatmo, satellite data such as land cover and vegetation health or LST, and additonal meta data such as soil conditions or zoning plans. The goal of this section is to give an overview of the different features that can be used for air temperature interpolation and discuss several highly important features that are especially relevant in the context of urban microclimate.
+The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. Based on the features, different models can be used for completely different tasks such as interpolation vs.\ extrapolation. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models which could include scaling and/or normalization. Especially in the context of air temperature interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the air temperature at canopy height, e.g.\ 2m height so that CUHIs could be detected when using these trained interpolation models. Alternatively, the target temperature could also be adapted to be measured at another height or be exchanged based on the use-case.\\
+The input features are a combination of sensor readings from PWS networks such as Sensor.Community and Netatmo, satellite data such as land cover and vegetation health or LST, and additonal meta data such as soil conditions, zoning plans, or locations of sensors. The goal of this section is to give an overview of the different features that can be used for air temperature interpolation and discuss several highly important features that are especially relevant in the context of urban microclimate based on related studies. Important questions are: 1. What features are there and how can they be measured/sourced from? 2. How do features for the 2 use-cases, e.g.\ single station interpolation vs.\ areal interpolation, differ? 3. How do we handle QC outputs? 4. How do we deal with correlations between inputs so that we do not introduce bias into our models?
 
-% TODO: rewrite
+\subsection{Feature Engineering Pipelines and Automation}
 
-Next to the model, the most important thing for a machine learning algorithm is the data. Even when the model is perfectly suited for the task at hand, if the data is not suitable, e.g. not enough data, wrong quality, wrongly prepared or formatted etc., the model will not be able to perform well. In the following, we take a look at the data coming from the data-layer and discuss important assumptions such as spatial and temporal autocorrelation. These correlations are important to consider, as they could invalidate models as f.e. Linear Regression~\ref{subsec: linear regression} assumes uncorrelated input variables.\\
-First of all, the data-layer exposes a variety of single data-points for various features for different locations for current and past points in time.
-.Features other than air temperature could further improve the predecition quality, like how~\cite{alonso2020new} suggests that in their study the Normalized Difference Vegetation Index (NDVI) and Modified Normalized Difference Water Index (MNDWI) have a strong impact on their estimation model. Therefore, we discuss how additional features can be included in the model.\\
-This model should then be deloyed inside the \textit{service-layer} and act as a building block for further temperature related research and analysis, as air temperature is an important variable for research in agronomy, meteorology, hydrology, ecology and many other fields of application and could be used for UHI detection in the context of smart cities. The general idea and architecture behind the model should not only be applicable for air temperature, but also other types of output features, even tho potentially significant domain knowledge, like in geostatistical analysis and statistics, is required to select and prepare the input features.\\
-% TODO: summary of the assumptions for the geolocation data
-Generally, there are different types of input features. Firstly, there are discrete measurements that capture the underlying continuous geological process as a specific value at a certain point in time. Examples for this are the measurements from sensors which might be deployed in an urban environment to capture air temperature, humidity and more. Important to note here is the interval, the values are captured. For example, a sensor might capture the air temperature as the average over five minutes, whereas a rain sensor might capture the absolute amount of rain in a specific time interval. Secondly, there are calculated features, which might be derived from the discrete measurements or the location of a measurement. For example, the distance to the closest body of water with a minimum size of $x^2$ meters might be a important information for the air temperature. Lastly, ...\\
-% data from gridded data sources (e.g. affiliation to postal code, district...)
-In the following chapter, we discuss how different types of correlation between measurements can be taken into account to improve the model and gain additional insights into local (meteological) dynamics.
-
-\subsubsection{Spatial Autocorrelation}
-% How different measurements are spatially related inside a time series
-
-As discussed in chapter \ref{chap:Related Work}, there is a dependency between air temperature and other meteological features and the location of the sensors. The closer a sensor is to another sensor, the more correlated the sensor readings should be.
-In geo-statistics, this is called spatial autocorrelation and can be defined traditionally with the Moran's I index~\cite{moran1948interpretation} or the Geary's coefficient~\cite{geary1954contiguity}. 
-% TODO: explain autocorrelation and the implications for ML models
-% model assumptions: no ML algorithm that expects independence between observations
-% feature selection: including all correlated features can lead to overfitting
-% spatial feature engineering: add additional features that encode the spatial relationship between sensors
-% spatial smoothing:
-% spatial aware algorithms: geographically weighted regression (GWR) 
-
-This relationship is however greatly influenced by the type of feature and the location of a sensor. As explained in \cite{oke2006guideline}, the sensor placement in the urban environment is a complex task, as the urban environment is highly dynamic and sensors can be influenced by highly local phenomena, such as air temperarture by heat vents or solar radiation by buildings and surface materials. For this model, we assume that the sensors are placed in a way that the sensor readings are representative for the area they are placed in, even tho in practice this assumption might not hold up, especially for sensors placed by non-experts.\\
-Each sensor reading from the data-layer has a location associated with it in the form of longitute, latitude and altitude (if available). This information can be used to calculate the distance between sensors and subsequently the correlation between sensor readings. However, how exactly the distance between two locations is calculated is not trivial. As the earth is a sphere, the distance between two points on the surface is not a straight line. Depending on the application, different distance metrics can be used. For a small area, such as the city of Hamburg, the euclidean distance could be sufficient, as the curvature of the earth for a small distance is negligible. However, for larger areas the geodesic (harvesine) distance might be more appropriate. In this work, we are focussing on a single city including it's surrounding area, therefore the euclidean distance should have a sufficient accuracy while also simplifing the calculation. As the city of Hamburg does not have big differences in elevation, the altitude is not considered in the distance calculation.\\
-% grid area -> each data point is in a grid cell. Multiple data points can be in the same grid cell. If this is the case, the readings are averaged. Outliers based on the overall mean temperature are removed. -> this is done in the data layer
-The location data can be incorporated into the input data in several ways. The most straight forward way would be to just include the longitude and latitude as input features. Depending on the type of model used, these values might need to be normalised. For example, tree-based models do not require normalisation (cite), as they are not sensitive to the scale of the input features. However, neural networks are very sensitive to the scale of the input features and therefore require normalisation (cite). This approach has the downside, that the distance between sensors is not directly encoded in the input data. If this information is important for the model, it could be included by precalculating the distances between all sensors, however this would increase the complexity of the model especially for large amounts of sensors, as this would result in a quadratic number of input features.\\
-The next approach would be to convert the 
-
-- area n x m grid of data points, each grid cell with n x n size (depending on the resulution), 4D space with location as x and y coordinates (euclidean distance -> but only for smaller areas such as city of Hamburg and suroundings), time as z coordinate and feature values as w coordinate.\\
-
-\subsubsection{Temporal Autocorrelation}
-% How different measurements are temporally related inside a time series
-
-- trends
--> expect normally distributed temperature curve
--> temporal lag (e.g. temperature of yesterday has influence on temperature of today)
-
-Either explicitly model 
-
-\subsubsection{Temporal Cross Correlation}
-% How different time series are related to each other (seasonaility)
-
-% TODO
-\subsubsection{Dealing with Correlation}
-\label{subsec:Dealing with Correlation}
-
-Todo: Techniques to turn correlated variables into uncorrelated ones
-- principal component analysis (PCA)
-- ...\\
-
-variance inflation factor (VIF)\\
--> over 10 = invalid model\cite{montgomery2021introduction}
--> others more moderate with max 3 \cite{zuur2010protocol}
-
-\subsubsection{Dealing with Uncertainty}
-- The model has a lot of uncertainty
-- model uncertainty in input data? (depending on sensor type, sensor age, placement...)
-
-- dealing with bias
-- dealing with variance
--> problem of over-fitting
+Before taking a look at available features and features used in related work, we quickly return to the topic of Smart City and how to integrate different data sources and automate the feature engineering process. A popular solution for production-ready ML applications is the use of pipelines that streamline the data pre-processing, feature engineering, potential re-training, and prediction processes. Luckily, all data-sources previously mentioned have APIs or offer dowload options to get access to recent sensor readings. Next to the air temperature readings which can be sourced from Netatmo, Sensor.Community, and/or the DWD, other features are also important to get good prediction, as suggested by Zumwald et al.\ where air temperature at 2m only explained 33\% of the prediction~\cite{zumwald2021mapping}, such as remote sensing information, that f.e.\ could be sourced from Google EE.\\
+The actual sensor readings come directly from the sensing layer, in which different external sources could be integrated via API, so that virtual sensors are created that are directly available for example via a overlay network such as SkipNet. In this work, we do not take advantage of other solutions but instead source data directly via API or archives to make a historical data analysis instead of testing real-time applications. After transporting these information via the transporation layer to the data-management layer, the service layer can consume the data streams. An air temperature interpolation service could then be placed in the service layer for areal interpolation. This service could then be used for areal interpolation to provide fine-granular air temperature maps/grids. The use-case of single station interpolation, for example in combination with moving sensors might be better located in the sensing layer as a virtual sensor, however challenges would be the dependency on other sensors which might have different sampling intervals.\\
+In this work, we only take advantage of sklearn pipelines~\footnote{\url{https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html}, \textit{last accessed: 27.08.2023}} in a limited fashion for the actual training and testing process to automatically include scaling and cross-validation, and rely on many manual steps to download the data, do pre-processing and QC, and finally extract features and train ML models.
 
 \subsection{Feature Overview}
+
+In the following sections, we take a look at available features for the use-case of air temperature interpolation.
 
 \subsubsection{Essential Climate Variables}
 
 Essential Climate Variables (ECV) are a list of currently 50 variables that are proposed by the WMO to measure climate and climate change. The WMO regularily publishes updates on which climate variables to use and how to measure them~\cite{wmo2018guide}. ECVs are generally more focused on measuring climate on a global scale, however they also contain many variables that are relevant for urban microclimate, such as air temperature and land cover. There are three categories of ECVs, namely Atmosphere, Land, and Ocean. And overview of the ECVs can be found online~\footnote{\url{https://gcos.wmo.int/en/essential-climate-variables/table}, \textit{last accessed: 08.08.2023}}.\\
+Next to official WMO suggestions, other institutions such as the Integrated Climate Data Centre (ICDC) from the University of Hamburg (UHH) also suggest variables to measure climate~\footnote{\url{https://www.cen.uni-hamburg.de/icdc/data.html}, \textit{last accessed: 27.08.2023}}. Table~\ref{tab:icdc datset parameters} shows the available parameters for which datasets are available.
 
-Hamburg ICDC overview:
-- atmospheric data
-    - air temperature
-    - pressure
-    - wind
-    - reciptation
-    - clouds
-    - aerosols
-    - humidity
-    - radiation
-    - climate indices
-- ocean
-    - water temperature
-    - wave height (SSH)
-    - salt content
-    - tide
-    - ocean color (e.g. plankton etc.)
-    - climatology
-    - ocean currents
-- ice/snow
-    - sea ice coverage
-    - sea ice thickness
-    - sea ice type
-    - snow thickness (ice)
-    - snow water equivalent (SWE)
-    - land snow cover
-    - glacier thickness
-    - melting ponds
-- land
-    - albedo
-    - surface temperature
-    - vegetation
-    - soil moisture
-    - topography
-    - short-wave radiation
-    - perma-frost
-- society
-    - social science parameters
+\begin{table}[ht]
+    \footnotesize
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Category} & \textbf{Parameters} \\
+        \hline
+        \multirow{9}{*}{Atmospheric Data} & Air Temperature \\
+        & Pressure \\
+        & Wind \\
+        & Precipitation \\
+        & Clouds \\
+        & Aerosols \\
+        & Humidity \\
+        & Radiation \\
+        & Climate Indices \\
+        \hline
+        \multirow{7}{*}{Ocean} & Water Temperature \\
+        & Wave Height (SSH) \\
+        & Salt Content \\
+        & Tide \\
+        & Ocean Color \\
+        & Climatology \\
+        & Ocean Currents \\
+        \hline
+        \multirow{8}{*}{Ice/Snow} & Sea Ice Coverage \\
+        & Sea Ice Thickness \\
+        & Sea Ice Type \\
+        & Snow Thickness (Ice) \\
+        & Snow Water Equivalent (SWE) \\
+        & Land Snow Cover \\
+        & Glacier Thickness \\
+        & Melting Ponds \\
+        \hline
+        \multirow{7}{*}{Land} & Albedo \\
+        & Surface Temperature \\
+        & Vegetation \\
+        & Soil Moisture \\
+        & Topography \\
+        & Short-wave Radiation \\
+        & Permafrost \\
+        \hline
+        \multirow{1}{*}{Society} & Social Science Parameters \\
+        \hline
+    \end{tabular}
+    \caption{ICDC Dataset Parameters}
+    \label{tab:icdc datset parameters}
+\end{table}
+
+\begin{table}[htp]
+    \footnotesize
+    \centering
+    \begin{tabular}{|lll|lll|}
+    \hline
+    \textbf{}                & \textbf{Variables (Units)}                                                                   & \multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Acquisition\\ Source\end{tabular}}} & \textbf{}                & \textbf{Variables (Units)}                                                            & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Acquisition\\ Source\end{tabular}}} \\ \hline
+    \rowcolor[HTML]{EFEFEF} 
+                            & \textbf{Vegetation Index}                                                                    &                                                                                           &                          & \textbf{Radiation Index}                                                              &                                                                                            \\
+                            & \begin{tabular}[c]{@{}l@{}}Normalized Difference Vegetation\\ Index (NDVI)\end{tabular}      & Landsat 8                                                                                 &                          & Spectral Radiance                                                                     & Landsat 8                                                                                  \\
+                            & Enhanced Vegetation Index (EVI)                                                              & Landsat 8                                                                                 &                          & Emissivity                                                                            & Landsat 8                                                                                  \\
+                            & \begin{tabular}[c]{@{}l@{}}Soil Adjusted Vegetation Index\\ (SAVI)\end{tabular}              & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Brightness\end{tabular}      & Landsat 8                                                                                  \\
+                            & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Greenness (GVI)\end{tabular}        & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Building Index}                                       & \cellcolor[HTML]{EFEFEF}                                                                   \\
+                            & Density of Low Vegetation                                                                    & LiDAR                                                                                     &                          & \begin{tabular}[c]{@{}l@{}}Normalized Difference Buit-Up\\ Index (NDBI)\end{tabular}  & Landsat 8                                                                                  \\
+                            & Density of Medium Vegetation                                                                 & LiDAR                                                                                     &                          & Urban Index (UI)                                                                      & Landsat 8                                                                                  \\
+                            & Density of High Vegetation                                                                   & LiDAR                                                                                     &                          & Index-based Built-Up Index (IBI)                                                      & Landsat 8                                                                                  \\
+    \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Water Presence Index}                                        & \cellcolor[HTML]{EFEFEF}                                                                  &                          & Building Density                                                                      & LiDAR                                                                                      \\
+                            & \begin{tabular}[c]{@{}l@{}}Modified Normalized Difference\\ Water Index (MNDWI)\end{tabular} & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Urban Morphology}                                     & \cellcolor[HTML]{EFEFEF}                                                                   \\
+                            & \begin{tabular}[c]{@{}l@{}}Normalized Difference Water\\ Index (NDWI)\end{tabular}           & Landsat 8                                                                                 &                          & Sky View Factor                                                                       & LiDAR                                                                                      \\
+    \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Bare Soil Index}                                             & \cellcolor[HTML]{EFEFEF}                                                                  &                          & \begin{tabular}[c]{@{}l@{}}Standard Deviation (STD) of\\ Building Height\end{tabular} & \begin{tabular}[c]{@{}l@{}}Local\\ Authority\end{tabular}                                  \\
+                            & \begin{tabular}[c]{@{}l@{}}Normalized Difference Bareness\\ Index (NDBaI)\end{tabular}       & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Moisture Index}                                       & \cellcolor[HTML]{EFEFEF}                                                                   \\
+                            & Bare Soil Index (BI)                                                                         & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Index\end{tabular}           & Landsat 8                                                                                  \\
+                            & \begin{tabular}[c]{@{}l@{}}Enhanced Built-Up and Bareness\\ Index (EBBI)\end{tabular}        & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Normalized Difference Moisture\\ Index (NDMI)\end{tabular} & Landsat 8                                                                                  \\
+                            & Density of Bare Soil                                                                         & LiDAR                                                                                     &                          &                                                                                       &                                                                                            \\ \hline
+    \end{tabular}
+    \caption{Indexes used by Alonso and Renard~\cite{alonso2020new} to predict air temperature.}
+    \label{tab:alonso_indexes}
+
+    \begin{tabular}{|llll|}
+    \hline
+    \textbf{Variable}          & \textbf{Data source}                                                 & \textbf{Data type} & \textbf{Spatial resoltion} \\ \hline
+    Red                        & \begin{tabular}[c]{@{}l@{}}Landsat 7,8 and\\ Sentinel 2\end{tabular} & Open source        & L: 30m, S: 10m             \\
+    Green                      &                                                                      &                    &                            \\
+    Blue                       &                                                                      &                    &                            \\
+    Near infrared              &                                                                      &                    &                            \\
+    Short-wave infrared 1      &                                                                      &                    & L: 30m, S: 20m             \\
+    Short-wave infrared 2      &                                                                      &                    &                            \\
+    NDVI                       &                                                                      &                    & L: 30m, S: 10m             \\
+    IBI                        &                                                                      &                    & L: 30m, S: 20m             \\
+    LST                        & Landsat 7,8                                                          &                    & 30m                        \\
+    Elevation above sea        & STRM                                                                 &                    & 30m                        \\
+    Terrain aspect             &                                                                      &                    &                            \\
+    Terrain slope              &                                                                      &                    &                            \\
+    Terrain ruggedness         &                                                                      &                    &                            \\
+    CHM                        & LiDAR                                                                & Closed source      & 1m                         \\
+    CHM slope                  &                                                                      &                    &                            \\
+    CHM aspect                 &                                                                      &                    &                            \\
+    CHM shadow/SVI             &                                                                      &                    &                            \\
+    Building height            & \begin{tabular}[c]{@{}l@{}}LiDAR + building\\ footprint\end{tabular} &                    &                            \\
+    Building height sd 1-4m    &                                                                      &                    &                            \\
+    Building height sd 4-20m   &                                                                      &                    &                            \\
+    Building height sd 20-100m &                                                                      &                    &                            \\
+    Fractional tree cover      & \begin{tabular}[c]{@{}l@{}}LiDAR + ortho-\\ photo\end{tabular}       &                    &                            \\
+    Tree height                &                                                                      &                    &                            \\
+    Distance to coast          & Global water occurrence                                              & Open source        & 30m                        \\
+    Distance to fresh water    &                                                                      &                    &                            \\ \hline
+    \end{tabular}
+    \caption{Features for Air Temperature Interpolation used by Venter et al.~\cite{venter2020hyperlocal}}
+    \label{tab: venter features interpolation}
+\end{table}
 
 \subsubsection{Features used in Related Work}
 
-Related studies can give a good overview of which features work best for air temperature interpolation. The used features can be roughly divided into three categories: in-situ measurements, satellite data, and additional meta data.
-An important way to use satellite data is to calculate indexes out of the raw data. Alonso and Renard~\cite{alonso2020new} used among other data the indexes shown in Table~\ref{tab:alonso_indexes} to predict air temperature.
-
-% Please add the following required packages to your document preamble:
-% \usepackage[table,xcdraw]{xcolor}
-% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
-\begin{table}[ht]
-\footnotesize
-\centering
-\begin{tabular}{|lll|lll|}
-\hline
-\textbf{}                & \textbf{Variables (Units)}                                                                   & \multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Acquisition\\ Source\end{tabular}}} & \textbf{}                & \textbf{Variables (Units)}                                                            & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Acquisition\\ Source\end{tabular}}} \\ \hline
-\rowcolor[HTML]{EFEFEF} 
-                         & \textbf{Vegetation Index}                                                                    &                                                                                           &                          & \textbf{Radiation Index}                                                              &                                                                                            \\
-                         & \begin{tabular}[c]{@{}l@{}}Normalized Difference Vegetation\\ Index (NDVI)\end{tabular}      & Landsat 8                                                                                 &                          & Spectral Radiance                                                                     & Landsat 8                                                                                  \\
-                         & Enhanced Vegetation Index (EVI)                                                              & Landsat 8                                                                                 &                          & Emissivity                                                                            & Landsat 8                                                                                  \\
-                         & \begin{tabular}[c]{@{}l@{}}Soil Adjusted Vegetation Index\\ (SAVI)\end{tabular}              & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Brightness\end{tabular}      & Landsat 8                                                                                  \\
-                         & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Greenness (GVI)\end{tabular}        & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Building Index}                                       & \cellcolor[HTML]{EFEFEF}                                                                   \\
-                         & Density of Low Vegetation                                                                    & LiDAR                                                                                     &                          & \begin{tabular}[c]{@{}l@{}}Normalized Difference Buit-Up\\ Index (NDBI)\end{tabular}  & Landsat 8                                                                                  \\
-                         & Density of Medium Vegetation                                                                 & LiDAR                                                                                     &                          & Urban Index (UI)                                                                      & Landsat 8                                                                                  \\
-                         & Density of High Vegetation                                                                   & LiDAR                                                                                     &                          & Index-based Built-Up Index (IBI)                                                      & Landsat 8                                                                                  \\
-\cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Water Presence Index}                                        & \cellcolor[HTML]{EFEFEF}                                                                  &                          & Building Density                                                                      & LiDAR                                                                                      \\
-                         & \begin{tabular}[c]{@{}l@{}}Modified Normalized Difference\\ Water Index (MNDWI)\end{tabular} & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Urban Morphology}                                     & \cellcolor[HTML]{EFEFEF}                                                                   \\
-                         & \begin{tabular}[c]{@{}l@{}}Normalized Difference Water\\ Index (NDWI)\end{tabular}           & Landsat 8                                                                                 &                          & Sky View Factor                                                                       & LiDAR                                                                                      \\
-\cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Bare Soil Index}                                             & \cellcolor[HTML]{EFEFEF}                                                                  &                          & \begin{tabular}[c]{@{}l@{}}Standard Deviation (STD) of\\ Building Height\end{tabular} & \begin{tabular}[c]{@{}l@{}}Local\\ Authority\end{tabular}                                  \\
-                         & \begin{tabular}[c]{@{}l@{}}Normalized Difference Bareness\\ Index (NDBaI)\end{tabular}       & Landsat 8                                                                                 & \cellcolor[HTML]{EFEFEF} & \cellcolor[HTML]{EFEFEF}\textbf{Moisture Index}                                       & \cellcolor[HTML]{EFEFEF}                                                                   \\
-                         & Bare Soil Index (BI)                                                                         & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Tasseled Cap Transformation\\ Index\end{tabular}           & Landsat 8                                                                                  \\
-                         & \begin{tabular}[c]{@{}l@{}}Enhanced Built-Up and Bareness\\ Index (EBBI)\end{tabular}        & Landsat 8                                                                                 &                          & \begin{tabular}[c]{@{}l@{}}Normalized Difference Moisture\\ Index (NDMI)\end{tabular} & Landsat 8                                                                                  \\
-                         & Density of Bare Soil                                                                         & LiDAR                                                                                     &                          &                                                                                       &                                                                                            \\ \hline
-\end{tabular}
-
-\caption{Indexes used by Alonso and Renard~\cite{alonso2020new} to predict air temperature.}
-\label{tab:alonso_indexes}
-\end{table}
-
-These indexes are either available as precalculated datasets, or can be calculated from raw satellite data. Especially the Google Earth Engine platform provides a lot of precalculated datasets from various sources such as MODIS~\cite{didan2021modis}, however each index is separately available, therefore requiring a lot of manual work to combine them into a single dataset. Due to the interference from clouds, these indexes usually also include quality bands, which indicate the quality of the index value for a given pixel, as well as missing values.\\
-In comparison to MODIS, Sentinel satellite data provides a significantly higher resolution at 10 - 60 m$^2$ per pixel compared to 500-1000 m$^2$ per pixel for MODIS but there are no precalculated indexes available for Sentinel data on the Google Earth Engine platform. However, there exist scripts published by other researchers to manually calculate such indexes for example the NDVI index from Sentinel data by the Free University of Berlin~\footnote{\url{https://www.geo.fu-berlin.de/en/v/geo-it/gee/2-monitoring-ndvi-nbr/2-2-calculating-indices/ndvi-s2/index.html}, \textit{last accessed: 09.08.2023}}.\\
+Related studies can give a good overview of which features work best for air temperature interpolation. The used features can be roughly divided into 4 categories: raw in-situ measurements, raw satellite data, calculated features, and additional meta data. An important way to use satellite data is to calculate indexes out of the raw data. Alonso and Renard~\cite{alonso2020new} used among other data the indexes shown in Table~\ref{tab:alonso_indexes} to predict air temperature. These indexes are either available as precalculated datasets, or can be calculated from raw satellite data. Especially the Google Earth Engine platform provides a lot of precalculated datasets from various sources such as MODIS~\cite{didan2021modis}, however each index is separately available, therefore requiring some work to combine them into a single dataset. Due to the interference from clouds, these indexes usually also include quality bands, which indicate the quality of the index value for a given pixel, as well as missing values.\\
+In comparison to MODIS, Sentinel satellite data provides a significantly higher resolution at 10-60 m$^2$ per pixel compared to 500-1000 m$^2$ per pixel for MODIS but there are no precalculated indexes available for Sentinel data on the Google Earth Engine platform.\\
+However, there exist scripts published by other researchers to manually calculate such indexes for example the NDVI index from Sentinel data by the Free University of Berlin~\footnote{\url{https://www.geo.fu-berlin.de/en/v/geo-it/gee/2-monitoring-ndvi-nbr/2-2-calculating-indices/ndvi-s2/index.html}, \textit{last accessed: 09.08.2023}}.\\
 In comparison to MODIS and Sentinel, many LiDAR datasets are closed-source and are not available for research purposes. This is unfortunate as LiDAR data provides a very high resolution of 5-10 cm$^2$ per pixel and enables the capturing of detailed elevation data. Especially in the context of urban areas and building heights this information can be very useful, for example to calculate the sky view factor which seems to have a significant impact on air temperature modlling~\cite{dirksen2019sky}.\\
 Next to index data from remote sensing, there are also other types of information that could be useful for ML applications. Alonso and Renard~\cite{alonso2020new} also used the following information:
 
@@ -447,42 +429,37 @@ Next to index data from remote sensing, there are also other types of informatio
     \end{itemize}
 \end{itemize}
 
-For the hyperlocal air temperature mapping study done in Oslo by Venter et al.~\cite{venter2020hyperlocal}, the following data was used:
+For the hyperlocal air temperature mapping study done in Oslo by Venter et al.~\cite{venter2020hyperlocal}, the used features are shown in Table~\ref{tab: venter features interpolation}.
 
-% TODO: make into table
-Hyperlocal Mapping in Oslo:
-Red Landsat 7, 8 and Sentinel 2 Open source L: 30 m, S: 10 m Green Blue Near infrared Short-wave infrared 1 L: 30 m, S: 20 m Short-wave infrared 2 NDVI L: 30 m, S: 10 m IBI L: 30 m, S: 20 m Land surface temperature Landsat 7, 8 30 m Elevation above sea STRM 30 m Terrain aspect Terrain slope Terrain ruggedness CHM LiDAR Closed source 1m CHM slope CHM aspect CHM shadow/SVI Building height LiDAR + building footprint Building height sd 1–4m Building height sd 4–20 m Building height sd 20–100 m Fractional tree cover LiDAR + orthophoto Tree height Distance to coast Global water occurrence Open source 30 m Distance to fresh water\\
+\subsection{Features used in this Work}
 
-% TODO: more studies
+In the following, we describe which features are used in this work for our two use-cases, e.g.\ single station interpolation and areal interpolation. Due to the limited scope of this work, only a subset of the available features will be used to show the feasibility of the respective use-case and get an idea on the upper bounds of RMSE values that can be expected when choosing one of the use-cases, as we expect that with an increase of features and therefore availability of information for the ML models to learn from, the prediction quality will increase.
 
-% Please add the following required packages to your document preamble:
-% \usepackage[table,xcdraw]{xcolor}
-% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\subsubsection{Features for Areal Interpolation}
+
 \begin{table}[ht]
-\footnotesize
-\centering
-\begin{tabular}{|lll|}
-\hline
-Measurement (Units)                                                 & Spatial Resolution & Temporal Resolution                                                                                                                    \\ \hline
-\rowcolor[HTML]{EFEFEF} 
-\textbf{Weather Station/Sensor Measurements}                        &                    &                                                                                                                                        \\
-\begin{tabular}[c]{@{}l@{}}Air temperature (°C)\\ Mean\end{tabular} & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
-Relative Humidity (\%)                                              & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
-Atmospheric Pressure (mBar)                                         & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
-Wind Strength (kmh)                                                 & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
-Wind Direction (°)                                                  & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
-Precipitation (mm)                                                  & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular}                             \\
-\rowcolor[HTML]{EFEFEF} 
-\textbf{Remote Sensing Data}                                        &                    &                                                                                                                                        \\
-NDVI (MODIS)                                                        & 500m               & 16 days                                                                                                                                \\
-EVI (MODIS)                                                         & 500m               & 16 days                                                                                                                                \\
-DEM (Copernicus)                                                    & 30m                & 2015 - 2017                                                                                                                            \\ \hline
-\end{tabular}
-\caption{Features for Air Temperature Interpolation Used in this Work}
-\label{tab:features this work}
+    \footnotesize
+    \centering
+    \begin{tabular}{|lll|}
+    \hline
+    Measurement (Units)                                                 & Spatial Resolution & Temporal Resolution                                                                                                                    \\ \hline
+    \rowcolor[HTML]{EFEFEF} 
+    \textbf{Weather Station/Sensor Measurements}                        &                    &                                                                                                                                        \\
+    \begin{tabular}[c]{@{}l@{}}Air temperature (°C)\\ Mean\end{tabular} & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+    Relative Humidity (\%)                                              & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+    Atmospheric Pressure (mBar)                                         & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+    Wind Strength (kmh)                                                 & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+    Wind Direction (°)                                                  & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (Sensor.Community)\\ 10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular} \\
+    Precipitation (mm)                                                  & Single location    & \begin{tabular}[c]{@{}l@{}}10 min (DWD)\\ 30 min (Netatmo Historical)\\ 10 min (Netatmo Live)\end{tabular}                             \\
+    \rowcolor[HTML]{EFEFEF} 
+    \textbf{Remote Sensing Data}                                        &                    &                                                                                                                                        \\
+    NDVI (MODIS)                                                        & 500m               & 16 days                                                                                                                                \\
+    EVI (MODIS)                                                         & 500m               & 16 days                                                                                                                                \\
+    DEM (Copernicus)                                                    & 30m                & 2015 - 2017                                                                                                                            \\ \hline
+    \end{tabular}
+    \caption{Features for Air Temperature Interpolation Used in this Work}
+    \label{tab:features this work}
 \end{table}
-
-\subsubsection{Features used in this Work}
 
 Air temperature, relative humidity, atmospheric pressure, precipitation, and wind was sourced from Netatmo and Sensor.Community PWS networks as well as the DWD weather stations as reference data.
 All remote sensing data acquired in this work was processed using the Google Earth Engine~\cite{gorelick2017google} as it offers a unified way of accessing data and offers anhanced processing capabilities that are especially important when dealing with these large datasets that can grow as large as several hundred terabytes. The following datasets have been used and downloaded from the Google Earth Engine platform:
@@ -502,8 +479,21 @@ Potential datasets that could be used in the future are:
     (10m, 5 days)~\cite{sentinel2msi} (for manual index calculation)
 \end{itemize}
 
-Additionally, location data was incoporated into the models either by longitude and latitude values in coordinate rerence system EPSG:4326 or by calculating distances between locations in meters.
-The features used in this work are shown in Table~\ref{tab:features this work} and were chosen based on availability and relevance for air temperature modelling.
-The amount of features in the initial scope of this work is quite limited and could be increased to gain better prediction results.
+Additionally, location data was incoporated into the models by longitude and latitude values in coordinate rerence system EPSG:4326. As noted by Hengl et al.\ this might not be optimal~\cite{hengl2018random} and could be improved by using distances between sampling locations instead. The features used in this work are shown in Table~\ref{tab:features this work} and were chosen based on availability and relevance for air temperature modelling. The amount of features in the initial scope of this work is quite limited and could be increased to gain better prediction results.
 
-% TODO: mention python libraries used
+\subsubsection{Features for Single Station Interpolation}
+
+For the single station interpolation use-case, we keep the setup rather simple. The idea behind this approach is the hypothesis that the model does not really care about the location of the sensor, but only about the similarity in temperature curves. Therefore, we use the air temperature readings of neighbouring sensors as covariants ordered by the distance to the sensor and always in the same order. Next to the air temperature, we also include the humidity and pressure of neighbours as covariants in the same order, and the time of the reading converted to a sinus function, so that we can explore if the time of day has an influence on prediction errors as shown in Appendix~\ref{lst: timestamp to sin}.
+
+\section{Additional Considerations}
+
+Next to the features, there are also additional considerations when creating train and test datasets. These include sampling, normalization and scaling, dealing with correlations, and more. If your model f.e.\ expects uncorrelated input variables, one could the variance inflation factor (VIF) to make sure the input variables are uncorrelated. If the VIF is over 10~\cite{montgomery2021introduction}, more restrictive over 3~\cite{zuur2010protocol}, this indicates that the model is invalid. Another option could be principal component analysis (PCA) to turn correlated variables into new uncorrelated ones. In this work, we try to choose models which can deal with correlations naturally like RF so we reduce the complexity of working with this type of features.\\
+Other considerations include imputation for missing values and feature scaling. These will be covered in the evaluation where appropriate, as some models such as KNN need feature scaling, while others such as RF or HGB do not need scaling, as all models except HGB cannot handle missing values and need imputation.
+
+\subsubsection{Spatial Autocorrelation}
+
+Spatial autocorrelation is the presence of `systematic spatial variation in a mapped variable'~\cite{haining2001spatial}. If adjacent variables tend to have similar values, spatial autocorrelation is positive. In contrast if adjacent variables tend to have very contrasting values, the spatial autocorrelation is negative. It can be defined traditionally via the Moran's I index~\cite{moran1948interpretation} or the Geary's coefficient~\cite{geary1954contiguity}. The goal of using ML in this context would be that these correlations can be ignored, simplifying the interpolation process. Especially in geostatistic methods such as Kriging, not dealing with correlations can lead to wrong interpolations and the introduction of bias.\\
+
+\subsubsection{Temporal Autocorrelation}
+
+Next to spatial autocorrelations, there can also be temporal autocorrelations between successive values of the same variable. Also, there can be seasonal trends that might need to be corrected, as well as temporal lag. In the case of temperature sensors, this could relate to the time it takes for a sensor to adjust to a new temperature. A reference-grade sensor might adjust in a few seconds, where a LCS might need more time. Especially with Netatmo sensor which have a suboptimal ventilation and small form factor, this could mean that after they heated up they need more time to cool down again, resulted in bias towards longer hotter temperatures.
