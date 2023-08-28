@@ -5,11 +5,11 @@
 single station interpolation works very good with RMSE between 0.4 and 0.5
 - because other factors, such as height of the station due not play an important part, as long as the distribution of the temperature is the same
 
-areal interpolation way harder. probably because information is missing (target variable for location/grid cell and height), making it hard to f.e. select stations only at 2m height that are representative for a larger area. Combination with LST however possible (should be investigated)
+areal interpolation way harder. probably because information is missing (target variable for location/grid cell and height), making it hard to for example select stations only at 2m height that are representative for a larger area. Combination with LST however possible (should be investigated)
 
 how these could be integrated -> interpolation service / temperature map that integrates multiple providers and allows interactive analysis. current tool set with python very flexible, but slow. dataset availability could be way better, especially with pre-processed data, so that one can focus on the actual comparison.
 
-comparison of model should have been done with more models, and f.e. should include state of the art implementation from f.e. ArcGIS. 
+comparison of model should have been done with more models, and for example should include state of the art implementation from for example ArcGIS. 
 
 final recommendation. create virtual sensors based on moving sensors -> use those virtual sensors to augment actual sensor data and then use eact interpolation methods such as Kriging to create a smooth surface.  
 \section{Summary}
@@ -20,7 +20,7 @@ TODO: Rewrite once Evaluation done\\
 \\
 
 With the growing need to analyze microclimates of cities in order to protect them against new phenomena like UHIs, this paper proposes the use of citizen-owned sensor networks that offer a higher spatial and temporal resolution of data points in comparison to traditional approaches such as relying on LST data. This approach also comes with challenges such as observing areas without stationary sensors and identifying poor quality data-points from broken or incorrectly installed sensors. With the obtained data, we create a temperature interpolation service that predicts temperature data between data points using a regression model that can act as a building block for further temperature-based analysis by abstracting the underlying single data-points in the data-layer away.\\
-In order to improve the quality of temperature predictions for unobserved areas, we investigate how temporary sensor readings, f.e. by attaching sensors to buses, bikes or e-scooters, can be used to capture temporary local meteorological snapshots, and how these snapshots can be incorporated into the interpolation process. We also evaluate which features need to be captured to generate the most accurate predictions, if machine-learning is a suitable approach, and how it compares to more traditional geostatistical approaches.
+In order to improve the quality of temperature predictions for unobserved areas, we investigate how temporary sensor readings, for example by attaching sensors to buses, bikes or e-scooters, can be used to capture temporary local meteorological snapshots, and how these snapshots can be incorporated into the interpolation process. We also evaluate which features need to be captured to generate the most accurate predictions, if machine-learning is a suitable approach, and how it compares to more traditional geostatistical approaches.
 
 Possible improvements:
 - QC -> use different time intervals, investigate different qc processes for other variables, how it looks with reference stations, combining more data, bias of specific sensors etc., not default parameters, e.g 3000m radius too big?
