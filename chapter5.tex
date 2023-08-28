@@ -244,22 +244,19 @@ After the QC process, the Sensor.Community sensor locations left are shown in~\r
 {\raggedright This table shows the QC steps used in this work from the CrowdQC+ library, including the \% of data available after each step, the number of stations available and the number of values left after each step. Optional steps are currently not used. \par}
 \end{sidewaystable}
 
-\subsection{Quality Control for Netatmo}
-
-The QC results for Netatmo stations in Hamburg during June 2023 can be found in \ref{fig:qc netatmo june 23} and \ref{fig:qc netatmo hamburg june 23}.
-After QC 60.24\% of Netatmo data is still available in Hamburg (so a loss of 39.76\%). The amount of data kept is in line with comparable cities as tested by CrowdQC+'s study which kept 47.1\% and 69.2\% for the cities Amsterdam and Toulouse respectively after steps m1-m5~\cite{fenner2021crowdqc+} as mentioned above. Another comparison can be made to the study by Meier et al. which kept 47\% of Netatmo data in Berlin after QC with CrowdQC~\cite{meier2017crowdsourcing}.
-It is interesting to note that stations directly next to water seem to be removed proportionally more often. This could be due to higher variability of wind close to water~\cite{ho2014mapping} which can result in higher prediction errors.
-
 \begin{figure}[htp]
     \centering
     \includegraphics[width=1\textwidth]{images/netatmo_qc_june_23.png}
     \caption{QC Result Statistics for Netatmo Data for Hamburg, June 2023}
     \label{fig:qc netatmo june 23}
-
-    \includegraphics[width=1\textwidth]{images/netatmo_hamburg_qc_june_23.png}
-    \caption{Netatmo Stations for Hamburg, June 2023}
-    \label{fig:qc netatmo hamburg june 23}
 \end{figure}
+
+\subsection{Quality Control for Netatmo}
+
+The QC results for Netatmo stations in Hamburg during June 2023 can be found in~\ref{fig:qc netatmo june 23} which shows the absolute values of sensor readings available after each step including the overall available data as `Raw data' before QC which is 1.026.721 rows.
+After QC 60.24\% of Netatmo data is still available in Hamburg (so a loss of 39.76\%). The amount of data kept is in line with comparable cities as tested by CrowdQC+'s study which kept 47.1\% and 69.2\% for the cities Amsterdam and Toulouse respectively after steps m1-m5~\cite{fenner2021crowdqc+} as mentioned above. Another comparison can be made to the study by Meier et al.\ which kept 47\% of Netatmo data in Berlin after QC with CrowdQC~\cite{meier2017crowdsourcing}.
+It is interesting to note that stations directly next to water seem to be removed proportionally more often. This could be due to higher variability of wind close to water~\cite{ho2014mapping} which can result in higher prediction errors.\\
+A station is not necessariliy removed at all times, only if it shows outliers for a certain period after QC step m3, maybe due to improper setup. The difference between day and night for an example day of 19.06.2023 can be found in Appendix~\ref{appendix: netatmo}  Figure~\ref{fig:qc netatmo hamburg before after m5}.
 
 \section{Feature Engineering}
 \label{sec:feature_engineering}
