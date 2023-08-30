@@ -49,9 +49,8 @@ The first use-case to be evaluated is the interpolation of air temperature for a
 
 \subsection{Model Comparison}
 
-First, we compare the overall performance of the models against each other. Figure~\ref{fig:rmse by model type} shows the RMSE of each model across both Hamburg and Stuttgart for the month of June 2023. For all models, one evaluation was done using the imputed dataset without missing values, as Linear Regression, KNN, Random Forest and SVM Regression cannot handle missing values. Gradient Boosting was once run with and once run without imputed data, where the imputed data performed better at 2 neighbours, possibly due to neighbours with missing values, but performed slightly worse than not imputed data for higher amounts of neighbours. SVM, KNN and Random Forest seem to hit a plateau when reaching a certain number of neighbours, around 15-20, whereas Linear Regression and Gradient Boosting continue to improve with a higher number of neighbours.\\
-Gradient Boosting shows the lowest RMSE starting with over 10 neighbours and has the smallest confidence interval. The non-imputed data also performs slightly better, as seen in Appendix %TODO: Link
-, therefore we will continue a more detailed evaluation with the Gradient Boosting model without imputed data. It is to note, that the individual models were mainly run with default parameters as given by sklearn library, therefore the performance of the individual models could be further improved. The exact parameter configurations can be found in Appendix~\ref{appendix: sklearn ml parameters single station}.
+First, we compare the overall performance of the models against each other. Figure~\ref{fig:rmse by model type} shows the RMSE of each model across both Hamburg and Stuttgart for the month of June 2023, while a more detailed overview can be found in Appendix Figure~\ref{fig:eval single station interpolation detailed} and~\ref{fig:eval single station interpolation detailed part 2}. For all models, one evaluation was done using the imputed dataset without missing values, as Linear Regression, KNN, Random Forest and SVM Regression cannot handle missing values. Gradient Boosting was once run with and once run without imputed data, where the imputed data performed better at 2 neighbours, possibly due to neighbours with missing values, but performed slightly worse than not imputed data for higher amounts of neighbours. SVM, KNN and Random Forest seem to hit a plateau when reaching a certain number of neighbours, around 15-20, whereas Linear Regression and Gradient Boosting continue to improve with a higher number of neighbours.\\
+Gradient Boosting shows the lowest RMSE starting with over 10 neighbours and has the smallest confidence interval. The non-imputed data also performs slightly better, as seen in Appendix Figure~\ref{fig:eval single station interpolation detailed part 2}, therefore we will continue a more detailed evaluation with the Gradient Boosting model without imputed data. It is to note, that the individual models were mainly run with default parameters as given by sklearn library, therefore the performance of the individual models could be further improved. The exact parameter configurations can be found in Appendix~\ref{appendix: sklearn ml parameters single station}.
 
 \subsection{Further Evaluation - Gradient Boosting}
 
@@ -130,17 +129,15 @@ We can see, that a low number of moving sensors, especially with high number of 
 % Areal Interpolation
 \section{Areal Interpolation of Air Temperature}
 
-The second use-case for ML-based interpolation of air temperature is the areal interpolation, e.g., turning a set of single data points into a continuous temperature grid. The problem with this approach is that in comparison to interpolating a single sensor, there are potentially many locations that have no sensor data and therefore no target variable to be trained with. The main assumption here is that locations with similar features, e.g., land coverage, soil temperature, sky view factor, solar radiance, etc.\ have similar air temperature. The main challenge here is to find the right features that capture the dependency between the different locations.\\
-In the first step, we simply use the coordinates of each data point in order to train the model in addition to remote sensing data, as land coverage and surface roughness have a high impact on air temperature.(Cite LCZ studies).
-Further improvements
-
-- parameters:
-  - grid cell size
-
-- todos:
-  - try to get surface temperature for specific time step -> LST high influence on TA?
+The second use-case for ML-based interpolation of air temperature is the areal interpolation, e.g., turning a set of single data points into a continuous temperature layer/grid. The problem with this approach is that in comparison to interpolating a single sensor, there are potentially many locations that have no sensor data and therefore no target variable to be trained with. The main assumption here is that locations with similar features, e.g., land coverage, soil temperature, sky view factor, solar radiance, etc.\ have similar air temperature. This assumption is one of the motivating factors behind LCZ research. The main challenge here is to find the right features that capture the dependency between the different locations and choose how to model spatial information.\\
+In the following section, areal interpolation of air temperature is explored by comparing the RMSE between different models, previously discussed in Chapter~\ref{chap:Machine Learning based Interpolation}. We primarily focus on the area of Stuttgart, as Sensor.Community data for this area was much easier to acquire. We focus again on the month of June 2023, as it contained a lot of periods of prolonged hot weather, as seen in the Appendix Figure~\ref{fig:dwd stuttgart june 23 mean min max}, and we are interested in mapping air temperature especially during hot periods. Similar to Kriging, in our areal interpolation exploration, we focus on the interpolation of air temperature for a single timestamp. Our approach could be extended in the future, to also include a temporal aspect as well; however, this is out of the scope of this work. Based on the DWD reference station, we chose the 19.06.2023 as our reference data to try out several types of areal interpolation. To get a good understanding, what kind of air temperatures to expect that day, we also took a look at the 2m and 5cm air temperature at the DWD station on the 19.06.2023, as seen in Appendix Figure~\ref{fig:dwd stuttgart june 23 10 min 2m 5cm}. Interest to note here, is that the 5cm air temperature fluctuates way more than the air temperature at 2m, indicating that height information of a sensor place an important role, especially in areal interpolation where you cannot only rely on the relationship between neighbouring temperature curves but need to capture placement information as well.
 
 \subsection{Model Comparison}
+
+
+
+limitations:
+- only one 
 
 - more features compared to location interpolation: land coverage, soil temperature, sky view factor, from satellite data and google earth engine
 
@@ -149,7 +146,7 @@ Further improvements
 
 baseline: mean, IWD, ordinary kriging (with different kernels)
 
-\subsection{Geostatistical Interpolation Baseline}
+\subsubsection{Geostatistical Interpolation Baseline}
 In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) or k-nearest neighbours (KNN) that are easy and performant, but struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Kriging, which is based on a gaussian process and 
 
 In the scope of this work, we unfortunately cannot compare all of these methods with each other and therefore need to focus on a subset of methods. EBK and EBKRP are one of the most commonly used methods for temperature interpolation (cite). According to~\cite{njoku2023effects}, EBKRP continuously outperforms EBK in different weather station density scenarios, therefore we will use EBKRP as a baseline for our comparison.\\
@@ -181,84 +178,62 @@ For this use-case we have several test areas that we could validate. To get an o
     \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
     \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
     \label{fig:qc sensor community stuttgart june 23}
-
-    \includegraphics[width=1\textwidth]{images/sensor_community_locations_hamburg_after_qc_june_23.png}
-    \caption{Locations for Sensor.Community in Hamburg, Germany, June 2023}
-    \label{fig:qc sensor community hamburg june 23}
 \end{figure}
 
 - we choose stations from Stuttgart and Hamburg for the evaluation
 -> identify stations with high mean daily temperature difference to reference station (to see if they are in a heat island)
 
-\subsubsection{Stuttgart}
+% TODO: Optional add Hamburg
+% \subsubsection{Hamburg}
 
-Station Locations:\\
+% Todo: add Hamburg station locations\\
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
-    \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
-\end{figure}
+% TODO
+% First compare only air temperature for stations that are near a reference station and have enough buddies for sensor community
+% - only for june 2023 from sensor community, not january as heat islands are not as important in winter (which depends on the context ofc if the goal is for example to save heating costs, could be a factor)
 
-DWD Reference location: 48.6883;9.2235 -> DWD id: 4931, Daily Max, Mean and Min values for June 2023\\
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=1\textwidth]{images/dwd_stuttgart_june_23_tair_max_mean_min.png}
-    \caption{Daily Mean, Max, and Min Air Temperature at 2m in Stuttgart, Germany, June 2023, DWD Station 4931}
-    \label{fig:dwd mean max min stuttgart june 23}
-\end{figure}
-
-\subsubsection{Hamburg}
-
-Todo: add Hamburg station locations\\
-
-TODO
-First compare only air temperature for stations that are near a reference station and have enough buddies for sensor community
-- only for june 2023 from sensor community, not january as heat islands are not as important in winter (which depends on the context ofc if the goal is for example to save heating costs, could be a factor)
-
-Steps in the evaluation:
-- find sensor community stations near reference stations that passed m5 QC step
-- Compare different interpolation approaches
-  - linear, forests, KNN, NNetwork
-  - with different amounts of data available (99\% -> 1\%) and see how RSME evolves
+% Steps in the evaluation:
+% - find sensor community stations near reference stations that passed m5 QC step
+% - Compare different interpolation approaches
+%   - linear, forests, KNN, NNetwork
+%   - with different amounts of data available (99\% -> 1\%) and see how RSME evolves
 
 
-Steps:
-- deterministic approaches
-  - "naive" approach with nearest neighbor -> show high error rate
-- probabilistic approaches
-  - reference approach with geostatistical methods (ordinary kriging, empirical bayesian kriging, EBK with regression) -> still high error rate, especially with lower density of weather stations/bad support for irregularly spaced data
-    - ordinary kriging:
-        - temperature semivariogram first
-        - add additional features (e.g., soil temperature, land coverage, sky view factor, ...) as semivariograms and use cokrigin to combine them
-    - empirical bayesian kriging:
-        - not implemented out of the box (pykrige)
+% Steps:
+% - deterministic approaches
+%   - "naive" approach with nearest neighbor -> show high error rate
+% - probabilistic approaches
+%   - reference approach with geostatistical methods (ordinary kriging, empirical bayesian kriging, EBK with regression) -> still high error rate, especially with lower density of weather stations/bad support for irregularly spaced data
+%     - ordinary kriging:
+%         - temperature semivariogram first
+%         - add additional features (e.g., soil temperature, land coverage, sky view factor, ...) as semivariograms and use cokrigin to combine them
+%     - empirical bayesian kriging:
+%         - not implemented out of the box (pykrige)
 
-  - semivariogram: https://pro.arcgis.com/en/pro-app/latest/help/analysis/geostatistical-analyst/understanding-a-semivariogram-the-range-sill-and-nugget.htm
+%   - semivariogram: https://pro.arcgis.com/en/pro-app/latest/help/analysis/geostatistical-analyst/understanding-a-semivariogram-the-range-sill-and-nugget.htm
 
-- deep learning approach with neural networks -> iteratively improve model by adding additional features, compare with reference approach
+% - deep learning approach with neural networks -> iteratively improve model by adding additional features, compare with reference approach
 
-% Overall steps
+% % Overall steps
 
-1. Data Collection and rough analysis
-  1.1. Get data from Sensor.Community
-  1.2. Get data from DWD
-  1.3. Get data from satellites via Google Earth Engine
-  1.4. Get data from Netatmo (Hamburg, try to get Stuttgart as reference with historical data via API)
-2. QC steps (TA first)
-  2.1. Try to remove indoor stations and stations with irregular data
-  2.2. Remove stations based on buddy check (removes a lot of sensor community stations due to lower density)
-  2.3. Reference station has high-quality data already, but can be used as a reference (interesting the comparison from 2m TA to 5cm TA)
-  2.4. Discuss QA for other parameters (Humidity, Pressure etc.)
-3. Comparison of models
-  3.1. Simple models with only coordinates as input features and TA as target feature
-  3.2. Add additional features (land coverage (NDVI, EVI)) and see how they improve the model
-    3.2.1. For land coverage etc.\ compare different satellites and resolutions
-    3.2.2. For coordinates/distances, compare different ways of calculating distances or modelling them in the model
-    3.2.3. Compare influence of normalization
-  3.3. Try to create a more complex NN model to show capabilities of NNs and try out LSTM for time series
-  3.4. Choose final candidate that seems the most promissing and compare with reference approach
-4. Comparison with reference approaches
-  4.1. Compare with simple Ordinary Kriging approach (with different kernels)
-  4.2. Discuss problem of not being able to extrapolate
+% 1. Data Collection and rough analysis
+%   1.1. Get data from Sensor.Community
+%   1.2. Get data from DWD
+%   1.3. Get data from satellites via Google Earth Engine
+%   1.4. Get data from Netatmo (Hamburg, try to get Stuttgart as reference with historical data via API)
+% 2. QC steps (TA first)
+%   2.1. Try to remove indoor stations and stations with irregular data
+%   2.2. Remove stations based on buddy check (removes a lot of sensor community stations due to lower density)
+%   2.3. Reference station has high-quality data already, but can be used as a reference (interesting the comparison from 2m TA to 5cm TA)
+%   2.4. Discuss QA for other parameters (Humidity, Pressure etc.)
+% 3. Comparison of models
+%   3.1. Simple models with only coordinates as input features and TA as target feature
+%   3.2. Add additional features (land coverage (NDVI, EVI)) and see how they improve the model
+%     3.2.1. For land coverage etc.\ compare different satellites and resolutions
+%     3.2.2. For coordinates/distances, compare different ways of calculating distances or modelling them in the model
+%     3.2.3. Compare influence of normalization
+%   3.3. Try to create a more complex NN model to show capabilities of NNs and try out LSTM for time series
+%   3.4. Choose final candidate that seems the most promissing and compare with reference approach
+% 4. Comparison with reference approaches
+%   4.1. Compare with simple Ordinary Kriging approach (with different kernels)
+%   4.2. Discuss problem of not being able to extrapolate

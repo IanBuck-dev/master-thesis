@@ -10,6 +10,20 @@
     \label{fig:qc netatmo hamburg before after m5}
 \end{figure}
 
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/eval imputed vs not imputed.png}
+    \caption{Evaluation Single Station Interpolation, Detailed View}
+    \label{fig:eval single station interpolation detailed}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/eval imputed vs not imputed part 2.png}
+    \caption{Evaluation Single Station Interpolation, Detailed View}
+    \label{fig:eval single station interpolation detailed part 2}
+\end{figure}
+
 \section{Sklearn Model Parameters for Single Station Interpolation}
 \label{appendix: sklearn ml parameters single station}
 
@@ -74,4 +88,20 @@ The locations of the stations are presented in Figure~\ref{fig:eval_hamburg_loca
     \includegraphics[width=1\textwidth]{images/eval_hamburg_locations_point_histb_10_map.png}
     \caption{Netatmo Stations for Minimum Distance Between Stations, Hamburg}
     \label{fig:eval_hamburg_locations_point_histb_10_map}
+\end{figure}
+
+\section{Areal Interpolation}
+
+Figure~\ref{fig:dwd stuttgart june 23 mean min max} shows the mean/max/min air temperature for DWD station with id 4931 across June 2023 in Stuttgart near the airport.
+Figure~\ref{fig:dwd stuttgart june 23 10 min 2m 5cm} shows the air temperature for the same station on the 19. June 2023 in a 10 minute interval. The blue line, i.e., TT\_10, shows the air temperature at 2m while the orange line, i.e., TM5\_10, shows the air temperature at 5cm directly above the ground.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1\textwidth]{images/dwd_stuttgart_june_23_tair_max_mean_min.png}
+    \caption{DWD Station 4931, Stuttgart, June 2023}
+    \label{fig:dwd stuttgart june 23 mean min max}
+
+    \includegraphics[width=1\textwidth]{images/dwd_stuttgart_june_19_23_tair.png}
+    \caption{DWD Station 4931, Stuttgart, 19. June 2023}
+    \label{fig:dwd stuttgart june 23 10 min 2m 5cm}
 \end{figure}
