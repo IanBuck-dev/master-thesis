@@ -127,61 +127,144 @@ We can see, that a low number of moving sensors, especially with high number of 
 % \subsubsection{Neural Network Exploration}
 
 % Areal Interpolation
-\section{Areal Interpolation of Air Temperature}
 
-The second use-case for ML-based interpolation of air temperature is the areal interpolation, e.g., turning a set of single data points into a continuous temperature layer/grid. The problem with this approach is that in comparison to interpolating a single sensor, there are potentially many locations that have no sensor data and therefore no target variable to be trained with. The main assumption here is that locations with similar features, e.g., land coverage, soil temperature, sky view factor, solar radiance, etc.\ have similar air temperature. This assumption is one of the motivating factors behind LCZ research. The main challenge here is to find the right features that capture the dependency between the different locations and choose how to model spatial information.\\
-In the following section, areal interpolation of air temperature is explored by comparing the RMSE between different models, previously discussed in Chapter~\ref{chap:Machine Learning based Interpolation}. We primarily focus on the area of Stuttgart, as Sensor.Community data for this area was much easier to acquire. We focus again on the month of June 2023, as it contained a lot of periods of prolonged hot weather, as seen in the Appendix Figure~\ref{fig:dwd stuttgart june 23 mean min max}, and we are interested in mapping air temperature especially during hot periods. Similar to Kriging, in our areal interpolation exploration, we focus on the interpolation of air temperature for a single timestamp. Our approach could be extended in the future, to also include a temporal aspect as well; however, this is out of the scope of this work. Based on the DWD reference station, we chose the 19.06.2023 as our reference data to try out several types of areal interpolation. To get a good understanding, what kind of air temperatures to expect that day, we also took a look at the 2m and 5cm air temperature at the DWD station on the 19.06.2023, as seen in Appendix Figure~\ref{fig:dwd stuttgart june 23 10 min 2m 5cm}. Interest to note here, is that the 5cm air temperature fluctuates way more than the air temperature at 2m, indicating that height information of a sensor place an important role, especially in areal interpolation where you cannot only rely on the relationship between neighbouring temperature curves but need to capture placement information as well.
-
-\subsection{Model Comparison}
-
-
-
-limitations:
-- only one 
-
-- more features compared to location interpolation: land coverage, soil temperature, sky view factor, from satellite data and google earth engine
-
-- improvements:
-  - predict air temperature based on LST for better training
-
-baseline: mean, IWD, ordinary kriging (with different kernels)
-
-\subsubsection{Geostatistical Interpolation Baseline}
-In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) or k-nearest neighbours (KNN) that are easy and performant, but struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Kriging, which is based on a gaussian process and 
-
-In the scope of this work, we unfortunately cannot compare all of these methods with each other and therefore need to focus on a subset of methods. EBK and EBKRP are one of the most commonly used methods for temperature interpolation (cite). According to~\cite{njoku2023effects}, EBKRP continuously outperforms EBK in different weather station density scenarios, therefore we will use EBKRP as a baseline for our comparison.\\
-In the following, the machine learning fundamentals for this work are explained and the different ML regression model types are introduced.
-
-
-\subsection{Further Evaluation - HistGradientBoostingRegressor}
-
-\subsection{Datasets for Evaluation}
-
-As a first step for training and testing areal air temperature interpolation methods, we need to define the test area and the data we use for training. In this context, it could be interesting to compare different sensor network providers.
-For this use-case we have several test areas that we could validate. To get an overview of the sensors left after QC for Sensor.Community, Table 
-
--> could also compare with Hamburg (closer to water, more wind)
-
-- find locations that are:
-  - somewhat near reference stations for comparison
-  - high station density
-  - interesting features (e.g., parks, water, ...)
-
-- locations in Germany for Sensor.Community are:
-  - Stuttgart (birthplace of Sensor.Community) with high station density + one reference station somewhat close
-  - Hamburg with lower sensor density, but 2 reference stations (interesting to see changes between those over realtively short distances) and close to water/river (Elbe)
-  - other candidates (but with way fewer sensor and no reference stations): Cologne, Munich, Freiburg (interesting that they have an airport but no reference station), Lüneburg
-  - interesting to note, that Berlin did not have any sensor stations that passed the QC step\\
-
-\begin{figure}[ht]
+\begin{figure}[htp]
     \centering
-    \includegraphics[width=1\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
+    \includegraphics[width=0.9\textwidth]{images/eval areal interpolation 19.06.2023 14h.png}
+    \caption{Areal Interpolation Comparison, Sensor.Community Stuttgart, 19.06.2023 2PM}
+    \label{fig:eval areal interpolation 14h stuttgart}
+
+    \includegraphics[width=0.9\textwidth]{images/sensor_community_locations_stuttgart_after_qc_june_23.png}
     \caption{Locations for Sensor.Community around Stuttgart, Germany, June 2023}
     \label{fig:qc sensor community stuttgart june 23}
 \end{figure}
 
-- we choose stations from Stuttgart and Hamburg for the evaluation
--> identify stations with high mean daily temperature difference to reference station (to see if they are in a heat island)
+\section{Areal Interpolation of Air Temperature}
+
+The second use-case for ML-based interpolation of air temperature is the areal interpolation, e.g., turning a set of single data points into a continuous temperature layer/grid. The problem with this approach is that in comparison to interpolating a single sensor, there are potentially many locations that have no sensor data and therefore no target variable to be trained with. The main assumption here is that locations with similar features, e.g., land coverage, soil temperature, sky view factor, solar radiance, etc.\ have similar air temperature. This assumption is one of the motivating factors behind LCZ research. The main challenge here is to find the right features that capture the dependency between the different locations and choose how to model spatial information.\\
+In the following section, areal interpolation of air temperature is explored by comparing the RMSE between different models, previously discussed in Chapter~\ref{chap:Machine Learning based Interpolation}. We primarily focus on the area of Stuttgart, as Sensor.Community data for this area was much easier to acquire, as seen in Figure~\ref{fig:qc sensor community stuttgart june 23}. We focus again on the month of June 2023, as it contained a lot of periods of prolonged hot weather, as seen in the Appendix Figure~\ref{fig:dwd stuttgart june 23 mean min max}, and we are interested in mapping air temperature especially during hot periods. Similar to Kriging, in our areal interpolation exploration, we focus on the interpolation of air temperature for a single timestamp. Our approach could be extended in the future, to also include a temporal aspect as well; however, this is out of the scope of this work. Based on the DWD reference station, we chose the 19.06.2023 as our reference data to try out several types of areal interpolation. To get a good understanding, what kind of air temperatures to expect that day, we also took a look at the 2m and 5cm air temperature at the DWD station on the 19.06.2023, as seen in Appendix Figure~\ref{fig:dwd stuttgart june 23 10 min 2m 5cm}. Interest to note here, is that the 5cm air temperature fluctuates way more than the air temperature at 2m, indicating that height information of a sensor place an important role, especially in areal interpolation where you cannot only rely on the relationship between neighbouring temperature curves but need to capture placement information as well.\\
+
+\subsection{Model Comparison}
+
+To compare the different models, we first need to define at which time we want to test our model, as we can only interpolate a single timestamp at a time. We chose the hottest temperature for the day at 2PM as well as the coldest point that day at 5AM. We start of with only Sensor.Community data and the following features:
+
+\begin{itemize}
+  \item Longitude, Latitude
+  \item Humidity (where available)
+  \item Pressure (where available)
+  \item Indexes (500m) ->  NDVI, EVI
+  \item DEM
+  \item Temperature and Distances to the closest 30 neighbours (similar to RFSP)
+\end{itemize}
+
+Each model, i.e., Linear Regression, KNN, RF, HBG, SVM, was run with default sklearn parameters. We used 10-fold cross validation with a StandardScaler to evaluate the model performances. The results can be found in Figure~\ref{fig:eval areal interpolation 14h stuttgart}. We can see a RMSE between 1.7 and 1.3 for KNN, RF, HBG, SVM, while Linear Regression clearly falls behind with over 2. The R2 score of all models is rather low with 0.2 maximum and in some cases even negative values, showing high variability during especially hot weather.\\
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/eval areal interpolation ok stuttgart 14h.png}
+    \caption{Ordinary Kriging Spherical Variogram, Sensor.Community Stuttgart, 19.06.2023 2PM}
+    \label{fig:eval areal interpolation ok 14h stuttgart}
+
+    \includegraphics[width=0.9\textwidth]{images/eval areal interpolation hgb 14h.png}
+    \caption{HistGradientBoostingRegressor Areal Interpolation, Sensor.Community Stuttgart, 19.06.2023 2PM}
+    \label{fig:eval areal interpolation hgb 14h stuttgart}
+\end{figure}
+
+\subsubsection{Comparison with Kriging}
+
+In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) that are simple but performant, yet struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Kriging.\\
+In the scope of this work, we unfortunately cannot compare available Kriging methods with each other and therefore need to focus on a subset of methods, namely those easily available via the pykrige Python library, i.e., Ordinary and Universal Kriging. We note however, that for example according to~\cite{njoku2023effects}, there are many other more sophisticated and specicialised Kriging methods such as EBK and EBKRP that could perform better. For Ordinary Kriging, we use the same dataset we used previously but only use the coordinates and the target air temperature. With a 80\% train and 20\% test split, we achieved the following RMSE and R2 scores in Table~\ref{tab: areal interpolation ok 2pm}. If we choose the same data and train and test our ML models on it, we get the RMSE and R2 shown in Table~\ref{tab: areal interpolation ml models 2pm}.\\
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{lrr}
+  \toprule
+  Variogram Model &     RMSE &        R2 \\
+  \midrule
+          linear & 1.712089 & -0.001049 \\
+            power & 1.712089 & -0.001049 \\
+        gaussian & 1.327896 &  0.397814 \\
+        spherical & 1.272819 &  0.446732 \\
+      exponential & 1.471249 &  0.260778 \\
+  \bottomrule
+  \end{tabular}
+  \label{tab: areal interpolation ok 2pm}
+  \caption{RMSE and R2 of Ordinary Kriging for Stuttgart 19.06.2023 2PM, Sensor.Community}
+
+  \begin{tabular}{lrr}
+  \toprule
+            ML Model &     RMSE &       R2 \\
+  \midrule
+            KNeighborsRegressor & 1.314883 & 0.183336 \\
+          RandomForestRegressor & 1.205100 & 0.314014 \\
+  HistGradientBoostingRegressor & 1.098671 & 0.429831 \\
+                            SVR & 1.432225 & 0.031072 \\
+  \bottomrule
+  \end{tabular}
+  \label{tab: areal interpolation ml models 2pm}
+  \caption{RMSE and R2 of ML Models for Stuttgart 19.06.2023 2PM, Sensor.Community}
+\end{table}
+
+From these results we can see, that our ML models outperform Ordniary Kriging in terms of RMSE but lack behind in R2 score. To show the differences, we use both Kriging and HGB to interpolate a map. The results of the best performing model according to R2 scoore, i.e., the spherical variogram, can be seen in Figure~\ref{fig:eval areal interpolation ok 14h stuttgart}. The HGB results can be seen in Figure~\ref{fig:eval areal interpolation hgb 14h stuttgart}.\\
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/eval areal interpolation 19.06.2023 5h.png}
+    \caption{Areal Interpolation Comparison, Sensor.Community Stuttgart, 19.06.2023 5AM}
+    \label{fig:eval areal interpolation 5h stuttgart}
+
+    \includegraphics[width=0.8\textwidth]{images/eval areal interpolation hgb 5h.png}
+    \caption{HistGradientBoostingRegressor Areal Interpolation, Sensor.Community Stuttgart, 19.06.2023 5AM}
+    \label{fig:eval areal interpolation 5h stuttgart map}
+\end{figure}
+
+\subsubsection{Comparison during Night}
+
+Next to mapping air temperature when it's especially hot, we also take a look at night time air temperature mapping to have a baseline for comparison and try to understand if there are differences. The results from the 10-fold cross validation on the same dataset but with the time set to 5am, i.e., the time of that day the air temperature was lowest, can be found in Figure~\ref{fig:eval areal interpolation 5h stuttgart}. The HGB model was then trained again with the error values in Table~\ref{tab: eval night time 5h stuttgart} and the resulting map in Figure~\ref{fig:eval areal interpolation 5h stuttgart map}.\\
+We can clearly see, that R2 values during the night are way higher, suggesting that we miss some kind of information during the day, such as solar radiation and LST, which might need to be integrated into our model for better prediction results. Additionally, we could also improve the accuracy by using Sentinel 2 and Landsat readings due to their way higher spatial resolution, as currently the MODIS remote sensing values have a 500m pixel size in comparison to a pixel size of 10m to 50m. In that case however, we would also need to manually calculate NDVI etc., which adds a little bit of extra work.
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{lrr}
+  \toprule
+                      ML Model &     RMSE &       R2 \\
+  \midrule
+            KNeighborsRegressor & 0.935147 & 0.679537 \\
+          RandomForestRegressor & 0.730378 & 0.804515 \\
+  HistGradientBoostingRegressor & 0.729455 & 0.805009 \\
+                            SVR & 0.804774 & 0.762663 \\
+  \bottomrule
+  \end{tabular}
+  \label{tab: eval night time 5h stuttgart}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/eval areal interpolation ok stuttgart 14h netatmo.png}
+    \caption{Ordinary Kriging Power Variogram, Netatmo Stuttgart, 19.06.2023 2PM}
+    \label{fig:eval areal interpolation ok 14h stuttgart netatmo}
+\end{figure}
+
+\subsubsection{Comparison with Netatmo}
+
+Like Sensor.Community, Netatmo also has many stations in the region of Stuttgart. To compare the two providers, we use Netatmo data for the same timestamp, i.e., 2PM on the 19. June 2023, to get a rough comparison. Please note, that we did not apply any QC to this data. This comparison should be improved by also applying QC steps to Netatmo stations; however, we did not have the time to collect this data and do the pre-processing steps in this work. The Ordinary Kriging results are shown in Table~\ref{tab: areal interpolation ok 2pm netatmo stuttgart}. In this comparison, the power variogram model seems to perform the best. The resulting map can be found in Figure~\ref{fig:eval areal interpolation ok 14h stuttgart netatmo}. The next step would be to also run through all pre-processing steps with Netatmo data for QC etc.\ and also compare the ML models with each other on the Netatmo data, possibly also on a combination of Netatmo and Sensor.Community to get even higher spatial coverage.
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{lrr}
+  \toprule
+  Variogram Model &     RMSE &       R2 \\
+  \midrule
+          linear & 1.755016 & 0.070271 \\
+            power & 1.592532 & 0.234456 \\
+        gaussian & 1.746884 & 0.078868 \\
+        spherical & 1.722252 & 0.104662 \\
+      exponential & 1.669650 & 0.158518 \\
+  \bottomrule
+  \end{tabular}
+  \label{tab: areal interpolation ok 2pm netatmo stuttgart}
+  \caption{RMSE and R2 of Ordinary Kriging for Stuttgart 19.06.2023 2PM, Netatmo}
+\end{table}
 
 % TODO: Optional add Hamburg
 % \subsubsection{Hamburg}
