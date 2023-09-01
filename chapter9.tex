@@ -1,42 +1,12 @@
 \chapter{Conclusion}
 \label{chap:Conclusion}
-% 3 Pages
 
-single station interpolation works very good with RMSE between 0.4 and 0.5
-- because other factors, such as height of the station due not play an important part, as long as the distribution of the temperature is the same
-
-areal interpolation way harder. probably because information is missing (target variable for location/grid cell and height), making it hard to for example select stations only at 2m height that are representative for a larger area. Combination with LST however possible (should be investigated)
-
-how these could be integrated -> interpolation service / temperature map that integrates multiple providers and allows interactive analysis. current tool set with python very flexible, but slow. dataset availability could be way better, especially with pre-processed data, so that one can focus on the actual comparison.
-
-comparison of model should have been done with more models, and for example should include state of the art implementation from for example ArcGIS. 
-
-final recommendation. create virtual sensors based on moving sensors -> use those virtual sensors to augment actual sensor data and then use eact interpolation methods such as Kriging to create a smooth surface.  
-\section{Summary}
-
-- discuss low amount of parameters and curse of dimensionality\\
-
-TODO: Rewrite once Evaluation done\\
-\\
-
-With the growing need to analyze microclimates of cities in order to protect them against new phenomena like UHIs, this paper proposes the use of citizen-owned sensor networks that offer a higher spatial and temporal resolution of data points in comparison to traditional approaches such as relying on LST data. This approach also comes with challenges such as observing areas without stationary sensors and identifying poor quality data-points from broken or incorrectly installed sensors. With the obtained data, we create a temperature interpolation service that predicts temperature data between data points using a regression model that can act as a building block for further temperature-based analysis by abstracting the underlying single data-points in the data-layer away.\\
-In order to improve the quality of temperature predictions for unobserved areas, we investigate how temporary sensor readings, for example by attaching sensors to buses, bikes or e-scooters, can be used to capture temporary local meteorological snapshots, and how these snapshots can be incorporated into the interpolation process. We also evaluate which features need to be captured to generate the most accurate predictions, if machine-learning is a suitable approach, and how it compares to more traditional geostatistical approaches.
-
-Possible improvements:
-- QC -> use different time intervals, investigate different qc processes for other variables, how it looks with reference stations, combining more data, bias of specific sensors etc., not default parameters, e.g 3000m radius too big?
-
-Support for existing findings:
-- harder to interpolate when it's hotter/air temperature is more variable
-- harder to interpolate when there is less data
-- surface temperature/temperature near the ground way more variable and less useful in predicting UHIs
-
-Other options (not yet shown):
-(harder to interpolate closer to water/big rivers)
-
-New findings:
-- Sensor.Community data cannot substitute Netatmo data due to low sensor density, and data quality an issue, however data availability is comandable
-
+In this work, the feasibility of two mayor use-cases for ML-based interpolation, e.g., interpolation for a single location and areal interpolation, was explored given the context of urban local air temperature mapping and an upper bound for RMSE values for both use-cases were established, comparing different ML models against each other and testing their suitability to model the urban microclimate.\\
+For interpolation of a single station, sensor readings from Netatmo and Sensor.Community were collected for the month of June 2023 from the areas of Hamburg and Stuttgart in Germany. The lowest RMSE was achieved by Histogram-based Gradient Boosting of around 0.5, depending on the train/test split, showing the ability of the ML model to accurately predict air temperature for a specific location based on surrounding stations, even when stations have missing data and are not available at all times. Histogram-based Gradient Boosting was further evaluated for the region of Hamburg with Netatmo data to inspect feature (permutation) importance, distances between neighbours, and data availability of neighbours. A look at the permutation importances suggests, that only a small percentage of neighbouring stations, i.e., those that have a very similar temperature curve, have a huge influence on the prediction quality, while other neighbours and other features have little to no influence, suggesting that for single station interpolation one might only want to focus on collecting temperature data and ignore other types of readings, reducing data pre-processing overhead. The distance between neighbours had only a minimal influence up to 7km, suggesting that neighbouring stations should not be located further than 10km away. Experiments with sampling the available data per station to simulate non-stationary sensors showed that even with a big number of moving sensors, as long as there are few stationary sensors, prediction quality is always high; however, when those stationary sensors get removed and all sensors are moving, errors only stayed low when many readings, e.g., 1000 per station, were available, which could be achieved for example by a bus that visits a location more than once every hour ($30 days * 24h = 720$). \\
+Areal interpolation on the other hand was evaluated with Sensor.Community data from Stuttgart and performed slightly worse than single station interpolation at a RMSE of 1.4-1.5 for a single timestamp on the 19.06.2023 14h, an especially hot day in Stuttgart, during the day but with a significantly lower R2 score of a maximum of 0.2 with some models. In comparison, on the same day but in the night at 5AM, the RMSE was significantly lower down to 0.65-0.7 for Histogram-based Gradient Boosting with R2 scores around 0.7, suggesting that during the day other factors influence the urban climate that we do not capture, such as LST or solar radiance, which should be explored in the future. Compared to Ordinary Kriging, a geostatistical model, the best predictor, i.e., Histogram-based Gradient Boosting, had similar RMSE and R2 scores when tested against both timestamps; however, the RMSE and R2 values highly dependet on the way the data was split, as changing the random seed for the train/test splitting revealed, suggesting as there is information missing for the model to accurately evaluate specific stations and sensor readings. One such missing factor could be the height of sensors, as a comparison with a DWD reference station revealed, that the temperature at 2m and 5cm differs by a lot, which means that a hotter station that is closer to the ground as a cooler station nearby could be correct; however, in the model this information is not captured, resulting in training data were two totally different sensor readings are located next to each other.\\
+Finally, we have shown that Histogram-based Gradient Boosting seems to be a very flexibel model that outperforms similar RF models, given that there is slightly more data to train on, and also has the added bonus of natively handling missing values, and is suitable for air temperature interpolation in the urban setting. Due to the limited scope, there were many aspects which could be further improved such as using 10-fold cross validation everywhere and running exhaustive grid searches to find the most optimal model setups, collecting more data for more cities, eventually with better ways to validate our findings, i.e., through more densly located reference stations, improving the QC process, using more precise remote sensing data, and much more.
 
 \section{Future Outlook}
 
-TODO
+There are many different directions in which this work could be extended. The areal interpolation use-case offers much room for improvement by using more precise remote sensing measurements or incorporating the temporal aspect, as well as the single station interpolation use-case, which could be turned into an actual study to collect data and evaluate how this data could improve the monitoring of the urban climate.\\
+Additionally, we didn't compare ML models to Neural Networks, which could be even more powerfull in their predictive capabilities. Another starting point could also be data pre-processing and QC or the influence of sensor height (and location) on the prediction quality. Lastly, working with spatial data purely in Python was quite slow, therefore it could make sense to improve tooling around the interpolation and PWS data collection to provide researchers with more flexibel ways of conducting research and reducing barriers of getting started.

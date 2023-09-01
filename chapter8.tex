@@ -170,7 +170,7 @@ Each model, i.e., Linear Regression, KNN, RF, HBG, SVM, was run with default skl
     \label{fig:eval areal interpolation hgb 14h stuttgart}
 \end{figure}
 
-\subsubsection{Comparison with Kriging}
+\subsection{Comparison with Kriging}
 
 In order to evaluate the performance of the ML model, we need to first get a better understanding of the interpolation quality of existing interpolation techniques. Next to simpler deterministic interpolation methods, such as inverse weight distance (IWD) that are simple but performant, yet struggle to capture more complex interdependencies, there are also more complex methods available. The most common geostatistical method for interpolation is Kriging.\\
 In the scope of this work, we unfortunately cannot compare available Kriging methods with each other and therefore need to focus on a subset of methods, namely those easily available via the pykrige Python library, i.e., Ordinary and Universal Kriging. We note however, that for example according to~\cite{njoku2023effects}, there are many other more sophisticated and specicialised Kriging methods such as EBK and EBKRP that could perform better. For Ordinary Kriging, we use the same dataset we used previously but only use the coordinates and the target air temperature. With a 80\% train and 20\% test split, we achieved the following RMSE and R2 scores in Table~\ref{tab: areal interpolation ok 2pm}. If we choose the same data and train and test our ML models on it, we get the RMSE and R2 shown in Table~\ref{tab: areal interpolation ml models 2pm}.\\
@@ -218,7 +218,7 @@ From these results we can see, that our ML models outperform Ordniary Kriging in
     \label{fig:eval areal interpolation 5h stuttgart map}
 \end{figure}
 
-\subsubsection{Comparison during Night}
+\subsection{Comparison during Night}
 
 Next to mapping air temperature when it's especially hot, we also take a look at night time air temperature mapping to have a baseline for comparison and try to understand if there are differences. The results from the 10-fold cross validation on the same dataset but with the time set to 5am, i.e., the time of that day the air temperature was lowest, can be found in Figure~\ref{fig:eval areal interpolation 5h stuttgart}. The HGB model was then trained again with the error values in Table~\ref{tab: eval night time 5h stuttgart} and the resulting map in Figure~\ref{fig:eval areal interpolation 5h stuttgart map}.\\
 We can clearly see, that R2 values during the night are way higher, suggesting that we miss some kind of information during the day, such as solar radiation and LST, which might need to be integrated into our model for better prediction results. Additionally, we could also improve the accuracy by using Sentinel 2 and Landsat readings due to their way higher spatial resolution, as currently the MODIS remote sensing values have a 500m pixel size in comparison to a pixel size of 10m to 50m. In that case however, we would also need to manually calculate NDVI etc., which adds a little bit of extra work.
@@ -245,7 +245,7 @@ We can clearly see, that R2 values during the night are way higher, suggesting t
     \label{fig:eval areal interpolation ok 14h stuttgart netatmo}
 \end{figure}
 
-\subsubsection{Comparison with Netatmo}
+\subsection{Comparison with Netatmo}
 
 Like Sensor.Community, Netatmo also has many stations in the region of Stuttgart. To compare the two providers, we use Netatmo data for the same timestamp, i.e., 2PM on the 19. June 2023, to get a rough comparison. Please note, that we did not apply any QC to this data. This comparison should be improved by also applying QC steps to Netatmo stations; however, we did not have the time to collect this data and do the pre-processing steps in this work. The Ordinary Kriging results are shown in Table~\ref{tab: areal interpolation ok 2pm netatmo stuttgart}. In this comparison, the power variogram model seems to perform the best. The resulting map can be found in Figure~\ref{fig:eval areal interpolation ok 14h stuttgart netatmo}. The next step would be to also run through all pre-processing steps with Netatmo data for QC etc.\ and also compare the ML models with each other on the Netatmo data, possibly also on a combination of Netatmo and Sensor.Community to get even higher spatial coverage.
 
