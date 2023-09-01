@@ -198,12 +198,12 @@ In this study, we use a 10 min interval to have a high temporal resolution and u
 \begin{figure}[htp]
     \centering
     \includegraphics[width=1\textwidth]{images/sensor_community_qc_january_23.png}
-    \caption{\gls{qc} Results for Sensor.Community Data for Germany, January 2023}
+    \caption{QC Results for Sensor.Community Data for Germany, January 2023}
     \label{fig:qc sensor community jan 23}
 
     \centering
     \includegraphics[width=1\textwidth]{images/sensor_community_qc_june_23.png}
-    \caption{\gls{qc} Results for Sensor.Community Data for Germany, June 2023}
+    \caption{QC Results for Sensor.Community Data for Germany, June 2023}
     \label{fig:qc sensor community june 23}
 \end{figure}
 
@@ -216,7 +216,7 @@ After the \gls{qc} process, the Sensor.Community sensor locations left are shown
 \begin{figure}[ht]
     \centering
     \includegraphics[width=1\textwidth]{images/sensor_community_locations_germany_after_qc_june_23.png}
-    \caption{\gls{qc} Results for Sensor.Community for Germany, June 2023}
+    \caption{QC Results for Sensor.Community for Germany, June 2023}
     \label{fig:qc sensor community germany june 23}
 \end{figure}
 
@@ -256,13 +256,13 @@ After the \gls{qc} process, the Sensor.Community sensor locations left are shown
 The \gls{qc} results for Netatmo stations in Hamburg during June 2023 can be found in~\ref{fig:qc netatmo june 23} which shows the absolute values of sensor readings available after each step including the overall available data as `Raw data' before \gls{qc} which is 1.026.721 rows.
 After \gls{qc} 60.24\% of Netatmo data is still available in Hamburg (so a loss of 39.76\%). The amount of data kept is in line with comparable cities as tested by CrowdQC+'s study which kept 47.1\% and 69.2\% for the cities Amsterdam and Toulouse respectively after steps m1-m5~\cite{fenner2021crowdqc+} as mentioned above. Another comparison can be made to the study by Meier et al.\ which kept 47\% of Netatmo data in Berlin after \gls{qc} with CrowdQC~\cite{meier2017crowdsourcing}.
 It is interesting to note that stations directly next to water seem to be removed proportionally more often. This could be due to higher variability of wind close to water~\cite{ho2014mapping} which can result in higher prediction errors.\\
-A station is not necessariliy removed at all times, only if it shows outliers for a certain period after \gls{qc} step m3, maybe due to improper setup. The difference between day and night for an example day of 19.06.2023 can be found in Appendix~\ref{appendix: netatmo}  Figure~\ref{fig:qc netatmo hamburg before after m5}.
+A station is not necessarily removed at all times, only if it shows outliers for a certain period after \gls{qc} step m3, maybe due to improper setup. The difference between day and night for an example day of 19.06.2023 can be found in Appendix~\ref{appendix: netatmo}  Figure~\ref{fig:qc netatmo hamburg before after m5}.
 
 \section{Feature Engineering}
 \label{sec:feature_engineering}
 
 The goal of feature engineering is to create features from the available data that can be used as input for the machine learning models. Based on the features, different models can be used for completely different tasks such as interpolation vs.\ extrapolation. The process includes the selection of features, the extraction of features from the raw data, and the transformation of features into a format that can be used by the machine learning models which could include scaling and/or normalization. Especially in the context of \gls{ta} interpolation, a lot of domain knowledge is required to select the right features and model correlations between them correctly. The target feature in this work is the \gls{ta} at canopy height, e.g., 2m height so that \gls{cuhi}s could be detected when using these trained interpolation models. Alternatively, the target temperature could also be adapted to be measured at another height or be exchanged based on the use-case.\\
-The input features are a combination of sensor readings from \gls{pws} networks such as Sensor.Community and Netatmo, satellite data such as land cover and vegetation health or \gls{lst}, and additional meta data such as soil conditions, zoning plans, or locations of sensors. The goal of this section is to give an overview of the different features that can be used for \gls{ta} interpolation and discuss several highly important features that are especially relevant in the context of urban microclimate based on related studies. Important questions are: 1. What features are there and how can they be measured/sourced from? 2. How do features for the 2 use-cases, e.g., single station interpolation vs.\ areal interpolation, differ? 3. How do we handle \gls{qc} outputs? 4. How do we deal with correlations between inputs so that we do not introduce bias into our models?
+The input features are a combination of sensor readings from \gls{pws} networks such as Sensor.Community and Netatmo, satellite data such as land cover and vegetation health or \gls{lst}, and additional meta data such as soil conditions, zoning plans, or locations of sensors. The goal of this section is to give an overview of the different features that can be used for \gls{ta} interpolation and discuss several highly important features that are especially relevant in the context of urban microclimate based on related studies. Important questions are: 1. What features are there and how can they be measured/sourced from? 2. How do features for the 2 use cases, e.g., single station interpolation vs.\ areal interpolation, differ? 3. How do we handle \gls{qc} outputs? 4. How do we deal with correlations between inputs so that we do not introduce bias into our models?
 
 \subsection{Feature Engineering Pipelines and Automation}
 
@@ -357,7 +357,7 @@ Next to official \gls{wmo} suggestions, other institutions such as the Integrate
 
     \begin{tabular}{|llll|}
     \hline
-    \textbf{Variable}          & \textbf{Data source}                                                 & \textbf{Data type} & \textbf{Spatial resoltion} \\ \hline
+    \textbf{Variable}          & \textbf{Data source}                                                 & \textbf{Data type} & \textbf{Spatial resolution} \\ \hline
     Red                        & \begin{tabular}[c]{@{}l@{}}Landsat 7,8 and\\ Sentinel 2\end{tabular} & Open source        & L: 30m, S: 10m             \\
     Green                      &                                                                      &                    &                            \\
     Blue                       &                                                                      &                    &                            \\
@@ -420,7 +420,7 @@ For the hyperlocal \gls{ta} mapping study done in Oslo by Venter et al.~\cite{ve
 
 \subsection{Features used in this Work}
 
-In the following, we describe which features are used in this work for our two use-cases, e.g., single station interpolation and areal interpolation. Due to the limited scope of this work, only a subset of the available features will be used to show the feasibility of the respective use-case and get an idea on the upper bounds of \gls{rmse} values that can be expected when choosing one of the use-cases, as we expect that with an increase of features and therefore availability of information for the \gls{ml} models to learn from, the prediction quality will increase.
+In the following, we describe which features are used in this work for our two use cases, e.g., single station interpolation and areal interpolation. Due to the limited scope of this work, only a subset of the available features will be used to show the feasibility of the respective use-case and get an idea on the upper bounds of \gls{rmse} values that can be expected when choosing one of the use cases, as we expect that with an increase of features and therefore availability of information for the \gls{ml} models to learn from, the prediction quality will increase.
 
 \subsubsection{Features for Areal Interpolation}
 
