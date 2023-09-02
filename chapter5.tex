@@ -1,6 +1,5 @@
 \chapter{Preparation of Datasets}
 \label{chap:preparations data sets}
-% Todo: 6 pages?
 
 Next to the \gls{ml} model selected, the data used to train and evaluate the model has a major influence on its performance. If the data is not representative or information is missing about the underlying process that the model should be fitted to, there can be errors, bias, or an inability to generalize well to new data. In this chapter, we look at potential features for \gls{ta}, at data sources for these features, and discuss the construction process of the datasets used in this work.\\
 % Overall dataset availability
@@ -66,7 +65,6 @@ Rainfall       & mm/h    & 0.2 to 150 mm/h        & 1mm/h   & every 5 min (bucke
 \end{tabular}
 \caption{Netatmo Sensor Specifications (Vendor reported)}
 \label{tab: netatmo sensor specs}
-% todo: adjust to page size, maybe move to dataset chapter
 \end{table}
 
 In the context of collecting meteorological data, the smart weather products are of particular interest. These include a smart outdoor weather station that collects \gls{ta}, humidity and air pressure, an anemometer that collects wind speed and direction, and a rain gauge. The sensor specifications, as reported by the vendor himself, is reported in Table~\ref{tab: netatmo sensor specs}.\\
@@ -396,7 +394,6 @@ However, there exist scripts published by other researchers to manually calculat
 In comparison to \gls{modis} and Sentinel, many LiDAR datasets are closed source and are not available for research purposes. This is unfortunate as LiDAR data provides a very high resolution of 5-10 cm$^2$ per pixel and enables the capturing of detailed elevation data. Especially in the context of urban areas and building heights this information can be very useful, for example to calculate the \gls{svf} which seems to have a significant impact on \gls{ta} modelling~\cite{dirksen2019sky}.\\
 Next to index data from remote sensing, there are also other types of information that could be useful for \gls{ml} applications. Alonso and Renard~\cite{alonso2020new} also used the following information:
 
-% Todo: make into table on one page
 \begin{itemize}
     \item Topographic
 
